@@ -38,8 +38,8 @@ function homeMapInit(){var el=document.getElementById('homemap');if(!el)return;l
   var m=L.map(el,{worldCopyJump:true,minZoom:1,maxZoom:12,scrollWheelZoom:false,attributionControl:true,fadeAnimation:false,markerZoomAnimation:false});el._m=m;
   baseLayer(L).addTo(m);
   var pts=[];[0,1].forEach(function(pass){SPOTS.forEach(function(s){var v=M.v.indexOf(s)>=0,f=M.f.indexOf(s)>=0,mine=v||f;if((pass===1)!==mine)return;var col=v?'#F6A04D':f?'#E5484D':'#9FB3C2';L.circleMarker([s.lat,s.lon],{radius:mine?9:4,color:'#fff',weight:mine?2:1,fillColor:col,fillOpacity:mine?1:.75}).addTo(m).bindPopup(spotPopup(s)+(v?'<div style="margin-top:4px;font-size:12px">✓ 다녀온 곳</div>':'')+(f?'<div style="font-size:12px">♥ 찜한 곳</div>':''));if(mine)pts.push([s.lat,s.lon]);});});
-  if(pts.length>1)m.fitBounds(pts,{padding:[30,30],maxZoom:4});else if(pts.length===1)m.setView(pts[0],4);else m.setView([15,135],2);
-  setTimeout(function(){m.invalidateSize();},80);});}
+  if(pts.length>1)m.fitBounds(pts,{padding:[30,30],maxZoom:4,animate:false});else if(pts.length===1)m.setView(pts[0],4,{animate:false});else m.setView([15,135],2,{animate:false});
+  setTimeout(function(){try{if(m._container&&document.body.contains(m._container))m.invalidateSize(false);}catch(e){}},80);});}
 
 /* ---------- 포인트: 다녀왔어요 · 리뷰 ---------- */
 state.rv={};

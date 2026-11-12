@@ -38,7 +38,7 @@
 '.cmtf{display:flex;gap:6px}.cmtf input{flex:1;height:40px;border-radius:10px;border:1px solid var(--line);padding:0 10px;background:var(--panel);color:var(--ink);font:14px var(--font-body)}',
 '#loadbar{position:fixed;left:0;top:0;height:3px;width:0;background:var(--coral);z-index:100;transition:width .3s,opacity .3s;opacity:0}#loadbar.on{opacity:1;width:70%}',
 '@media (max-width:860px){body.msearch .gsearch{display:block!important;position:fixed;top:60px;left:8px;right:8px;z-index:60}body.msearch .gsearch input{width:100%}}',
-'@media (max-width:480px){#themeBtn{display:none}}',
+'@media (max-width:480px){#themeBtn{display:none}#hdrLogout{display:none}}',
 '.msbtn{display:none}@media (max-width:860px){.msbtn{display:flex}}',
 '.bell{position:relative}.bell i{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:4px;background:#D92D20}',
 '.season{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}.season span{font-size:11px;text-align:center;padding:6px 0;border-radius:6px;background:var(--bg);color:var(--sub)}.season span.on{background:var(--sea);color:#fff;font-weight:700}',
@@ -175,8 +175,7 @@ V.home=function(){setTitle('','전 세계 스쿠버·프리다이빙 포인트, 
   '<div class="cols3"><div class="panel"><h2>이번 시즌 추천 <a href="#map">지도에서 보기</a></h2><div class="list">'+inSeason().slice(0,4).map(function(x){return item({href:'#spot-'+x.id,thumb:x.color,t:x.name,s:x.country+' · 시즌 '+x.season});}).join('')+'</div></div>'+
   '<div class="panel"><h2>모집 중인 모임 <a href="#community">전체</a></h2>'+(meets?'<div class="list">'+meets+'</div>':'<p class="empty">지금 모집 중인 모임이 없어요.</p><a class="btn btn-line" href="#meet">모임 만들기</a>')+'</div>'+
   '<div class="panel"><h2>내 장비 <a href="#gear">관리</a></h2>'+(g?'<div class="notice">'+esc(g.g.cat)+' '+esc(g.g.brand)+' 정비까지 '+(g.d.days<0?(-g.d.days)+'일 지났어요':g.d.days+'일 남았어요')+'</div>':'<p class="empty">장비를 등록하면 오버홀 시기를 미리 알려드려요.</p><a class="btn btn-line" href="#gearreg">장비 등록</a>')+'</div></div>'+foot();};
-function photoCats(){var C=[['map','포인트',I.map,'tubbataha_1'],['resorts','리조트',I.resort,'racha_0'],['edu','강사 · 자격증',I.edu,'subic_1'],['trip','코스 · 비용',I.trip,'coron_2'],['life','해양생물',I.fish,'wakatobi_0'],['safety','맛집 · 안전',I.food,'mauritius_1'],['community','모임',I.people,'hurghada_1'],['feed','피드','M4 5h16v14H4z M4 15l4-4 4 4 3-3 5 5 M15 9h.01','moalboal_2'],['gear','장비 마켓',I.gear,'nusapenida_0'],['gear','정비 · 수리',I.wrench,'thistlegorm_3'],['log','다이브 로그',I.log,'yonaguni_0'],['tools','계산기 · 체크',I.edu,'saipan_0']];
-  return '<div class="pcats">'+C.map(function(c){return '<a class="pcat" href="#'+c[0]+'"><img src="/assets/media/'+c[3]+'_s.jpg" alt="" loading="lazy"><span><i>'+ic(c[2],18)+'</i>'+c[1]+'</span></a>';}).join('')+'</div><p class="small" style="margin:-8px 0 0;text-align:right"><a href="#credits">사진 출처</a></p>';}
+function photoCats(){return '<div class="cats">'+[['map','포인트',I.map],['resorts','리조트',I.resort],['edu','강사 · 자격증',I.edu],['trip','코스 · 비용',I.trip],['life','해양생물',I.fish],['safety','맛집 · 안전',I.food],['community','모임',I.people],['feed','피드','M4 5h16v14H4z M4 15l4-4 4 4 3-3 5 5 M15 9h.01'],['gear','장비 마켓',I.gear],['gear','정비 · 수리',I.wrench],['log','다이브 로그',I.log],['tools','계산기 · 체크',I.edu]].map(function(c){return '<a class="cat" href="#'+c[0]+'"><i>'+ic(c[2],22)+'</i>'+c[1]+'</a>';}).join('')+'</div>';}
 function months(str){var m=[],s=String(str||'');if(/연중|사계절|1년 내내|연간/.test(s))return [1,2,3,4,5,6,7,8,9,10,11,12];var re=/(\d{1,2})\s*[~\-–]\s*(\d{1,2})\s*월?/g,x;while((x=re.exec(s))){var a=+x[1],b=+x[2];if(a<1||a>12||b<1||b>12)continue;for(var i=a;;i=i%12+1){m.push(i);if(i===b||m.length>24)break;}}
   var one=s.replace(re,'').match(/(\d{1,2})월/g);if(one)one.forEach(function(t){var n=parseInt(t,10);if(n>=1&&n<=12)m.push(n);});return m.filter(function(v,i,a){return a.indexOf(v)===i;});}
 function inSeason(){var mo=new Date().getMonth()+1;var L=SPOTS.filter(function(s){return vis(s)&&months(s.season).indexOf(mo)>=0;});return L.length?L:SPOTS.slice(0,4);}
@@ -207,13 +206,13 @@ function spotPopup(s){var p=firstPhoto(s.id);return '<div style="width:220px">'+
 function initMap(el,opt){loadLeaflet().then(function(){if(!document.body.contains(el))return;var L=window.L;
   var m=L.map(el,{worldCopyJump:true,zoomControl:true,attributionControl:true,minZoom:2,maxZoom:17,fadeAnimation:false,markerZoomAnimation:false});el._m=m;
   baseLayer(L).addTo(m);
-  if(opt.view)m.setView(opt.view.c,opt.view.z);else if(opt.bounds)m.fitBounds(opt.bounds);else m.setView([15,140],3);
+  if(opt.view)m.setView(opt.view.c,opt.view.z,{animate:false});else if(opt.bounds)m.fitBounds(opt.bounds,{animate:false});else m.setView([15,140],3,{animate:false});
   if(opt.sites&&DB.sites){var cl=L.markerClusterGroup({chunkedLoading:true,maxClusterRadius:50,showCoverageOnHover:false});var C=['#475467','#0A5C8A','#B4530A'],N=['다이빙 센터·샵','다이빙 포인트','리조트·숙소'];
     DB.sites.forEach(function(x){if(opt.near&&km(opt.near.lat,opt.near.lon,x[0],x[1])>opt.near.r)return;cl.addLayer(L.circleMarker([x[0],x[1]],{radius:5,color:'#fff',weight:1,fillColor:C[x[3]]||C[0],fillOpacity:.9}).bindPopup('<b>'+esc(x[2])+'</b><br><span style="font-size:12px">'+N[x[3]]+(x[4]?' · '+esc(x[4]):'')+'</span><br><a href="https://www.google.com/maps/search/?api=1&query='+x[0]+','+x[1]+'" target="_blank" rel="noopener">길찾기</a>'));});m.addLayer(cl);}
   (opt.spots||[]).forEach(function(s){var on=s.id===state.sel;L.circleMarker([s.lat,s.lon],{radius:on?11:8,color:'#fff',weight:2,dashArray:s.t==='free'?'3 2':null,fillColor:s.t==='free'?'#F6A04D':'#0A5C8A',fillOpacity:1}).addTo(m).bindPopup(spotPopup(s)).on('click',function(){state.sel=s.id;});});
   if(opt.save)m.on('moveend',function(){var c=m.getCenter();state.lv={c:[c.lat,c.lng],z:m.getZoom()};LS.set('mapView',state.lv);});
   if(opt.me&&state.myPos)L.circleMarker([state.myPos.lat,state.myPos.lon],{radius:7,color:'#fff',weight:2,fillColor:'#D92D20',fillOpacity:1}).addTo(m).bindPopup('내 위치');
-  setTimeout(function(){m.invalidateSize();},60);}).catch(function(){el.innerHTML='<p class="empty" style="color:#fff;padding:20px">지도를 불러오지 못했어요. 연결을 확인해 주세요.</p>';});}
+  setTimeout(function(){try{if(m._container&&document.body.contains(m._container))m.invalidateSize(false);}catch(e){}},60);}).catch(function(){el.innerHTML='<p class="empty" style="color:#fff;padding:20px">지도를 불러오지 못했어요. 연결을 확인해 주세요.</p>';});}
 function lvlOk(s){return state.lvl==='전체'||String(s.lv).indexOf(state.lvl)>=0;}
 V.map=function(){setTitle('다이빙 지도','전 세계 다이빙 포인트와 다이빙 센터 지도');loadMedia();
   var list=SPOTS.filter(function(s){return vis(s)&&lvlOk(s)&&(!state.mapq||kmatch(s.name+' '+s.country+' '+EN[s.id]+' '+s.kind,state.mapq));}),mo=+state.mon||0;if(mo)list=list.filter(function(s){return months(s.season).indexOf(mo)>=0;});
