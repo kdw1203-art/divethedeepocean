@@ -64,3 +64,4 @@ document.addEventListener('click',function(e){if(e.target.id!=='langBtn')return;
 
 /* 영어 화면에서는 지도 글자도 영어로 */
 if(LANG==='en'){koStyle=function(){if(KOSTYLE||!window.maplibregl)return;return fetch('https://tiles.openfreemap.org/styles/liberty').then(function(r){return r.json();}).then(function(st){st.layers.forEach(function(l){if(l.layout&&l.layout['text-field'])l.layout['text-field']=['coalesce',['get','name:en'],['get','name_int'],['get','name']];});KOSTYLE=st;}).catch(function(){});};}
+if(LANG==='en'){var _hmb9=homeMapBox;homeMapBox=function(){return _hmb9().replace(/world_s\.webp/g,'world_en_s.webp').replace(/world\.webp/g,'world_en.webp');};}
