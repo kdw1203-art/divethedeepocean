@@ -1,6 +1,6 @@
 import re
 p='/home/claude/dive/site/index.html';s=open(p).read()
-mod=open('/home/claude/dive/site/life_about.js').read()+'\n'+open('/home/claude/dive/site/up.js').read()
+mod=open('/home/claude/dive/site/life_about.js').read()+'\n'+open('/home/claude/dive/site/up.js').read()+'\n'+open('/home/claude/dive/site/up2.js').read()
 mark="window.addEventListener('hashchange',route);"
 if '/*UP-START*/' in s:
   a=s.index('/*UP-START*/');b=s.index('/*UP-END*/')+len('/*UP-END*/');s=s[:a]+'/*UP-START*/\n'+mod+'\n/*UP-END*/'+s[b:]

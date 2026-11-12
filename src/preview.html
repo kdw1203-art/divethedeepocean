@@ -1228,8 +1228,8 @@ V.home=function(){setTitle('','전 세계 스쿠버·프리다이빙 포인트, 
   var g=(state.gearL||[]).map(function(x){return {g:x,d:due(x)};}).filter(function(x){return x.d;}).sort(function(a,b){return a.d.days-b.d.days;})[0];
   var intro=LS.get('introDone',false)?'':'<div class="panel" style="border:2px solid var(--sea)"><h2>처음 오셨나요? <button class="chip" type="button" id="introX">닫기</button></h2><div class="list">'+item({href:'#map',t:'1. 지도에서 다음 바다 고르기',s:'추천 포인트 '+SPOTS.length+'곳과 다이빙 센터 7,700여 곳'})+item({href:'#life',t:'2. 그 바다에 사는 생물 미리 보기',s:'2만6천 종 도감'})+item({href:'#signup',t:'3. 가입하고 로그·장비 정리하기',s:'다이버는 전부 무료'})+'</div></div>';
   return '<div class="vh"><div><h1>다음 바다, 여기서 고르세요</h1><p>포인트부터 리조트, 강사, 이동 경로, 내 로그와 장비 정비까지 한 곳에서 · 다이버는 모두 무료</p></div>'+modeChips()+'</div>'+intro+
-  '<form class="panel msbox" id="homeSearch" role="search" style="padding:12px"><label for="hq" style="position:absolute;left:-9999px">통합 검색</label><input id="hq" type="search" placeholder="포인트 · 리조트 · 생물 · 장비 검색" style="width:100%;height:46px;border-radius:12px;border:1px solid var(--line);padding:0 14px;font:15px var(--font-body);background:var(--panel);color:var(--ink)"></form>'+
-  '<div class="cols"><a class="panel" href="#spot-'+s.id+'" style="padding:0;overflow:hidden;text-decoration:none;color:inherit"><div class="ph1" style="height:220px;border-radius:0">'+(p?'<img src="'+esc(p.src)+'" alt="'+esc(s.name)+'" loading="lazy"><span class="credit">'+esc(p.author)+' · '+esc(p.license)+'</span>':'<div style="height:100%;background:'+s.color+'"></div>')+'</div><div class="item" style="padding:14px 18px;border:0"><span class="tx"><span>'+s.country+' · '+s.kind+'</span><b>'+s.name+'</b><span>'+s.desc+'</span></span><span class="rt">자세히</span></div></a>'+condCard()+'</div>'+
+  homeMapBox()+'<form class="panel msbox" id="homeSearch" role="search" style="padding:12px"><label for="hq" style="position:absolute;left:-9999px">통합 검색</label><input id="hq" type="search" placeholder="포인트 · 리조트 · 생물 · 장비 검색" style="width:100%;height:46px;border-radius:12px;border:1px solid var(--line);padding:0 14px;font:15px var(--font-body);background:var(--panel);color:var(--ink)"></form>'+
+  '<div class="cols"><a class="panel" href="#spot-'+s.id+'" style="padding:0;overflow:hidden;text-decoration:none;color:inherit"><div class="ph1" style="height:170px;border-radius:0">'+(p?'<img src="'+esc(p.src)+'" alt="'+esc(s.name)+'" loading="lazy"><span class="credit">'+esc(p.author)+' · '+esc(p.license)+'</span>':'<div style="height:100%;background:'+s.color+'"></div>')+'</div><div class="item" style="padding:14px 18px;border:0"><span class="tx"><span>'+s.country+' · '+s.kind+'</span><b>'+s.name+'</b><span>'+s.desc+'</span></span><span class="rt">자세히</span></div></a>'+condCard()+'</div>'+
   '<div class="panel" id="seaToday"><h2>'+s.name+' 오늘 바다 <span class="small">Open-Meteo</span></h2><p class="empty" style="margin:0">불러오는 중이에요.</p></div>'+
   '<div class="cats">'+[['map','포인트',I.map],['resorts','리조트',I.resort],['edu','강사 · 자격증',I.edu],['trip','코스 · 비용',I.trip],['life','해양생물',I.fish],['safety','맛집 · 안전',I.food],['community','모임',I.people],['feed','피드','M4 5h16v14H4z M4 15l4-4 4 4 3-3 5 5 M15 9h.01'],['gear','장비 마켓',I.gear],['gear','정비 · 수리',I.wrench],['log','다이브 로그',I.log],['tools','계산기 · 체크',I.edu]].map(function(c){return '<a class="cat" href="#'+c[0]+'"><i>'+ic(c[2],22)+'</i>'+c[1]+'</a>';}).join('')+'</div>'+
   (R.length?'<div class="panel"><h2>최근 본 포인트</h2><div class="list">'+R.map(function(x){return item({href:'#spot-'+x.id,thumb:x.color,t:x.name,s:x.country+' · '+x.kind});}).join('')+'</div></div>':'')+
@@ -1242,7 +1242,7 @@ function inSeason(){var mo=new Date().getMonth()+1;var L=SPOTS.filter(function(s
 function seasonBar(s){var m=months(s.season);if(!m.length)return '';return '<div class="season" aria-label="시즌 '+esc(s.season)+'">'+[1,2,3,4,5,6,7,8,9,10,11,12].map(function(i){return '<span class="'+(m.indexOf(i)>=0?'on':'')+'">'+i+'월</span>';}).join('')+'</div>';}
 function seaToday(s){var el=document.getElementById('seaToday');if(!el)return;var key=s.id;if(seaToday.c[key]){fill(seaToday.c[key]);return;}
   fetch('https://marine-api.open-meteo.com/v1/marine?latitude='+s.lat+'&longitude='+s.lon+'&current=wave_height,sea_surface_temperature,wave_period&timezone=auto').then(function(r){return r.json();}).then(function(d){seaToday.c[key]=d;fill(d);}).catch(function(){el.querySelector('p').textContent='바다 정보를 불러오지 못했어요.';});
-  function fill(d){var c=d&&d.current;if(!c||c.wave_height==null&&c.sea_surface_temperature==null){el.querySelector('p').textContent='이 위치는 바다 예보가 없어요 (호수·실내 시설 등).';return;}
+  function fill(d){var c=d&&d.current;if(!c||c.wave_height==null&&c.sea_surface_temperature==null){el.querySelector('p').textContent='이 지점은 바다 예보 범위 밖이에요. 현지 센터에 물어보세요.';return;}
     el.innerHTML='<h2>'+esc(s.name)+' 지금 바다 <span class="small">Open-Meteo 예보 · '+esc((c.time||'').replace('T',' '))+' 현지</span></h2><div class="stats"><div class="stat"><small>수면 수온</small><b>'+(c.sea_surface_temperature!=null?c.sea_surface_temperature.toFixed(1)+'℃':'—')+'</b></div><div class="stat"><small>파고</small><b>'+(c.wave_height!=null?c.wave_height.toFixed(1)+'m':'—')+'</b></div><div class="stat"><small>파도 주기</small><b>'+(c.wave_period!=null?c.wave_period.toFixed(0)+'초':'—')+'</b></div><div class="stat"><small>시즌</small><b style="font-size:14px">'+esc(s.season)+'</b></div></div><p class="small" style="margin:8px 0 0">모델 예보값이라 실제와 다를 수 있어요. 출항 여부는 현지 센터 판단을 따르세요.</p>';}}
 seaToday.c={};
 condCard=function(){var L=state.userLogs||[],last=L.filter(function(l){return l.date;}).sort(function(a,b){return a.date<b.date?1:-1;})[0];
@@ -1260,7 +1260,7 @@ state.lv=LS.get('mapView',null);state.osm=true;state.lvl='전체';
 var RB={'전체':[[-50,-170],[65,190]],'한국':[[33,124.5],[38.6,131.5]],'일본':[[24,122],[45,146]],'필리핀':[[5,116],[19,127]],'동남아':[[-10,95],[20,130]],'미크로네시아':[[5,130],[22,170]],'인도양·홍해':[[-25,30],[30,80]],'호주·태평양':[[-45,110],[0,190]],'아메리카':[[-30,-120],[40,-55]],'유럽':[[28,-20],[62,40]]};
 function spotPopup(s){var p=firstPhoto(s.id);return '<div style="width:220px">'+(p?'<img src="'+esc(th(p))+'" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px">':'')+'<b style="display:block;margin-top:6px">'+esc(s.name)+'</b><span style="font-size:12px;color:#4A5B68">'+esc(EN[s.id])+'<br>'+esc(s.country)+' · '+esc(s.kind)+' · 시즌 '+esc(s.season)+'</span><br><a href="#spot-'+s.id+'" style="display:inline-block;margin-top:6px;font-weight:700">포인트 보기 →</a></div>';}
 function initMap(el,opt){loadLeaflet().then(function(){if(!document.body.contains(el))return;var L=window.L;
-  var m=L.map(el,{worldCopyJump:true,zoomControl:true,attributionControl:true,minZoom:2,maxZoom:17});el._m=m;
+  var m=L.map(el,{worldCopyJump:true,zoomControl:true,attributionControl:true,minZoom:2,maxZoom:17,fadeAnimation:false,markerZoomAnimation:false});el._m=m;
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(m);
   if(opt.view)m.setView(opt.view.c,opt.view.z);else if(opt.bounds)m.fitBounds(opt.bounds);else m.setView([15,140],3);
   if(opt.sites&&DB.sites){var cl=L.markerClusterGroup({chunkedLoading:true,maxClusterRadius:50,showCoverageOnHover:false});var C=['#475467','#0A5C8A','#B4530A'],N=['다이빙 센터·샵','다이빙 포인트','리조트·숙소'];
@@ -1271,7 +1271,7 @@ function initMap(el,opt){loadLeaflet().then(function(){if(!document.body.contain
   setTimeout(function(){m.invalidateSize();},60);}).catch(function(){el.innerHTML='<p class="empty" style="color:#fff;padding:20px">지도를 불러오지 못했어요. 연결을 확인해 주세요.</p>';});}
 function lvlOk(s){return state.lvl==='전체'||String(s.lv).indexOf(state.lvl)>=0;}
 V.map=function(){setTitle('다이빙 지도','전 세계 다이빙 포인트와 다이빙 센터 지도');loadMedia();
-  var list=SPOTS.filter(function(s){return vis(s)&&lvlOk(s);}),mo=+state.mon||0;if(mo)list=list.filter(function(s){return months(s.season).indexOf(mo)>=0;});
+  var list=SPOTS.filter(function(s){return vis(s)&&lvlOk(s)&&(!state.mapq||kmatch(s.name+' '+s.country+' '+EN[s.id]+' '+s.kind,state.mapq));}),mo=+state.mon||0;if(mo)list=list.filter(function(s){return months(s.season).indexOf(mo)>=0;});
   if(state.myPos)list=list.slice().sort(function(a,b){return km(state.myPos.lat,state.myPos.lon,a.lat,a.lon)-km(state.myPos.lat,state.myPos.lon,b.lat,b.lon);});
   var LV=['전체','초급','중급','상급'];
   return '<div class="vh"><div><h1>다이빙 지도</h1><p>추천 포인트 '+SPOTS.length+'곳'+(DB.sites?' · 다이빙 센터와 포인트 '+DB.sites.length.toLocaleString()+'곳':'')+'</p></div>'+modeChips()+'</div>'+
@@ -1324,7 +1324,7 @@ var _trip=V.trip;V.trip=function(){setTitle('코스 · 비용');var h=_trip(),k=
 
 /* ---------- 해양생물 ---------- */
 state.seen=LS.get('seen',{});
-_life=function(){var list=LIFE.filter(function(l){return state.lcat==='전체'||l[1]===state.lcat;});
+_life=function(){var list=LIFE.filter(function(l){var i=LIFE.indexOf(l);return (state.lcat==='전체'||l[1]===state.lcat)&&(!state.lifeq||kmatch(l[0]+' '+LEN[i]+' '+l[2],state.lifeq));});
   return '<div class="vh"><div><h1>해양생물 도감</h1><p>대표 '+LIFE.length+'종과 전체 2만6천여 종 · 어디서 볼 수 있는지와 특징</p></div></div>'+
   '<div class="chips" role="group" aria-label="분류">'+LCATS.map(function(c){return '<button class="chip" type="button" data-lcat="'+c+'" aria-pressed="'+(state.lcat===c)+'">'+c+'</button>';}).join('')+'</div>'+
   '<div class="panel"><h2>'+state.lcat+' '+list.length+'종 <span class="small">본 생물 '+Object.keys(state.seen).filter(function(k){return state.seen[k];}).length+'종</span></h2><div class="lcards">'+list.map(function(l){var i=LIFE.indexOf(l),w=l[1]==='주의 생물',sp=SPOTS.filter(function(s){return s.life.indexOf(l[0])>=0;}).slice(0,4);
@@ -1424,7 +1424,7 @@ function loadNotes(){if(loadNotes.b)return;loadNotes.b=1;var N=[];
 var _bizpage=V.bizpage;V.bizpage=function(i){var b=state.biz[+i],h=_bizpage(i);if(!b)return h;
   if(b.status==='반려됨')h=h.replace('<p class="small" style="margin:8px 0 0">심사를 통과하면','<div class="notice" style="margin-top:8px">반려 사유: '+esc(b.reject||'운영자가 사유를 남기지 않았어요')+'</div><button class="btn btn-pri" type="button" data-resubmit="'+b.dbid+'" style="margin-top:8px">고쳐서 다시 심사 받기</button><p class="small" style="margin:8px 0 0">심사를 통과하면');
   if(b.status==='승인됨')h=h.replace('<span class="tag fr">승인됨</span>','<span class="tag ok">인증 업체 ✓</span>');
-  h=h.replace('<div class="hero" style="background:','<div class="hero" style="height:140px;background:').replace('<span>업체 사진을 올리는 자리</span>','<span>업체 사진 등록은 업체 페이지 편집에서 열릴 예정이에요</span>');
+  h=h.replace('<div class="hero" style="background:','<div class="hero" style="height:140px;background:').replace('<span>업체 사진을 올리는 자리</span>','<span>업체 사진은 페이지 고치기에서 올릴 수 있어요</span>');
   return h;};
 var _pull=BE.pull;BE.pull=function(){return _pull().then(function(){if(!BE.on||!BE.user)return;return Promise.all([BE.sb.from('businesses').select('id,reject_reason').eq('owner',BE.user.id).then(function(r){(r.data||[]).forEach(function(x){state.biz.forEach(function(b){if(b.dbid===x.id)b.reject=x.reject_reason;});});}),
   BE.sb.from('posts').select('id,photo').eq('owner',BE.user.id).order('created_at',{ascending:false}).limit(60).then(function(r){state.myPosts=(r.data||[]).map(function(p){return {url:pubUrl(p.photo)};});}),
@@ -1449,14 +1449,15 @@ function report(type,id){if(!BE.on)return toast('실제 서비스에서 신고�
 
 /* ---------- 라우트 후처리 · 이벤트 ---------- */
 var NOTFOUND={};
-var _route=route;route=function(){var h=(location.hash||'#home').slice(1),id=h,dash=h.indexOf('-');if(!V[h]&&dash>0&&V[h.slice(0,dash)])id=h.slice(0,dash);
+function killMaps(){main.querySelectorAll('.lmap,.homemap').forEach(function(e){if(e._m){try{e._m.off();e._m.remove();}catch(x){}e._m=null;}});}
+var _route=route;route=function(){killMaps();var h=(location.hash||'#home').slice(1),id=h,dash=h.indexOf('-');if(!V[h]&&dash>0&&V[h.slice(0,dash)])id=h.slice(0,dash);
   if(h&&!V[id]&&h!=='home'){main.innerHTML='<div class="view"><div class="vh"><div><h1>페이지를 찾을 수 없어요</h1><p>주소가 바뀌었거나 지워진 화면이에요.</p></div><a class="btn btn-pri" href="#home">홈으로</a></div></div>';setTitle('찾을 수 없음');return;}
   var prev=route._last;route._last=h;_route();
   var back=route._stack.length>1&&route._stack[route._stack.length-2]===h;if(back){route._stack.pop();var y=route._pos[h];if(y)main.scrollTop=y;}else route._stack.push(h);if(route._stack.length>40)route._stack.shift();
   after();};
 route._stack=[];route._pos={};
 main.addEventListener('scroll',function(){route._pos[route._last]=main.scrollTop;},{passive:true});
-var _rerender=rerender;rerender=function(){var y=main.scrollTop;_route();after();main.scrollTop=y;};
+var _rerender=rerender;rerender=function(){var y=main.scrollTop;killMaps();_route();after();main.scrollTop=y;};
 function after(){var c=cur();if(FORMS[c])setTitle(FORMS[c].title);if(c==='map')mapAfter();if(c==='spot')spotAfter();if(c==='home')seaToday(spot(state.sel));bindUp();}
 function bindUp(){
   main.querySelectorAll('[data-pwt]').forEach(function(b){b.onclick=function(){var i=b.parentNode.querySelector('input');var s=i.type==='password';i.type=s?'text':'password';b.textContent=s?'숨기기':'보기';b.setAttribute('aria-label',s?'비밀번호 숨기기':'비밀번호 보기');};});
@@ -1533,6 +1534,188 @@ LIFE.forEach(function(l,i){INDEX.push({t:l[0],s:LEN[i]+' · '+l[1],h:'#life',k:l
 if('serviceWorker' in navigator){navigator.serviceWorker.getRegistration().then(function(r){if(!r)return;r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller){var t=document.getElementById('toast');toast('새 버전이 있어요. 화면을 눌러 새로고침하면 적용돼요.');t.style.cursor='pointer';t.onclick=function(){location.reload();};}});});});}
 /* iOS 설치 안내 */
 var _prof3=V.profile;V.profile=function(){var h=_prof3();if(/iphone|ipad/i.test(navigator.userAgent)&&!navigator.standalone)h=h.replace('<b>홈 화면에 추가</b>를 누르면','<b>공유 버튼 → 홈 화면에 추가</b>를 누르면');return h;};
+
+/* ================= 2차 묶음 ================= */
+(function(){var c=document.createElement('style');c.textContent=[
+'.homemap{height:340px;border-radius:16px;overflow:hidden;background:var(--map);position:relative;z-index:0}',
+'@media (max-width:860px){.homemap{height:300px}}',
+'.mystat{display:flex;gap:8px;flex-wrap:wrap}.mystat span{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:12px;background:var(--bg);font-size:13px;font-weight:700}',
+'.dot2{width:12px;height:12px;border-radius:6px;display:inline-block;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2)}',
+'.stars{color:#F6A04D;letter-spacing:1px}',
+'.rv{border-bottom:1px solid var(--line);padding:10px 0;display:flex;flex-direction:column;gap:4px}.rv:last-child{border-bottom:0}',
+'.starpick{display:flex;gap:4px}.starpick button{width:44px;height:44px;border:0;background:transparent;font-size:28px;color:var(--line);cursor:pointer}.starpick button.on{color:#F6A04D}',
+'.thread{display:flex;flex-direction:column;gap:8px;max-height:55vh;overflow-y:auto;padding:4px}',
+'.bub{max-width:78%;padding:10px 12px;border-radius:14px;background:var(--bg);font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word}.bub.me{align-self:flex-end;background:var(--sea);color:#fff}.bub small{display:block;font-size:11px;opacity:.7;margin-top:4px}',
+'.bphotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}.bphotos img{width:100%;height:110px;object-fit:cover;border-radius:10px}',
+'.prow{display:grid;grid-template-columns:1fr 140px 44px;gap:6px;align-items:center}'
+].join('\n');document.head.appendChild(c);})();
+toast=function(t){var d=document.getElementById('toast');d.textContent=t;d.classList.add('on');clearTimeout(d._t);d._t=setTimeout(function(){d.classList.remove('on');d.onclick=null;d.style.cursor='';},4200);};
+
+/* 초성 검색 */
+var CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+function cho(s){return String(s||'').replace(/[가-힣]/g,function(c){return CHO[Math.floor((c.charCodeAt(0)-44032)/588)];});}
+function kmatch(text,q){q=String(q||'').trim().toLowerCase();if(!q)return true;text=String(text||'').toLowerCase();if(text.indexOf(q)>=0)return true;if(/^[ㄱ-ㅎ]+$/.test(q.replace(/\s/g,'')))return cho(text).replace(/\s/g,'').indexOf(q.replace(/\s/g,''))>=0;return false;}
+
+/* ---------- 찜 · 다녀온 곳 ---------- */
+state.visited=LS.get('visited',{});
+fav=function(id){return '<button class="chip" type="button" data-fav="'+id+'" aria-pressed="'+(!!state.favs[id])+'">'+(state.favs[id]?'♥ 찜함':'♡ 찜하기')+'</button>';};
+function visBtn(id){var on=isVisited(id);return '<button class="chip" type="button" data-visit="'+id+'" aria-pressed="'+(!!on)+'">'+(on?'✓ 다녀왔어요':'다녀왔어요')+'</button>';}
+function logVisited(){var o={};(state.userLogs||[]).forEach(function(l){var t=String(l.site||'').toLowerCase();if(!t)return;SPOTS.forEach(function(s){var k=[s.name.split(/[ ·(]/)[0],String(EN[s.id]||'').split(/[ ,(]/)[0]].filter(function(x){return x&&x.length>=2;});if(k.some(function(x){return t.indexOf(x.toLowerCase())>=0;}))o[s.id]=1;});});return o;}
+function isVisited(id){return !!state.visited[id]||!!logVisited()[id];}
+function myPlaces(){var lv=logVisited(),V=SPOTS.filter(function(s){return state.visited[s.id]||lv[s.id];}),F=SPOTS.filter(function(s){return state.favs[s.id];});var C={};V.forEach(function(s){C[s.country]=1;});return {v:V,f:F,countries:Object.keys(C)};}
+
+/* ---------- 홈: 세계지도 + 내 바다 ---------- */
+function homeMapBox(){var M=myPlaces();
+  return '<div class="panel" style="padding:14px"><h2 style="margin-bottom:10px">내 바다 지도 <a href="#map">전체 지도</a></h2><div id="homemap" class="homemap" role="region" aria-label="내가 다녀온 곳과 찜한 곳 지도"></div>'+
+  '<div class="mystat" style="margin-top:10px"><span><i class="dot2" style="background:#F6A04D"></i>다녀온 곳 '+M.v.length+'곳 · '+M.countries.length+'개 나라</span><span><i class="dot2" style="background:#E5484D"></i>찜한 곳 '+M.f.length+'곳</span><span><i class="dot2" style="background:#9FB3C2"></i>추천 포인트 '+SPOTS.length+'곳</span></div>'+
+  ((M.v.length||M.f.length)?'<div class="chips" style="margin-top:10px">'+M.v.map(function(s){return '<a class="chip" href="#spot-'+s.id+'" style="display:inline-flex;align-items:center;text-decoration:none;border-color:#F6A04D">✓ '+s.name+'</a>';}).join('')+M.f.filter(function(s){return M.v.indexOf(s)<0;}).map(function(s){return '<a class="chip" href="#spot-'+s.id+'" style="display:inline-flex;align-items:center;text-decoration:none;border-color:#E5484D">♥ '+s.name+'</a>';}).join('')+'</div>':'<p class="small" style="margin:10px 0 0">포인트 화면에서 <b>다녀왔어요</b>나 <b>찜하기</b>를 누르면 이 지도에 표시돼요. 로그에 적은 포인트도 자동으로 다녀온 곳에 들어가요.</p>')+'</div>';}
+function homeMapInit(){var el=document.getElementById('homemap');if(!el)return;loadLeaflet().then(function(){if(!document.body.contains(el)||el._m)return;var L=window.L,M=myPlaces();
+  var m=L.map(el,{worldCopyJump:true,minZoom:1,maxZoom:12,scrollWheelZoom:false,attributionControl:true,fadeAnimation:false,markerZoomAnimation:false});el._m=m;
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(m);
+  var pts=[];[0,1].forEach(function(pass){SPOTS.forEach(function(s){var v=M.v.indexOf(s)>=0,f=M.f.indexOf(s)>=0,mine=v||f;if((pass===1)!==mine)return;var col=v?'#F6A04D':f?'#E5484D':'#9FB3C2';L.circleMarker([s.lat,s.lon],{radius:mine?9:4,color:'#fff',weight:mine?2:1,fillColor:col,fillOpacity:mine?1:.75}).addTo(m).bindPopup(spotPopup(s)+(v?'<div style="margin-top:4px;font-size:12px">✓ 다녀온 곳</div>':'')+(f?'<div style="font-size:12px">♥ 찜한 곳</div>':''));if(mine)pts.push([s.lat,s.lon]);});});
+  if(pts.length>1)m.fitBounds(pts,{padding:[30,30],maxZoom:6});else if(pts.length===1)m.setView(pts[0],5);else m.setView([15,135],2);
+  setTimeout(function(){m.invalidateSize();},80);});}
+
+/* ---------- 포인트: 다녀왔어요 · 리뷰 ---------- */
+state.rv={};
+var _spot2=V.spot;V.spot=function(id){var h=_spot2(id),s=spot(state.sel),R=state.rv[s.id];
+  h=h.replace('<button class="chip" type="button" data-share=',visBtn(s.id)+'<button class="chip" type="button" data-share=');
+  var avg=R&&R.length?(R.reduce(function(a,r){return a+r.rating;},0)/R.length):0;
+  if(avg)h=h.replace('<span class="en">'+EN[s.id]+'</span> · ','<span class="stars">★ '+avg.toFixed(1)+'</span> 후기 '+R.length+' · <span class="en">'+EN[s.id]+'</span> · ');
+  var mine=R&&BE.user?R.filter(function(r){return r.owner===BE.user.id;})[0]:null;
+  var box='<div class="panel" id="rvBox"><h2>다녀온 다이버 후기 '+(R?R.length:'')+(avg?' <span class="stars">★ '+avg.toFixed(1)+'</span>':'')+'</h2>'+
+   (!BE.on?'<p class="empty">실제 서비스에서 후기를 볼 수 있어요.</p>':R===undefined?'<p class="empty">불러오는 중이에요.</p>':(R.length?R.map(function(r){return '<div class="rv"><span><span class="stars">'+'★★★★★'.slice(0,r.rating)+'<span style="color:var(--line)">'+'★★★★★'.slice(r.rating)+'</span></span> <b>'+esc(r.author_nick)+'</b> <span class="small">'+(r.dived_on?esc(r.dived_on)+' 다이빙':'')+'</span></span><span style="white-space:pre-wrap">'+esc(r.body)+'</span>'+(BE.user&&r.owner===BE.user.id?'<span><button class="chip" type="button" data-rvdel="'+r.id+'" style="min-height:30px;height:30px">삭제</button></span>':'')+'</div>';}).join(''):'<p class="empty">아직 후기가 없어요. 다녀오셨다면 첫 후기를 남겨 주세요.</p>')+
+   (mine?'':'<form id="rvForm" class="form" style="margin-top:12px" novalidate><div style="grid-column:1/-1"><span class="small">별점</span><div class="starpick" role="radiogroup" aria-label="별점">'+[1,2,3,4,5].map(function(n){return '<button type="button" data-star="'+n+'" class="'+((state.rvStar||0)>=n?'on':'')+'" aria-label="'+n+'점">★</button>';}).join('')+'</div></div><label for="rvDate">다이빙한 날<input id="rvDate" type="date"></label><label for="rvBody" style="grid-column:1/-1">후기<textarea id="rvBody" rows="3" maxlength="1000" placeholder="시야, 조류, 만난 생물, 센터 브리핑 등"></textarea></label><div style="grid-column:1/-1"><button class="btn btn-pri" type="submit">후기 남기기</button></div></form>'))+'</div>';
+  return h.replace('<div class="panel" id="obsBox">',box+'<div class="panel" id="obsBox">');};
+function rvLoad(sid){if(!BE.on||state.rv[sid]!==undefined||rvLoad[sid])return;rvLoad[sid]=1;BE.sb.from('spot_reviews').select('*').eq('spot',sid).order('created_at',{ascending:false}).limit(100).then(function(r){rvLoad[sid]=0;state.rv[sid]=r.data||[];if(cur()==='spot'&&state.sel===sid)rerender();});}
+
+/* ---------- 판매글: 완료 처리 · 메시지 ---------- */
+var _item=V.item;V.item=function(i){var h=_item(i),raw=null;if(String(i).charAt(0)==='d')raw=(state.pubItems||[]).filter(function(y){return 'd'+y.id===i;})[0];else{var b=state.items[+i];if(b&&b.dbid&&BE.on)raw={id:b.dbid,owner:BE.user&&BE.user.id,status:'active'};}
+  if(!raw||!BE.on)return h;var mine=BE.user&&raw.owner===BE.user.id;
+  var act=mine?'<button class="btn btn-line" type="button" data-sold="'+raw.id+'" data-st="'+(raw.status==='sold'?'active':'sold')+'">'+(raw.status==='sold'?'다시 판매 중으로':'판매 완료로 바꾸기')+'</button>':'<button class="btn btn-pri" type="button" data-dm="'+raw.owner+'" data-item="'+raw.id+'">판매자에게 메시지</button> <button class="chip" type="button" data-report="item" data-rid="'+raw.id+'">신고</button>';
+  return h.replace(/<\/p><\/div><\/div>$/,'</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">'+act+'</div></div></div>')+(raw.status==='sold'?'<div class="notice">판매 완료된 물건이에요.</div>':'');};
+
+/* ---------- 메시지함 ---------- */
+state.inbox=null;
+function inboxLoad(){if(!BE.user||inboxLoad.b)return;inboxLoad.b=1;var me=BE.user.id;BE.sb.from('messages').select('*').or('sender.eq.'+me+',recipient.eq.'+me).order('created_at',{ascending:true}).limit(500).then(function(r){inboxLoad.b=0;state.inbox=r.data||[];var c=cur();if(c==='inbox'||c==='notice')rerender();paintAuth();});}
+function threads(){var me=BE.user.id,T={};(state.inbox||[]).forEach(function(m){var o=m.sender===me?m.recipient:m.sender,k=o+'|'+(m.item_id||'');(T[k]||(T[k]={other:o,item:m.item_id,msgs:[],nick:null})).msgs.push(m);if(m.sender!==me)T[k].nick=m.sender_nick;});return Object.keys(T).map(function(k){var t=T[k];t.key=k;t.last=t.msgs[t.msgs.length-1];t.unread=t.msgs.filter(function(m){return m.recipient===me&&!m.read_at;}).length;return t;}).sort(function(a,b){return a.last.created_at<b.last.created_at?1:-1;});}
+function unreadCount(){if(!BE.user||!state.inbox)return 0;return state.inbox.filter(function(m){return m.recipient===BE.user.id&&!m.read_at;}).length;}
+V.inbox=function(arg){setTitle('메시지');if(!BE.on||!BE.user)return '<div class="vh"><div><h1>메시지</h1><p>로그인하면 판매자·구매자와 메시지를 주고받을 수 있어요.</p></div><a class="btn btn-pri" href="#login">로그인</a></div>';
+  if(!state.inbox){inboxLoad();return '<div class="vh"><div><h1>메시지</h1><p>불러오는 중이에요.</p></div></div>';}
+  var T=threads();
+  if(arg){var p=decodeURIComponent(arg).split('|'),other=p[0],itemId=p[1]||'',t=T.filter(function(x){return x.other===other&&String(x.item||'')===itemId;})[0],it=itemId?(state.pubItems||[]).filter(function(y){return String(y.id)===itemId;})[0]:null;
+    var msgs=t?t.msgs:[];var unread=msgs.filter(function(m){return m.recipient===BE.user.id&&!m.read_at;}).map(function(m){return m.id;});if(unread.length){BE.sb.from('messages').update({read_at:new Date().toISOString()}).in('id',unread).then(function(){msgs.forEach(function(m){if(unread.indexOf(m.id)>=0)m.read_at=new Date().toISOString();});paintAuth();});}
+    return '<div class="vh"><div><a class="small" href="#inbox">← 메시지함</a><h1>'+esc((t&&t.nick)||'상대방')+'</h1><p>'+(it?'<a href="#item-d'+it.id+'">'+esc(it.title)+'</a> · '+(+it.price).toLocaleString()+'원':'')+'</p></div></div><div class="panel"><div class="thread" id="thread">'+(msgs.length?msgs.map(function(m){var me=m.sender===BE.user.id;return '<div class="bub'+(me?' me':'')+'">'+esc(m.body)+'<small>'+m.created_at.slice(5,16).replace('T',' ')+(me&&m.read_at?' · 읽음':'')+'</small></div>';}).join(''):'<p class="empty">첫 메시지를 보내 보세요. 직거래는 사람이 많은 곳에서, 선입금 요구는 조심하세요.</p>')+'</div><form class="cmtf" id="dmForm" data-to="'+esc(other)+'" data-item="'+esc(itemId)+'" style="margin-top:10px"><input maxlength="1000" placeholder="메시지 쓰기" aria-label="메시지"><button class="btn btn-pri" type="submit" style="height:40px">보내기</button></form></div>';}
+  return '<div class="vh"><div><h1>메시지</h1><p>판매글에서 주고받은 메시지</p></div></div><div class="panel">'+(T.length?'<div class="list">'+T.map(function(t){var it=t.item?(state.pubItems||[]).filter(function(y){return y.id===t.item;})[0]:null;return item({href:'#inbox-'+encodeURIComponent(t.key),tags:t.unread?[['새 메시지 '+t.unread,'fr']]:null,t:esc(t.nick||'상대방')+(it?' · '+esc(it.title):''),s:esc(t.last.body).slice(0,60),r:t.last.created_at.slice(5,10)});}).join('')+'</div>':'<p class="empty">아직 주고받은 메시지가 없어요. 장비 마켓 판매글에서 판매자에게 메시지를 보낼 수 있어요.</p>')+'</div>';};
+
+/* ---------- 모임 참가 ---------- */
+state.mem={};
+var _meetV=V.meet;V.meet=function(i){var h=_meetV(i);if(!BE.on||String(i).charAt(0)!=='d')return h;var id=+String(i).slice(1),raw=(state.pubMeets||[]).filter(function(y){return y.id===id;})[0];if(!raw)return h;
+  var M=state.mem[id];if(M===undefined){if(!memLoad[id]){memLoad[id]=1;BE.sb.from('meetup_members').select('*').eq('meetup_id',id).order('created_at').then(function(r){memLoad[id]=0;state.mem[id]=r.data||[];if(cur()==='meet')rerender();});}return h;}
+  var host=BE.user&&raw.owner===BE.user.id,joined=BE.user&&M.some(function(m){return m.user_id===BE.user.id;}),n=M.length+1,full=n>=raw.max_people;
+  h=h.replace(/<span class="tag ok">모집 중 · 1\/[^<]*<\/span>/,'<span class="tag '+(full?'fr':'ok')+'">'+(full?'마감':'모집 중')+' · '+n+'/'+raw.max_people+'명</span>');
+  var act=host?'<p class="small" style="margin:0">내가 만든 모임이에요.</p>':joined?'<button class="btn btn-line" type="button" data-leave="'+id+'">참가 취소</button>':full?'<button class="btn btn-line" type="button" disabled>인원이 다 찼어요</button>':'<button class="btn btn-pri" type="button" data-join="'+id+'">참가 신청</button>';
+  var list='<div class="panel"><h2>참가자 '+n+'명</h2><div class="chips"><span class="chip" style="cursor:default">모임장</span>'+M.map(function(m){return '<span class="chip" style="cursor:default">'+esc(m.nick)+(host?' <button type="button" data-kick="'+id+'|'+m.user_id+'" style="border:0;background:transparent;cursor:pointer" aria-label="내보내기">×</button>':'')+'</span>';}).join('')+'</div><div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">'+act+(host?'':'<button class="btn btn-line" type="button" data-dm="'+raw.owner+'" data-item="">모임장에게 메시지</button>')+'</div><p class="small" style="margin:8px 0 0">최소 자격과 로그 수는 모임장이 현장에서 확인해요.</p></div>';
+  return h+list;};
+function memLoad(){}
+
+/* ---------- 구인구직 ---------- */
+state.jobs=null;
+var _commV2=V.community;V.community=function(){var h=_commV2();if(state.tab!=='jobs')return h;if(!BE.on)return h;
+  if(state.jobs===null&&!jobsLoad.b){jobsLoad();}
+  var J=state.jobs||[],body=state.jobs===null?'<p class="empty">불러오는 중이에요.</p>':J.length?'<div class="list">'+J.map(function(j){return item({href:'#job-'+j.id,tags:[[j.role,'']].concat(j.housing?[['숙소 제공','ok']]:[]),t:esc(j.title),s:esc(j.org_name)+' · '+esc(j.place)+(j.pay?' · '+esc(j.pay):''),r:j.created_at.slice(5,10)});}).join('')+'</div>':'<p class="empty">아직 올라온 구인 글이 없어요.</p>';
+  return h.replace('<a class="btn btn-pri" href="#meet">모임 만들기</a>','<a class="btn btn-pri" href="#jobnew">구인 글 쓰기</a>').replace(/<div class="panel"><div class="list"><p class="empty">아직 올라온 구인 글이[^<]*<\/p><\/div><\/div>/,'<div class="panel">'+body+'</div>');};
+function jobsLoad(){jobsLoad.b=1;BE.sb.from('jobs').select('*').eq('active',true).order('created_at',{ascending:false}).limit(100).then(function(r){jobsLoad.b=0;state.jobs=r.data||[];if(cur()==='community')rerender();});}
+V.job=function(i){var j=(state.jobs||[]).filter(function(x){return String(x.id)===String(i);})[0];if(!j){if(BE.on&&state.jobs===null)jobsLoad();return '<div class="vh"><div><a class="small" href="#community">← 구인구직</a><h1>구인 글</h1><p>불러오는 중이거나 마감된 글이에요.</p></div></div>';}
+  setTitle(j.title);var mine=BE.user&&j.owner===BE.user.id;
+  return '<div class="vh"><div><a class="small" href="#community">← 구인구직</a><h1>'+esc(j.title)+'</h1><p>'+esc(j.org_name)+' · '+esc(j.place)+'</p></div>'+(mine?'<button class="btn btn-line" type="button" data-jobclose="'+j.id+'">마감하기</button>':'')+'</div><div class="cols"><div class="panel"><h2>하는 일</h2><p style="margin:0;white-space:pre-wrap">'+esc(j.body)+'</p></div><div class="panel"><h2>조건</h2>'+kvl([['직무',j.role],['근무지',j.place],['급여',j.pay],['비자',j.visa],['숙소',j.housing?'제공':''],['연락',j.contact],['올린 날',j.created_at.slice(0,10)]])+(mine?'':'<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-pri" type="button" data-dm="'+j.owner+'" data-item="">메시지 보내기</button><button class="chip" type="button" data-report="business" data-rid="'+j.id+'">신고</button></div>')+'</div></div>';};
+V.jobnew=function(){setTitle('구인 글 쓰기');if(!BE.on||!BE.user)return '<div class="vh"><div><h1>구인 글 쓰기</h1><p>로그인하면 쓸 수 있어요.</p></div><a class="btn btn-pri" href="#login">로그인</a></div>';
+  var R=['강사','다이브마스터','프리다이빙 강사','보트 · 스태프','사무 · 예약','인턴'];
+  return '<div class="vh"><div><a class="small" href="#community">← 구인구직</a><h1>구인 글 쓰기</h1><p>근무지, 급여, 비자 조건을 분명히 적어 주세요</p></div></div><form class="panel form" id="jobForm" novalidate><label for="jo">업체 이름 *<input id="jo" maxlength="80" required></label><label for="jt">제목 *<input id="jt" maxlength="80" required placeholder="예: 세부 모알보알 한국어 가능 강사"></label><label for="jr">직무 *<select id="jr">'+R.map(function(r){return '<option>'+r+'</option>';}).join('')+'</select></label><label for="jp">근무지 *<input id="jp" maxlength="80" required placeholder="나라 · 지역"></label><label for="jy">급여<input id="jy" maxlength="80" placeholder="예: 월 000만원 + 커미션"></label><label for="jv">비자<input id="jv" maxlength="80" placeholder="예: 워킹비자 지원"></label><label class="ck" for="jh"><input id="jh" type="checkbox"><span class="ckt">숙소 제공</span></label><label for="jb" style="grid-column:1/-1">하는 일 · 자격 *<textarea id="jb" rows="5" maxlength="3000" placeholder="필요한 자격, 언어, 근무 시작일, 근무 기간"></textarea></label><label for="jc" style="grid-column:1/-1">연락 방법 *<input id="jc" maxlength="200" placeholder="이메일 · 카카오톡 ID"></label><div class="fsticky" style="grid-column:1/-1"><button class="btn btn-pri" type="submit">올리기</button></div><p class="small" id="jobMsg" role="status" style="grid-column:1/-1;margin:0">허위 조건이나 수수료를 먼저 요구하는 글은 내려요.</p></form>';};
+
+/* ---------- 팔로우 ---------- */
+state.follows=null;
+function followsLoad(){if(!BE.user||followsLoad.b)return;followsLoad.b=1;BE.sb.from('follows').select('followee').eq('follower',BE.user.id).then(function(r){followsLoad.b=0;state.follows={};(r.data||[]).forEach(function(x){state.follows[x.followee]=1;});if(cur()==='feed')rerender();});}
+var _feedV=V.feed;V.feed=function(){if(BE.user&&state.follows===null)followsLoad();var only=state.fonly&&BE.user;var save=state.pubPosts;
+  if(only&&save)state.pubPosts=save.filter(function(p){return state.follows&&state.follows[p.owner];});var h=_feedV();state.pubPosts=save;
+  if(BE.user)h=h.replace('<button class="chip" type="button" data-fsort="new"','<button class="chip" type="button" data-fonly aria-pressed="'+(!!only)+'">팔로잉</button><button class="chip" type="button" data-fsort="new"');
+  if(only&&save&&!save.filter(function(p){return state.follows&&state.follows[p.owner];}).length)h=h.replace('<b>아직 올라온 사진이 없어요</b>','<b>팔로우한 다이버의 사진이 아직 없어요</b>');
+  if(BE.user)(save||[]).forEach(function(p){if(!p.owner||p.owner===BE.user.id)return;var on=state.follows&&state.follows[p.owner];h=h.replace('<button class="chip" type="button" data-report="post" data-rid="'+p.dbid+'"','<button class="chip" type="button" data-follow="'+p.owner+'" aria-pressed="'+(!!on)+'">'+(on?'팔로잉':'팔로우')+'</button><button class="chip" type="button" data-report="post" data-rid="'+p.dbid+'"');});
+  return h;};
+
+/* ---------- 업체 페이지 편집 ---------- */
+var _bizpage2=V.bizpage;V.bizpage=function(i){var b=state.biz[+i],h=_bizpage2(i);if(!b)return h;
+  var ph=(b.photos||[]).map(pubUrl).filter(Boolean),pl=b.price_list||[];
+  if(ph.length)h=h.replace(/<div class="hero" style="height:140px;background:[^"]*"><span>[^<]*<\/span><\/div>/,'<div class="bphotos">'+ph.map(function(u){return '<img src="'+esc(u)+'" alt="'+esc(b.name)+' 사진" loading="lazy">';}).join('')+'</div>');
+  if(pl.length)h=h.replace('<div class="panel"><h2>서비스</h2>','<div class="panel"><h2>가격표</h2>'+kvl(pl.map(function(x){return [esc(x.n),esc(x.p)];}))+'</div><div class="panel"><h2>서비스</h2>');
+  if(b.hours)h=h.replace("kvl([['주소'","kvl([['운영 시간',b.hours],['주소'");
+  if(BE.on&&b.dbid)h=h.replace('</p></div><a class="btn btn-line" href="#spot-','</p></div><a class="btn btn-pri" href="#bizedit-'+i+'">사진 · 가격표 · 소개 고치기</a><a class="btn btn-line" href="#spot-');
+  return h;};
+V.bizedit=function(i){var b=state.biz[+i];setTitle('업체 페이지 고치기');if(!b||!BE.on||!BE.user)return '<div class="vh"><div><h1>업체 페이지 고치기</h1><p>내 업체만 고칠 수 있어요.</p></div><a class="btn btn-pri" href="#profile">내 정보</a></div>';
+  var e=state.bedit&&state.bedit.i===i?state.bedit:(state.bedit={i:i,photos:(b.photos||[]).slice(),pl:(b.price_list||[]).map(function(x){return {n:x.n,p:x.p};}),intro:b.intro||'',hours:b.hours||'',price:b.price||''});
+  return '<div class="vh"><div><a class="small" href="#bizpage-'+i+'">← '+esc(b.name)+'</a><h1>업체 페이지 고치기</h1><p>바뀐 내용은 바로 페이지에 보여요. 업체 이름·종류를 바꾸려면 다시 심사를 받아야 해요.</p></div></div>'+
+  '<div class="panel"><h2>사진 '+e.photos.length+'/8</h2><div class="bphotos">'+e.photos.map(function(p,k){return '<div style="position:relative"><img src="'+esc(pubUrl(p))+'" alt=""><button class="chip" type="button" data-bphdel="'+k+'" style="position:absolute;top:4px;right:4px;min-height:30px;height:30px">빼기</button></div>';}).join('')+'</div>'+(e.photos.length<8?'<label class="drop" for="bphIn" style="margin-top:10px"><b>사진 추가</b><span class="small">시설, 보트, 바닷속 사진 · 한 번에 여러 장</span></label><input id="bphIn" type="file" accept="image/*" multiple style="position:absolute;left:-9999px">':'')+'<p class="small" id="bphMsg" role="status" style="margin:6px 0 0"></p></div>'+
+  '<form class="panel form" id="bizEditForm" novalidate style="margin-top:16px"><label for="be_intro" style="grid-column:1/-1">소개<textarea id="be_intro" rows="5">'+esc(e.intro)+'</textarea></label><label for="be_hours">운영 시간<input id="be_hours" value="'+esc(e.hours)+'" placeholder="예: 매일 07:00~18:00, 우기 휴무"></label><label for="be_price">대표 상품 한 줄<input id="be_price" value="'+esc(e.price)+'"></label>'+
+  '<div style="grid-column:1/-1"><b style="font-size:13px">가격표</b><div style="display:flex;flex-direction:column;gap:6px;margin-top:6px" id="plRows">'+e.pl.map(function(x,k){return '<div class="prow"><input data-pln="'+k+'" value="'+esc(x.n)+'" placeholder="상품 (예: 펀다이빙 2회)" style="height:44px;border-radius:10px;border:1px solid var(--line);padding:0 10px;background:var(--panel);color:var(--ink)"><input data-plp="'+k+'" value="'+esc(x.p)+'" placeholder="가격" style="height:44px;border-radius:10px;border:1px solid var(--line);padding:0 10px;background:var(--panel);color:var(--ink)"><button class="chip" type="button" data-pldel="'+k+'" aria-label="줄 빼기">×</button></div>';}).join('')+'</div><button class="chip" type="button" id="plAdd" style="margin-top:6px">+ 줄 추가</button></div>'+
+  '<div class="fsticky" style="grid-column:1/-1"><button class="btn btn-pri" type="submit">저장하기</button></div></form>';};
+
+/* ---------- 데이터 보강 ---------- */
+var _pull2=BE.pull;BE.pull=function(){return _pull2().then(function(){if(!BE.on)return;var jobs=[BE.sb.from('market_items').select('id,owner,status').in('id',(state.pubItems||[]).map(function(x){return x.id;}).concat([0])).then(function(r){var o={};(r.data||[]).forEach(function(x){o[x.id]=x;});(state.pubItems||[]).forEach(function(x){if(o[x.id]){x.owner=o[x.id].owner;x.status=o[x.id].status;}});}),
+  BE.sb.from('meetups').select('id,owner').in('id',(state.pubMeets||[]).map(function(x){return x.id;}).concat([0])).then(function(r){var o={};(r.data||[]).forEach(function(x){o[x.id]=x.owner;});(state.pubMeets||[]).forEach(function(x){x.owner=o[x.id];});})];
+  if(BE.user){jobs.push(BE.sb.from('businesses').select('id,photos,price_list,hours').eq('owner',BE.user.id).then(function(r){(r.data||[]).forEach(function(x){state.biz.forEach(function(b){if(b.dbid===x.id){b.photos=x.photos;b.price_list=x.price_list;b.hours=x.hours;}});});}));inboxLoad();}
+  return Promise.all(jobs).then(function(){rerender();});});};
+
+/* ---------- 로그 오프라인 대기열 ---------- */
+state.logQ=LS.get('logQueue',[]);
+function flushLogs(){if(!BE.on||!BE.user||!state.logQ.length||!navigator.onLine||flushLogs.b)return;flushLogs.b=1;var q=state.logQ.slice();BE.sb.from('dive_logs').insert(q.map(function(o){return {dive_date:o.date,site:o.site,max_depth:+o.depth||null,minutes:+o.time||null,source:'manual'};})).then(function(r){flushLogs.b=0;if(r.error)return;state.logQ=state.logQ.slice(q.length);LS.set('logQueue',state.logQ);toast('연결이 끊긴 동안 쓴 로그 '+q.length+'개를 올렸어요.');BE.pull();},function(){flushLogs.b=0;});}
+window.addEventListener('online',flushLogs);
+var _logV=V.log;V.log=function(){var h=_logV();if(state.logQ.length)h=h.replace('<div class="cols"><form class="panel form" id="quickLog"','<div class="notice">연결되면 올릴 로그가 '+state.logQ.length+'개 있어요.</div><div class="cols"><form class="panel form" id="quickLog"');return h;};
+
+/* ---------- 도감·지도 초성 검색 ---------- */
+state.lifeq='';state.mapq='';
+var _lifeV2=V.life;V.life=function(){return _lifeV2().replace('<div class="chips" role="group" aria-label="분류">','<div class="form" style="margin-bottom:-6px"><label for="lifeq2" style="grid-column:1/-1">대표 생물 찾기 (초성도 돼요: ㄱㄹㅅㅇ)<input id="lifeq2" value="'+esc(state.lifeq)+'" placeholder="예: 고래상어, ㅁㅌ, manta"></label></div><div class="chips" role="group" aria-label="분류">');};
+var _mapV2=V.map;V.map=function(){return _mapV2().replace('<div class="mapbar">','<div class="form"><label for="mapq" style="grid-column:1/-1">포인트 찾기 (초성도 돼요)<input id="mapq" value="'+esc(state.mapq)+'" placeholder="예: 모알보알, ㅍㄹㅇ, Palau"></label></div><div class="mapbar">');};
+
+/* ---------- 헤더 알림 점 ---------- */
+var _paint2=paintAuth;paintAuth=function(){_paint2();var n=unreadCount(),b=document.querySelector('#authAct .bell');if(b&&n){b.insertAdjacentHTML('beforeend','<i></i>');b.setAttribute('aria-label','알림 · 새 메시지 '+n+'개');b.href='#inbox';}};
+var _notice=V.notice;V.notice=function(){var h=_notice(),n=unreadCount();if(BE.user&&n)h=h.replace('<div class="panel">','<div class="panel"><div class="list">'+item({href:'#inbox',tags:[['메시지','fr']],t:'새 메시지 '+n+'개',s:'메시지함 열기'})+'</div></div><div class="panel">');return h;};
+var _prof4=V.profile;V.profile=function(){var h=_prof4();if(BE.user)h=h.replace(item({href:'#log',t:'다이브 로그'}),item({href:'#inbox',t:'메시지',r:unreadCount()?'새 '+unreadCount():''})+item({href:'#log',t:'다이브 로그'}));return h;};
+
+/* ---------- 이벤트 ---------- */
+var _after1=after;after=function(){_after1();var c=cur();if(c==='home')homeMapInit();if(c==='spot')rvLoad(state.sel);if(c==='feed'||c==='log')flushLogs();bind2();};
+function bind2(){
+  main.querySelectorAll('[data-visit]').forEach(function(b){b.onclick=function(){var id=b.dataset.visit;if(state.visited[id])delete state.visited[id];else{if(logVisited()[id]){toast('로그에 적힌 포인트라 다녀온 곳으로 표시돼요.');return;}state.visited[id]=new Date().toISOString().slice(0,10);}LS.set('visited',state.visited);rerender();};});
+  main.querySelectorAll('[data-star]').forEach(function(b){b.onclick=function(){state.rvStar=+b.dataset.star;main.querySelectorAll('[data-star]').forEach(function(x){x.className=(+x.dataset.star<=state.rvStar)?'on':'';});};});
+  var rf=document.getElementById('rvForm');if(rf)rf.onsubmit=function(e){e.preventDefault();if(!BE.user)return needLogin('후기를 남기려면 로그인해 주세요');var body=document.getElementById('rvBody').value.trim();if(!state.rvStar)return toast('별점을 골라 주세요.');if(body.length<5)return toast('후기를 5자 이상 적어 주세요.');if(BADW.test(body))return toast('커뮤니티 규칙에 맞지 않는 표현이 있어요.');var sid=state.sel;rf.querySelector('button[type=submit]').disabled=true;
+    BE.sb.from('spot_reviews').insert({spot:sid,author_nick:(state.me&&state.me.nick)||'다이버',rating:state.rvStar,body:body,dived_on:document.getElementById('rvDate').value||null}).then(function(r){if(r.error){toast(/duplicate/i.test(r.error.message)?'이 포인트에는 이미 후기를 남겼어요.':'저장하지 못했어요.');rf.querySelector('button[type=submit]').disabled=false;return;}state.rvStar=0;delete state.rv[sid];if(!state.visited[sid]){state.visited[sid]=new Date().toISOString().slice(0,10);LS.set('visited',state.visited);}toast('후기를 남겼어요. 고마워요!');rvLoad(sid);});};
+  main.querySelectorAll('[data-rvdel]').forEach(function(b){b.onclick=function(){if(!confirm('후기를 지울까요?'))return;BE.sb.from('spot_reviews').delete().eq('id',+b.dataset.rvdel).then(function(){delete state.rv[state.sel];rvLoad(state.sel);});};});
+  main.querySelectorAll('[data-sold]').forEach(function(b){b.onclick=function(){b.disabled=true;BE.sb.from('market_items').update({status:b.dataset.st}).eq('id',+b.dataset.sold).then(function(r){toast(r.error?'바꾸지 못했어요.':b.dataset.st==='sold'?'판매 완료로 바꿨어요. 마켓 목록에서 내려가요.':'다시 판매 중이에요.');BE.pull();});};});
+  main.querySelectorAll('[data-dm]').forEach(function(b){b.onclick=function(){if(!BE.user)return needLogin('메시지는 로그인 후에 보낼 수 있어요');if(b.dataset.dm===BE.user.id)return;location.hash='#inbox-'+encodeURIComponent(b.dataset.dm+'|'+(b.dataset.item||''));};});
+  var dm=document.getElementById('dmForm');if(dm){var th=document.getElementById('thread');if(th)th.scrollTop=th.scrollHeight;dm.onsubmit=function(e){e.preventDefault();var i=dm.querySelector('input'),v=i.value.trim();if(!v)return;if(BADW.test(v))return toast('커뮤니티 규칙에 맞지 않는 표현이 있어요.');dm.querySelector('button').disabled=true;
+    BE.sb.from('messages').insert({recipient:dm.dataset.to,sender_nick:(state.me&&state.me.nick)||'다이버',item_id:dm.dataset.item?+dm.dataset.item:null,body:v}).select().then(function(r){dm.querySelector('button').disabled=false;if(r.error){toast('보내지 못했어요.');return;}state.inbox=(state.inbox||[]).concat(r.data||[]);rerender();});};}
+  main.querySelectorAll('[data-join]').forEach(function(b){b.onclick=function(){if(!BE.user)return needLogin('모임에 참가하려면 로그인해 주세요');var id=+b.dataset.join;b.disabled=true;BE.sb.from('meetup_members').insert({meetup_id:id,nick:(state.me&&state.me.nick)||'다이버'}).then(function(r){if(r.error)toast('신청하지 못했어요.');else toast('참가 신청했어요. 모임장에게 메시지로 인사해 보세요.');delete state.mem[id];rerender();});};});
+  main.querySelectorAll('[data-leave]').forEach(function(b){b.onclick=function(){var id=+b.dataset.leave;BE.sb.from('meetup_members').delete().eq('meetup_id',id).eq('user_id',BE.user.id).then(function(){delete state.mem[id];toast('참가를 취소했어요.');rerender();});};});
+  main.querySelectorAll('[data-kick]').forEach(function(b){b.onclick=function(){var p=b.dataset.kick.split('|');if(!confirm('이 참가자를 내보낼까요?'))return;BE.sb.from('meetup_members').delete().eq('meetup_id',+p[0]).eq('user_id',p[1]).then(function(){delete state.mem[+p[0]];rerender();});};});
+  var jf=document.getElementById('jobForm');if(jf)jf.onsubmit=function(e){e.preventDefault();var g=function(k){return document.getElementById(k).value.trim();},msg=document.getElementById('jobMsg');var o={org_name:g('jo'),title:g('jt'),role:g('jr'),place:g('jp'),pay:g('jy')||null,visa:g('jv')||null,housing:document.getElementById('jh').checked,body:g('jb'),contact:g('jc')};
+    if(!o.org_name||o.title.length<2||!o.place||o.body.length<10||o.contact.length<3){msg.textContent='별표 칸을 모두 채워 주세요. 하는 일은 10자 이상 적어 주세요.';return;}if(BADW.test(o.title+o.body))return toast('규칙에 맞지 않는 표현이 있어요.');jf.querySelector('button[type=submit]').disabled=true;
+    BE.sb.from('jobs').insert(o).select().then(function(r){if(r.error){msg.textContent='올리지 못했어요: '+r.error.message;jf.querySelector('button[type=submit]').disabled=false;return;}state.jobs=null;state.tab='jobs';toast('구인 글을 올렸어요.');location.hash='#community';});};
+  main.querySelectorAll('[data-jobclose]').forEach(function(b){b.onclick=function(){if(!confirm('마감할까요? 목록에서 내려가요.'))return;BE.sb.from('jobs').update({active:false}).eq('id',+b.dataset.jobclose).then(function(){state.jobs=null;location.hash='#community';});};});
+  main.querySelectorAll('[data-follow]').forEach(function(b){b.onclick=function(){var o=b.dataset.follow,on=state.follows&&state.follows[o];(state.follows||(state.follows={}));if(on){delete state.follows[o];BE.sb.from('follows').delete().eq('follower',BE.user.id).eq('followee',o).then(function(){});}else{state.follows[o]=1;BE.sb.from('follows').insert({followee:o}).then(function(){});}rerender();};});
+  main.querySelectorAll('[data-fonly]').forEach(function(b){b.onclick=function(){state.fonly=!state.fonly;rerender();};});
+  main.querySelectorAll('[data-like]').forEach(function(b){if(!BE.on)return;var n=b.cloneNode(true);b.parentNode.replaceChild(n,b);n.onclick=function(){if(!BE.user)return needLogin('좋아요는 로그인 후에 눌러요');var pid=n.dataset.like,on=!state.likes[pid],p=(state.pubPosts||[]).filter(function(x){return x.id===pid;})[0];state.likes[pid]=on;if(p)p.likes=Math.max(0,(p.likes||0)+(on?1:-1));n.setAttribute('aria-pressed',on);n.textContent='좋아요 '+(p?p.likes:'');var id=+pid.slice(1);(on?BE.sb.from('post_likes').insert({post_id:id}):BE.sb.from('post_likes').delete().eq('post_id',id).eq('user_id',BE.user.id)).then(function(r){if(r.error){state.likes[pid]=!on;if(p)p.likes+=on?-1:1;rerender();toast('반영하지 못했어요.');}});};});
+  var bi=document.getElementById('bphIn');if(bi)bi.onchange=function(){var e=state.bedit,files=[].slice.call(bi.files,0,8-e.photos.length),msg=document.getElementById('bphMsg'),n=files.length;if(!n)return;msg.textContent='올리는 중… ('+n+'장)';
+    files.forEach(function(f){shrink(f,function(u){if(!u){if(--n===0)rerender();return;}upload('media',dataUrlToBlob(u),'biz.jpg').then(function(p){e.photos.push(p);},function(){toast('사진 하나를 올리지 못했어요.');}).then(function(){if(--n===0){msg.textContent='';rerender();}});});});};
+  main.querySelectorAll('[data-bphdel]').forEach(function(b){b.onclick=function(){state.bedit.photos.splice(+b.dataset.bphdel,1);rerender();};});
+  function plSync(){main.querySelectorAll('[data-pln]').forEach(function(i){state.bedit.pl[+i.dataset.pln].n=i.value;});main.querySelectorAll('[data-plp]').forEach(function(i){state.bedit.pl[+i.dataset.plp].p=i.value;});var a=document.getElementById('be_intro');if(a){state.bedit.intro=a.value;state.bedit.hours=document.getElementById('be_hours').value;state.bedit.price=document.getElementById('be_price').value;}}
+  var pa=document.getElementById('plAdd');if(pa)pa.onclick=function(){plSync();state.bedit.pl.push({n:'',p:''});rerender();};
+  main.querySelectorAll('[data-pldel]').forEach(function(b){b.onclick=function(){plSync();state.bedit.pl.splice(+b.dataset.pldel,1);rerender();};});
+  var bf=document.getElementById('bizEditForm');if(bf)bf.onsubmit=function(e){e.preventDefault();plSync();var E=state.bedit,b=state.biz[+E.i];bf.querySelector('button[type=submit]').disabled=true;
+    BE.sb.from('businesses').update({intro:E.intro,hours:E.hours||null,price:E.price||null,photos:E.photos,price_list:E.pl.filter(function(x){return x.n.trim();}).map(function(x){return {n:x.n.trim().slice(0,60),p:x.p.trim().slice(0,40)};})}).eq('id',b.dbid).then(function(r){if(r.error){toast('저장하지 못했어요: '+r.error.message);bf.querySelector('button[type=submit]').disabled=false;return;}toast('업체 페이지를 고쳤어요.');var i=E.i;state.bedit=null;BE.pull().then(function(){location.hash='#bizpage-'+i;});});};
+  var l2=document.getElementById('lifeq2');if(l2)l2.oninput=function(){clearTimeout(l2._t);l2._t=setTimeout(function(){state.lifeq=l2.value;rerender();var n=document.getElementById('lifeq2');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length);}},250);};
+  var mq=document.getElementById('mapq');if(mq)mq.oninput=function(){clearTimeout(mq._t);mq._t=setTimeout(function(){state.mapq=mq.value;rerender();var n=document.getElementById('mapq');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length);}},300);};
+  var ql=document.getElementById('quickLog');if(ql&&BE.on){var orig=ql.onsubmit;ql.onsubmit=function(e){if(navigator.onLine||!BE.user)return orig.call(ql,e);e.preventDefault();var o={date:document.getElementById('qd').value,site:document.getElementById('qs').value.trim(),depth:document.getElementById('qp').value,time:document.getElementById('qt').value};if(!o.date||!o.site)return toast('날짜와 포인트를 적어 주세요.');state.logQ.push(o);LS.set('logQueue',state.logQ);toast('지금은 오프라인이에요. 연결되면 자동으로 올릴게요.');rerender();};}
+}
+if(BE.on){setTimeout(flushLogs,4000);}
 
 /*UP-END*/
 window.addEventListener('hashchange',route);

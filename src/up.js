@@ -164,8 +164,8 @@ V.home=function(){setTitle('','전 세계 스쿠버·프리다이빙 포인트, 
   var g=(state.gearL||[]).map(function(x){return {g:x,d:due(x)};}).filter(function(x){return x.d;}).sort(function(a,b){return a.d.days-b.d.days;})[0];
   var intro=LS.get('introDone',false)?'':'<div class="panel" style="border:2px solid var(--sea)"><h2>처음 오셨나요? <button class="chip" type="button" id="introX">닫기</button></h2><div class="list">'+item({href:'#map',t:'1. 지도에서 다음 바다 고르기',s:'추천 포인트 '+SPOTS.length+'곳과 다이빙 센터 7,700여 곳'})+item({href:'#life',t:'2. 그 바다에 사는 생물 미리 보기',s:'2만6천 종 도감'})+item({href:'#signup',t:'3. 가입하고 로그·장비 정리하기',s:'다이버는 전부 무료'})+'</div></div>';
   return '<div class="vh"><div><h1>다음 바다, 여기서 고르세요</h1><p>포인트부터 리조트, 강사, 이동 경로, 내 로그와 장비 정비까지 한 곳에서 · 다이버는 모두 무료</p></div>'+modeChips()+'</div>'+intro+
-  '<form class="panel msbox" id="homeSearch" role="search" style="padding:12px"><label for="hq" style="position:absolute;left:-9999px">통합 검색</label><input id="hq" type="search" placeholder="포인트 · 리조트 · 생물 · 장비 검색" style="width:100%;height:46px;border-radius:12px;border:1px solid var(--line);padding:0 14px;font:15px var(--font-body);background:var(--panel);color:var(--ink)"></form>'+
-  '<div class="cols"><a class="panel" href="#spot-'+s.id+'" style="padding:0;overflow:hidden;text-decoration:none;color:inherit"><div class="ph1" style="height:220px;border-radius:0">'+(p?'<img src="'+esc(p.src)+'" alt="'+esc(s.name)+'" loading="lazy"><span class="credit">'+esc(p.author)+' · '+esc(p.license)+'</span>':'<div style="height:100%;background:'+s.color+'"></div>')+'</div><div class="item" style="padding:14px 18px;border:0"><span class="tx"><span>'+s.country+' · '+s.kind+'</span><b>'+s.name+'</b><span>'+s.desc+'</span></span><span class="rt">자세히</span></div></a>'+condCard()+'</div>'+
+  homeMapBox()+'<form class="panel msbox" id="homeSearch" role="search" style="padding:12px"><label for="hq" style="position:absolute;left:-9999px">통합 검색</label><input id="hq" type="search" placeholder="포인트 · 리조트 · 생물 · 장비 검색" style="width:100%;height:46px;border-radius:12px;border:1px solid var(--line);padding:0 14px;font:15px var(--font-body);background:var(--panel);color:var(--ink)"></form>'+
+  '<div class="cols"><a class="panel" href="#spot-'+s.id+'" style="padding:0;overflow:hidden;text-decoration:none;color:inherit"><div class="ph1" style="height:170px;border-radius:0">'+(p?'<img src="'+esc(p.src)+'" alt="'+esc(s.name)+'" loading="lazy"><span class="credit">'+esc(p.author)+' · '+esc(p.license)+'</span>':'<div style="height:100%;background:'+s.color+'"></div>')+'</div><div class="item" style="padding:14px 18px;border:0"><span class="tx"><span>'+s.country+' · '+s.kind+'</span><b>'+s.name+'</b><span>'+s.desc+'</span></span><span class="rt">자세히</span></div></a>'+condCard()+'</div>'+
   '<div class="panel" id="seaToday"><h2>'+s.name+' 오늘 바다 <span class="small">Open-Meteo</span></h2><p class="empty" style="margin:0">불러오는 중이에요.</p></div>'+
   '<div class="cats">'+[['map','포인트',I.map],['resorts','리조트',I.resort],['edu','강사 · 자격증',I.edu],['trip','코스 · 비용',I.trip],['life','해양생물',I.fish],['safety','맛집 · 안전',I.food],['community','모임',I.people],['feed','피드','M4 5h16v14H4z M4 15l4-4 4 4 3-3 5 5 M15 9h.01'],['gear','장비 마켓',I.gear],['gear','정비 · 수리',I.wrench],['log','다이브 로그',I.log],['tools','계산기 · 체크',I.edu]].map(function(c){return '<a class="cat" href="#'+c[0]+'"><i>'+ic(c[2],22)+'</i>'+c[1]+'</a>';}).join('')+'</div>'+
   (R.length?'<div class="panel"><h2>최근 본 포인트</h2><div class="list">'+R.map(function(x){return item({href:'#spot-'+x.id,thumb:x.color,t:x.name,s:x.country+' · '+x.kind});}).join('')+'</div></div>':'')+
@@ -178,7 +178,7 @@ function inSeason(){var mo=new Date().getMonth()+1;var L=SPOTS.filter(function(s
 function seasonBar(s){var m=months(s.season);if(!m.length)return '';return '<div class="season" aria-label="시즌 '+esc(s.season)+'">'+[1,2,3,4,5,6,7,8,9,10,11,12].map(function(i){return '<span class="'+(m.indexOf(i)>=0?'on':'')+'">'+i+'월</span>';}).join('')+'</div>';}
 function seaToday(s){var el=document.getElementById('seaToday');if(!el)return;var key=s.id;if(seaToday.c[key]){fill(seaToday.c[key]);return;}
   fetch('https://marine-api.open-meteo.com/v1/marine?latitude='+s.lat+'&longitude='+s.lon+'&current=wave_height,sea_surface_temperature,wave_period&timezone=auto').then(function(r){return r.json();}).then(function(d){seaToday.c[key]=d;fill(d);}).catch(function(){el.querySelector('p').textContent='바다 정보를 불러오지 못했어요.';});
-  function fill(d){var c=d&&d.current;if(!c||c.wave_height==null&&c.sea_surface_temperature==null){el.querySelector('p').textContent='이 위치는 바다 예보가 없어요 (호수·실내 시설 등).';return;}
+  function fill(d){var c=d&&d.current;if(!c||c.wave_height==null&&c.sea_surface_temperature==null){el.querySelector('p').textContent='이 지점은 바다 예보 범위 밖이에요. 현지 센터에 물어보세요.';return;}
     el.innerHTML='<h2>'+esc(s.name)+' 지금 바다 <span class="small">Open-Meteo 예보 · '+esc((c.time||'').replace('T',' '))+' 현지</span></h2><div class="stats"><div class="stat"><small>수면 수온</small><b>'+(c.sea_surface_temperature!=null?c.sea_surface_temperature.toFixed(1)+'℃':'—')+'</b></div><div class="stat"><small>파고</small><b>'+(c.wave_height!=null?c.wave_height.toFixed(1)+'m':'—')+'</b></div><div class="stat"><small>파도 주기</small><b>'+(c.wave_period!=null?c.wave_period.toFixed(0)+'초':'—')+'</b></div><div class="stat"><small>시즌</small><b style="font-size:14px">'+esc(s.season)+'</b></div></div><p class="small" style="margin:8px 0 0">모델 예보값이라 실제와 다를 수 있어요. 출항 여부는 현지 센터 판단을 따르세요.</p>';}}
 seaToday.c={};
 condCard=function(){var L=state.userLogs||[],last=L.filter(function(l){return l.date;}).sort(function(a,b){return a.date<b.date?1:-1;})[0];
@@ -196,7 +196,7 @@ state.lv=LS.get('mapView',null);state.osm=true;state.lvl='전체';
 var RB={'전체':[[-50,-170],[65,190]],'한국':[[33,124.5],[38.6,131.5]],'일본':[[24,122],[45,146]],'필리핀':[[5,116],[19,127]],'동남아':[[-10,95],[20,130]],'미크로네시아':[[5,130],[22,170]],'인도양·홍해':[[-25,30],[30,80]],'호주·태평양':[[-45,110],[0,190]],'아메리카':[[-30,-120],[40,-55]],'유럽':[[28,-20],[62,40]]};
 function spotPopup(s){var p=firstPhoto(s.id);return '<div style="width:220px">'+(p?'<img src="'+esc(th(p))+'" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px">':'')+'<b style="display:block;margin-top:6px">'+esc(s.name)+'</b><span style="font-size:12px;color:#4A5B68">'+esc(EN[s.id])+'<br>'+esc(s.country)+' · '+esc(s.kind)+' · 시즌 '+esc(s.season)+'</span><br><a href="#spot-'+s.id+'" style="display:inline-block;margin-top:6px;font-weight:700">포인트 보기 →</a></div>';}
 function initMap(el,opt){loadLeaflet().then(function(){if(!document.body.contains(el))return;var L=window.L;
-  var m=L.map(el,{worldCopyJump:true,zoomControl:true,attributionControl:true,minZoom:2,maxZoom:17});el._m=m;
+  var m=L.map(el,{worldCopyJump:true,zoomControl:true,attributionControl:true,minZoom:2,maxZoom:17,fadeAnimation:false,markerZoomAnimation:false});el._m=m;
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(m);
   if(opt.view)m.setView(opt.view.c,opt.view.z);else if(opt.bounds)m.fitBounds(opt.bounds);else m.setView([15,140],3);
   if(opt.sites&&DB.sites){var cl=L.markerClusterGroup({chunkedLoading:true,maxClusterRadius:50,showCoverageOnHover:false});var C=['#475467','#0A5C8A','#B4530A'],N=['다이빙 센터·샵','다이빙 포인트','리조트·숙소'];
@@ -207,7 +207,7 @@ function initMap(el,opt){loadLeaflet().then(function(){if(!document.body.contain
   setTimeout(function(){m.invalidateSize();},60);}).catch(function(){el.innerHTML='<p class="empty" style="color:#fff;padding:20px">지도를 불러오지 못했어요. 연결을 확인해 주세요.</p>';});}
 function lvlOk(s){return state.lvl==='전체'||String(s.lv).indexOf(state.lvl)>=0;}
 V.map=function(){setTitle('다이빙 지도','전 세계 다이빙 포인트와 다이빙 센터 지도');loadMedia();
-  var list=SPOTS.filter(function(s){return vis(s)&&lvlOk(s);}),mo=+state.mon||0;if(mo)list=list.filter(function(s){return months(s.season).indexOf(mo)>=0;});
+  var list=SPOTS.filter(function(s){return vis(s)&&lvlOk(s)&&(!state.mapq||kmatch(s.name+' '+s.country+' '+EN[s.id]+' '+s.kind,state.mapq));}),mo=+state.mon||0;if(mo)list=list.filter(function(s){return months(s.season).indexOf(mo)>=0;});
   if(state.myPos)list=list.slice().sort(function(a,b){return km(state.myPos.lat,state.myPos.lon,a.lat,a.lon)-km(state.myPos.lat,state.myPos.lon,b.lat,b.lon);});
   var LV=['전체','초급','중급','상급'];
   return '<div class="vh"><div><h1>다이빙 지도</h1><p>추천 포인트 '+SPOTS.length+'곳'+(DB.sites?' · 다이빙 센터와 포인트 '+DB.sites.length.toLocaleString()+'곳':'')+'</p></div>'+modeChips()+'</div>'+
@@ -260,7 +260,7 @@ var _trip=V.trip;V.trip=function(){setTitle('코스 · 비용');var h=_trip(),k=
 
 /* ---------- 해양생물 ---------- */
 state.seen=LS.get('seen',{});
-_life=function(){var list=LIFE.filter(function(l){return state.lcat==='전체'||l[1]===state.lcat;});
+_life=function(){var list=LIFE.filter(function(l){var i=LIFE.indexOf(l);return (state.lcat==='전체'||l[1]===state.lcat)&&(!state.lifeq||kmatch(l[0]+' '+LEN[i]+' '+l[2],state.lifeq));});
   return '<div class="vh"><div><h1>해양생물 도감</h1><p>대표 '+LIFE.length+'종과 전체 2만6천여 종 · 어디서 볼 수 있는지와 특징</p></div></div>'+
   '<div class="chips" role="group" aria-label="분류">'+LCATS.map(function(c){return '<button class="chip" type="button" data-lcat="'+c+'" aria-pressed="'+(state.lcat===c)+'">'+c+'</button>';}).join('')+'</div>'+
   '<div class="panel"><h2>'+state.lcat+' '+list.length+'종 <span class="small">본 생물 '+Object.keys(state.seen).filter(function(k){return state.seen[k];}).length+'종</span></h2><div class="lcards">'+list.map(function(l){var i=LIFE.indexOf(l),w=l[1]==='주의 생물',sp=SPOTS.filter(function(s){return s.life.indexOf(l[0])>=0;}).slice(0,4);
@@ -360,7 +360,7 @@ function loadNotes(){if(loadNotes.b)return;loadNotes.b=1;var N=[];
 var _bizpage=V.bizpage;V.bizpage=function(i){var b=state.biz[+i],h=_bizpage(i);if(!b)return h;
   if(b.status==='반려됨')h=h.replace('<p class="small" style="margin:8px 0 0">심사를 통과하면','<div class="notice" style="margin-top:8px">반려 사유: '+esc(b.reject||'운영자가 사유를 남기지 않았어요')+'</div><button class="btn btn-pri" type="button" data-resubmit="'+b.dbid+'" style="margin-top:8px">고쳐서 다시 심사 받기</button><p class="small" style="margin:8px 0 0">심사를 통과하면');
   if(b.status==='승인됨')h=h.replace('<span class="tag fr">승인됨</span>','<span class="tag ok">인증 업체 ✓</span>');
-  h=h.replace('<div class="hero" style="background:','<div class="hero" style="height:140px;background:').replace('<span>업체 사진을 올리는 자리</span>','<span>업체 사진 등록은 업체 페이지 편집에서 열릴 예정이에요</span>');
+  h=h.replace('<div class="hero" style="background:','<div class="hero" style="height:140px;background:').replace('<span>업체 사진을 올리는 자리</span>','<span>업체 사진은 페이지 고치기에서 올릴 수 있어요</span>');
   return h;};
 var _pull=BE.pull;BE.pull=function(){return _pull().then(function(){if(!BE.on||!BE.user)return;return Promise.all([BE.sb.from('businesses').select('id,reject_reason').eq('owner',BE.user.id).then(function(r){(r.data||[]).forEach(function(x){state.biz.forEach(function(b){if(b.dbid===x.id)b.reject=x.reject_reason;});});}),
   BE.sb.from('posts').select('id,photo').eq('owner',BE.user.id).order('created_at',{ascending:false}).limit(60).then(function(r){state.myPosts=(r.data||[]).map(function(p){return {url:pubUrl(p.photo)};});}),
@@ -385,14 +385,15 @@ function report(type,id){if(!BE.on)return toast('실제 서비스에서 신고�
 
 /* ---------- 라우트 후처리 · 이벤트 ---------- */
 var NOTFOUND={};
-var _route=route;route=function(){var h=(location.hash||'#home').slice(1),id=h,dash=h.indexOf('-');if(!V[h]&&dash>0&&V[h.slice(0,dash)])id=h.slice(0,dash);
+function killMaps(){main.querySelectorAll('.lmap,.homemap').forEach(function(e){if(e._m){try{e._m.off();e._m.remove();}catch(x){}e._m=null;}});}
+var _route=route;route=function(){killMaps();var h=(location.hash||'#home').slice(1),id=h,dash=h.indexOf('-');if(!V[h]&&dash>0&&V[h.slice(0,dash)])id=h.slice(0,dash);
   if(h&&!V[id]&&h!=='home'){main.innerHTML='<div class="view"><div class="vh"><div><h1>페이지를 찾을 수 없어요</h1><p>주소가 바뀌었거나 지워진 화면이에요.</p></div><a class="btn btn-pri" href="#home">홈으로</a></div></div>';setTitle('찾을 수 없음');return;}
   var prev=route._last;route._last=h;_route();
   var back=route._stack.length>1&&route._stack[route._stack.length-2]===h;if(back){route._stack.pop();var y=route._pos[h];if(y)main.scrollTop=y;}else route._stack.push(h);if(route._stack.length>40)route._stack.shift();
   after();};
 route._stack=[];route._pos={};
 main.addEventListener('scroll',function(){route._pos[route._last]=main.scrollTop;},{passive:true});
-var _rerender=rerender;rerender=function(){var y=main.scrollTop;_route();after();main.scrollTop=y;};
+var _rerender=rerender;rerender=function(){var y=main.scrollTop;killMaps();_route();after();main.scrollTop=y;};
 function after(){var c=cur();if(FORMS[c])setTitle(FORMS[c].title);if(c==='map')mapAfter();if(c==='spot')spotAfter();if(c==='home')seaToday(spot(state.sel));bindUp();}
 function bindUp(){
   main.querySelectorAll('[data-pwt]').forEach(function(b){b.onclick=function(){var i=b.parentNode.querySelector('input');var s=i.type==='password';i.type=s?'text':'password';b.textContent=s?'숨기기':'보기';b.setAttribute('aria-label',s?'비밀번호 숨기기':'비밀번호 보기');};});
