@@ -609,14 +609,7 @@ V.feed=function(){
   (state.fview==='grid'?'<div class="fgrid">'+posts.map(function(p){return p.url?'<img src="'+p.url+'" alt="'+esc(p.spot)+' 사진">':'<div style="background:'+p.c+'"><span>'+esc(p.spot)+'</span></div>';}).join('')+'</div>':
   '<div class="feed">'+posts.map(function(p,i){var liked=state.likes[p.id];return '<article class="post"><header><span class="av" style="width:36px;height:36px"></span><span class="tx" style="display:flex;flex-direction:column"><b>'+esc(p.user)+'</b><a class="small" href="#spot-'+p.sid+'">'+esc(p.spot)+'</a></span></header>'+(p.url?'<img class="ph" src="'+p.url+'" alt="'+esc(p.spot)+' 사진">':'<div class="ph" style="background:'+p.c+'"><span>사진 영역</span></div>')+'<div class="pb">'+(p.log?'<span class="tag'+(p.fr?' fr':'')+'">'+esc(p.log)+'</span>':'')+'<p>'+esc(p.text)+'</p><div style="display:flex;gap:8px;align-items:center"><button class="chip" type="button" data-like="'+p.id+'" aria-pressed="'+(!!liked)+'">좋아요 '+(p.likes+(liked?1:0))+'</button><span class="small">댓글 '+p.cm+'</span></div></div></article>';}).join('')+'</div>');
 };
-var FEED=[
- {id:'f1',user:'[다이버]',sid:'moalboal',spot:'모알보알',c:'#1D5B7A',log:'스쿠버 · 24.2m · 52분',text:'[게시글 내용 · 정어리 떼 한가운데]',likes:128,cm:14},
- {id:'f2',user:'[다이버]',sid:'dahab',spot:'다합 블루홀',c:'#174E6B',log:'프리다이빙 · CWT 28m',fr:1,text:'[게시글 내용 · 개인 최고 기록]',likes:96,cm:9},
- {id:'f3',user:'[다이버]',sid:'anilao',spot:'아닐라오',c:'#24688A',log:'스쿠버 · 18.6m · 61분',text:'[게시글 내용 · 피그미해마 발견]',likes:211,cm:23},
- {id:'f4',user:'[다이버]',sid:'jeju',spot:'제주 서귀포 문섬·섶섬',c:'#195270',log:'스쿠버 · 22.0m · 44분',text:'[게시글 내용 · 연산호 군락]',likes:74,cm:6},
- {id:'f5',user:'[다이버]',sid:'komodo',spot:'코모도',c:'#2A6283',log:'스쿠버 · 26.4m · 48분',text:'[게시글 내용 · 만타 세 마리]',likes:302,cm:31},
- {id:'f6',user:'[다이버]',sid:'k26',spot:'K26 (가평)',c:'#2C6FA0',log:'프리다이빙 · 풀 훈련',fr:1,text:'[게시글 내용 · 주말 훈련]',likes:45,cm:4}
-];
+var FEED=[];
 V.gear=function(){
   var g=[['호흡기 (1·2단계)','오버홀 D-24',88,'#B4530A','구입일 · 다이브 횟수 · 제조사 권장 주기 기준'],['BCD','점검 양호',35,'#0B6B3A','마지막 점검 후 다이브 횟수 기준'],['다이브 컴퓨터','배터리 양호',20,'#0B6B3A','기기에서 받은 값'],['웻슈트 5mm','교체 검토',95,'#B42318','사용 기간 기준'],['프리다이빙 롱핀','점검 양호',30,'#0B6B3A','사용 횟수 기준']];
   return '<div class="vh"><div><h1>장비 · 정비</h1><p>오버홀 시기를 먼저 알려주고, 정비점과 중고 거래까지 연결해요</p></div><button class="btn btn-pri" type="button">장비 등록</button></div>'+
@@ -642,7 +635,7 @@ var LS={get:function(k,d){try{var v=localStorage.getItem('dtdo.'+k);return v?JSO
 state.favs=LS.get('favs',{});state.cmp=LS.get('cmp',[]);state.userLogs=LS.get('logs',[]);state.posts=LS.get('posts',[]);state.likes=LS.get('likes',{});state.check=LS.get('check',{});
 state.vb=[0,12,360,136];state.osm=false;state.lq='';state.lg='전체';state.lpage=0;state.calc={o2:32,pp:1.4,depth:18,sac:15,tank:11,bar:200,reserve:50};state.cost={air:0,pick:0,pack:0,rent:0,etc:0,ppl:2};
 function persist(){LS.set('favs',state.favs);LS.set('cmp',state.cmp);LS.set('likes',state.likes);LS.set('check',state.check);if(!LS.set('logs',state.userLogs)||!LS.set('posts',state.posts)){state.saveFail=true;}}
-function shrink(file,cb){var img=new Image();img.onload=function(){var m=560,r=Math.min(1,m/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*r);c.height=Math.round(img.height*r);c.getContext('2d').drawImage(img,0,0,c.width,c.height);var u;try{u=c.toDataURL('image/jpeg',.72);}catch(e){u=img.src;}cb(u);};img.onerror=function(){cb(null);};img.src=URL.createObjectURL(file);}
+function shrink(file,cb){var img=new Image();img.onload=function(){var m=1280,r=Math.min(1,m/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*r);c.height=Math.round(img.height*r);c.getContext('2d').drawImage(img,0,0,c.width,c.height);var u;try{u=c.toDataURL('image/jpeg',.8);}catch(e){u=img.src;}cb(u);};img.onerror=function(){cb(null);};img.src=URL.createObjectURL(file);}
 /* ---------- 대규모 데이터 ---------- */
 var DB={sp:null,sites:null,spErr:false,siErr:false};
 var SPG=['어류','상어·가오리','갯민숭달팽이·연체동물','두족류','산호·말미잘·해파리','갑각류','극피동물','바다거북','고래·돌고래','물범·바다사자','해면','해조류'];
@@ -980,6 +973,568 @@ document.addEventListener('click',function(e){if(!e.target.closest('.gsearch'))g
 gq.addEventListener('keydown',function(e){if(e.key==='Enter'){var f=gres.querySelector('a');if(f){location.hash=f.getAttribute('href');gres.classList.remove('open');gq.value='';}}if(e.key==='Escape')gres.classList.remove('open');});
 // theme
 document.getElementById('themeBtn').addEventListener('click',function(){var r=document.documentElement;var dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=dark?'light':'dark';});
+/*UP-START*/
+var LABOUT=[
+'세상에서 가장 큰 물고기로 다 자라면 12m를 넘기도 해요. 이빨 대신 아가미로 플랑크톤과 작은 물고기를 걸러 먹어서 사람에게는 위협이 되지 않아요.',
+'날개처럼 펼친 가슴지느러미 폭이 3~5m쯤이에요. 산호초 근처 청소 스테이션에 들러 작은 물고기에게 몸을 맡기고, 입을 벌린 채 플랑크톤을 걸러 먹어요.',
+'가오리 가운데 가장 커서 폭이 7m에 이르기도 해요. 먼바다를 떠돌며 살고, 등에 T자 모양 흰 무늬와 입 안쪽이 검은 것으로 리프 만타와 구분해요.',
+'몸길이만큼 긴 꼬리 윗부분이 특징이에요. 꼬리를 채찍처럼 휘둘러 정어리 떼를 기절시켜 잡아먹고, 이른 아침 청소 스테이션에서 자주 보여요.',
+'망치처럼 옆으로 넓은 머리 양끝에 눈이 달려 있어요. 넓은 머리로 먹이의 전기 신호를 잘 잡아내고, 큰 무리를 지어 다니는 종도 있어요.',
+'인도·태평양 산호초에서 가장 흔한 상어 가운데 하나예요. 꼬리지느러미 뒤 가장자리가 검고, 위협을 느끼면 등을 구부리고 지느러미를 내리는 경고 자세를 해요.',
+'지느러미 끝이 검게 물들어 있고 얕은 모래 바닥이나 산호초 가장자리에서 자주 보여요. 몸길이 1.5m 안팎으로 겁이 많은 편이에요.',
+'등지느러미와 꼬리 끝이 하얀 작은 상어예요. 낮에는 바위 밑이나 굴에서 쉬고 밤에 먹이를 찾아 나와요.',
+'몸에 호랑이 같은 줄무늬가 있고 커지면 4~5m까지 자라요. 거의 무엇이든 먹는 대형 포식자라 가이드 브리핑을 꼭 따라야 해요.',
+'짧고 뭉툭한 주둥이에 몸이 굵은 상어로 민물이 섞인 강 하구에도 들어가요. 탁한 물에서 만날 수 있어 주의가 필요해요.',
+'긴 가슴지느러미 끝이 둥글고 하얀 먼바다 상어예요. 호기심이 많아 다이버에게 다가오기도 하니 수면 근처에서 무리 지어 있는 게 안전해요.',
+'날카로운 이빨이 입 밖으로 보여 무섭게 생겼지만 움직임이 느리고 온순한 편이에요. 수면에서 공기를 삼켜 부력을 맞추는 독특한 습성이 있어요.',
+'어릴 때는 얼룩말 같은 줄무늬, 커서는 표범 같은 점무늬로 바뀌어요. 낮에는 모래 바닥에 가만히 누워 쉬는 모습을 자주 볼 수 있어요.',
+'입가에 수염 같은 돌기가 있고 바닥에 붙어 쉬는 걸 좋아해요. 순하지만 건드리면 물 수 있어요.',
+'납작한 몸과 술 장식 같은 피부로 바닥에 완벽하게 숨어요. 다가오는 물고기를 기다렸다 한입에 삼키는 매복형 상어예요.',
+'세계에서 가장 무거운 경골어류로 1톤을 넘기도 해요. 깊은 바다에 살다가 체온을 올리거나 기생충을 떼려고 얕은 곳으로 올라와요.',
+'모래 바닥에 몸을 묻고 눈만 내놓고 있어요. 꼬리에 독가시가 있으니 바닥에 손을 짚거나 밟지 않게 조심해야 해요.',
+'길이 15m 안팎으로 긴 가슴지느러미가 특징이에요. 번식기에 따뜻한 바다로 내려와 수컷이 긴 노래를 불러요.',
+'혹등고래보다 훨씬 작은 7~8m의 밍크고래 아종이에요. 호주 그레이트배리어리프 북쪽에서 6~7월에 다이버 곁으로 다가오곤 해요.',
+'연안 가까이 사는 돌고래로 몸길이 2.5m 안팎이에요. 무리를 지어 다니고 사람에게 호기심을 보이기도 해요.',
+'물 위로 뛰어올라 몸을 여러 번 비틀어 도는 행동으로 이름이 붙었어요. 낮에는 만에서 쉬고 밤에 먼바다로 사냥을 나가요.',
+'바다풀을 뜯어 먹는 초식 포유류로 꼬리가 돌고래처럼 생겼어요. 해초밭이 사라지면서 수가 줄어 보호 대상이에요.',
+'귀가 겉으로 보이고 앞지느러미로 몸을 세울 수 있어요. 장난기가 많아 다이버 주변을 맴돌며 놀기도 해요.',
+'어른이 되면 바다풀과 해조류를 주로 먹어요. 지방이 초록빛을 띠어 이름이 붙었고 등딱지는 1m 안팎이에요.',
+'매의 부리처럼 뾰족한 입으로 해면을 뜯어 먹어요. 등딱지 무늬가 아름다워 남획됐고 지금은 심각한 멸종 위기종이에요.',
+'가장 큰 바다거북으로 딱딱한 등딱지 대신 가죽 같은 피부가 있어요. 해파리를 주로 먹고 아주 깊이 잠수해요.',
+'수십만 마리가 한 덩어리로 움직이며 모양을 계속 바꿔요. 포식자가 나타나면 공 모양으로 뭉치는 베이트볼을 만들어요.',
+'은빛 몸이 길고 아래턱이 튀어나와 있어요. 낮에는 소용돌이 모양으로 천천히 돌며 무리 지어 떠 있어요.',
+'눈이 큰 전갱이류로 수백 마리가 원을 그리며 돌아요. 조류가 있는 곳에서 자주 만나요.',
+'이마가 혹처럼 튀어나온 가장 큰 앵무고기예요. 이빨로 산호를 갉아 먹고 소화한 뒤 하얀 모래로 내보내요.',
+'두툼한 입술과 이마의 혹이 특징인 큰 놀래기로 2m 가까이 자라요. 사람을 무서워하지 않고, 개체 수가 줄어 보호종이에요.',
+'전갱이류 가운데 가장 커서 1.5m를 넘기도 해요. 빠르게 돌진해 사냥하는 모습을 볼 수 있어요.',
+'감자 같은 얼룩무늬가 있는 큰 그루퍼예요. 호기심이 많아 다이버에게 가까이 다가와요.',
+'300kg을 넘기도 하는 거대한 그루퍼예요. 난파선이나 굴 주변에 머물며 큰 소리를 내기도 해요.',
+'노란 줄무늬 스내퍼가 수백 마리 모여 한자리에 떠 있어요. 사진으로 담기 좋은 장면이에요.',
+'개처럼 날카로운 이빨이 있는 다랑어로 조류 센 절벽에서 사냥해요. 빠르게 지나가니 눈을 크게 뜨고 있어야 해요.',
+'한국과 일본 바다에서 겨울에 큰 무리로 나타나는 전갱이류예요. 빠르게 지나가는 은빛 무리가 장관이에요.',
+'말미잘과 함께 살며 서로 도와요. 말미잘 독침에 쏘이지 않는 점액이 몸을 감싸고 있고, 무리에서 가장 큰 개체가 암컷이 돼요.',
+'파랑·주황 무늬가 화려한 작은 물고기로 해 질 녘 산호 사이에서 짝짓기를 해요. 빛을 싫어하니 조명은 약하게 비춰 주세요.',
+'모래 바닥에 몸 대부분을 묻고 머리만 내밀어 플랑크톤을 먹어요. 다가가면 쏙 숨어 버리니 멀리서 천천히 봐야 해요.',
+'두툼한 입술과 점무늬가 특징으로 낮에는 산호 아래 무리 지어 쉬어요. 어릴 때와 커서의 무늬가 크게 달라요.',
+'몸이 납작하고 지느러미가 위아래로 길어요. 다이버를 따라오며 주변을 맴도는 경우가 많아요.',
+'몸이 납작하고 색이 화려한 산호초 물고기예요. 해면이나 조류를 먹고 텃세가 있는 편이에요.',
+'작고 동그란 몸에 눈을 가리는 줄무늬가 있어요. 짝을 지어 다니는 경우가 많고 산호 폴립을 먹어요.',
+'뱀처럼 긴 몸으로 바위 틈에 살아요. 입을 벌렸다 닫는 건 숨을 쉬는 동작이에요. 손을 틈 안에 넣지 마세요.',
+'리본처럼 가는 몸에 콧구멍이 꽃잎처럼 펼쳐져 있어요. 어릴 때 검정, 수컷일 때 파랑, 암컷일 때 노랑으로 색이 바뀌어요.',
+'은빛 비늘이 큰 대형 물고기로 1~2m까지 자라요. 동굴이나 그늘진 곳에 무리 지어 머물러요.',
+'껍데기 없는 바다달팽이로 색과 모양이 수천 가지예요. 먹은 먹이의 독이나 색을 몸에 저장하기도 해요.',
+'2cm 남짓한 아주 작은 해마로 부채산호와 색과 돌기가 똑같아요. 가이드가 찾아줘야 보일 만큼 위장이 뛰어나요.',
+'꼬리로 해초나 산호를 감고 머물러요. 수컷 배 주머니에서 새끼가 태어나요.',
+'몸이 해면처럼 생긴 매복형 물고기예요. 머리 위 낚싯대 같은 돌기로 먹이를 유인해 순식간에 삼켜요.',
+'온몸이 털 같은 돌기로 덮여 해조류처럼 보이는 씬벵이예요. 인도네시아 렘베에서 특히 자주 보여요.',
+'해마와 가까운 종으로 해초나 바다나리에 몸을 기대 떠 있어요. 몸 색과 모양이 주변과 똑같아 찾기 어려워요.',
+'화려한 술 장식이 있는 쏨뱅이류로 아주 드물게 보여요. 등지느러미에 독가시가 있어요.',
+'불가사리를 먹는 작은 새우로 하얀 바탕에 분홍 점무늬가 있어요. 보통 한 쌍이 함께 살아요.',
+'망치 같은 앞다리로 아주 빠르게 쳐서 조개를 깨요. 사람이 볼 수 없는 색까지 구분하는 눈을 가졌어요.',
+'갯민숭달팽이나 해삼 위에 붙어 사는 작은 새우예요. 숙주를 타고 이동하며 그 위에서 먹이를 얻어요.',
+'몸 색과 자세를 바꿔 넙치, 바다뱀, 쏠배감펭 같은 다른 생물을 흉내 내요. 모래 바닥에서 주로 보여요.',
+'몸 색이 보라·노랑·빨강으로 물결치듯 바뀌는 작은 갑오징어예요. 헤엄보다 바닥을 걷듯 움직여요.',
+'코코넛 껍데기나 조개껍데기를 들고 다니다 위험하면 그 안에 숨어요. 도구를 쓰는 무척추동물로 알려져 있어요.',
+'갑오징어 가운데 가장 커서 50cm에 이르기도 해요. 번식기에 남호주 바다에 수만 마리가 모여요.',
+'몸 색과 피부 질감을 순식간에 바꾸는 위장의 달인이에요. 굴 앞에 껍데기를 쌓아 두는 습성이 있어요.',
+'뼈대 없이 부드러운 몸을 가진 산호로 물이 흐를 때 폴립을 펼쳐 먹이를 잡아요. 색이 화려해 사진에 잘 담겨요.',
+'부채처럼 넓게 펼쳐진 산호로 조류 방향에 맞서 자라요. 크게는 몇 미터까지 펼쳐져요.',
+'석회질 골격을 쌓아 산호초를 만드는 산호예요. 몸 안의 조류와 함께 살아서 수온이 오르면 하얗게 변하는 백화가 생겨요.',
+'1m 넘게 자라는 조개로 외투막 색이 형광처럼 화려해요. 몸속 조류가 만든 양분을 받아 살아요.',
+'불가사리와 친척인 극피동물로 깃털 같은 팔을 펼쳐 플랑크톤을 걸러요. 팔을 흔들며 헤엄치기도 해요.',
+'제주 바다에서 가장 흔하게 보이는 작은 물고기예요. 큰 무리로 다니며 제주에서는 물회로도 먹어요.',
+'하얗고 솜털 같은 촉수가 꽃처럼 피는 말미잘이에요. 동해와 남해 차가운 바다 바위에 무리 지어 붙어 있어요.',
+'분홍·보라색으로 나무처럼 가지를 뻗는 연산호예요. 제주 문섬과 섶섬 바다를 대표하는 풍경이에요.',
+'한국 바위 해안에 흔한 물고기로 겨울에 산란해요. 수컷이 알을 지키는 모습을 볼 수 있어요.',
+'이마가 크게 튀어나온 대형 놀래기예요. 동해와 남해 바위 지대에서 다이버에게 다가오기도 해요.',
+'어릴 때 몸에 굵은 검은 줄이 있어요. 단단한 이빨로 성게와 조개를 깨 먹어요.',
+'바위 틈과 해조류 숲에 사는 물고기로 큰 눈이 특징이에요. 한국 바다 다이빙에서 자주 만나요.',
+'겉은 하얗거나 갈색이지만 골격이 검어서 이름이 붙었어요. 제주 바다에서 자라는 보호종이에요.',
+'몸길이 10~20cm의 작은 문어지만 맹독이 있어요. 위협을 느끼면 파란 고리 무늬가 선명하게 빛나요. 절대 만지지 마세요.',
+'바위나 산호와 구분이 안 될 만큼 위장을 잘해요. 등지느러미 독가시에 찔리면 극심한 통증이 생기니 바닥을 짚지 마세요.',
+'부채처럼 펼친 지느러미가 화려한 쏨뱅이류예요. 지느러미 가시에 독이 있고 대서양에서는 외래종으로 문제가 되고 있어요.',
+'원뿔 모양 껍데기를 가진 고둥으로 작살 같은 독침을 쏴요. 예쁜 껍데기라도 집어 들지 마세요.',
+'숨을 쉬러 수면에 올라오는 파충류예요. 독이 강하지만 대체로 온순하니 건드리지 않으면 괜찮아요.',
+'산란기에 둥지 주변을 지키며 다이버를 공격하기도 해요. 둥지는 위쪽으로 원뿔 모양이라 위로 올라가지 말고 옆으로 피하세요.',
+'산호처럼 생겼지만 해파리와 가까운 생물이에요. 닿으면 화끈거리며 쏘이니 장갑 없이 만지지 마세요.',
+'정육면체 모양 갓에 긴 촉수가 달린 해파리로 독이 매우 강해요. 출몰 시기에는 스틴거 슈트를 입어요.',
+'뾰족한 가시가 몸을 덮고 있어요. 밟거나 짚으면 가시가 박혀 부러지니 입수·출수할 때 발밑을 조심하세요.',
+'꼬리에 톱니 같은 독가시가 있어요. 모래 바닥에 숨어 있으니 얕은 곳에서는 발을 끌듯이 걸으세요.'
+];
+
+/* ================= 개선 묶음 (2026-11) ================= */
+(function addCss(){var c=document.createElement('style');c.textContent=[
+'.vh a.small{display:inline-flex;align-items:center;min-height:44px;padding:0 12px 0 0;font-size:14px;font-weight:700;text-decoration:none;color:var(--sea)}',
+'@media (pointer:coarse){.chip{min-height:44px;height:auto}.zoomer button{width:44px;height:44px}}',
+'.chip{min-height:40px}',
+'.ck{display:flex!important;flex-direction:row!important;align-items:flex-start;gap:10px;font-weight:500!important;line-height:1.45}',
+'.ck input{flex:none;width:22px;height:22px;margin:0}',
+'.ckt{flex:1;min-width:0}',
+'.ck a{margin-left:auto;flex:none;font-size:13px;font-weight:700}',
+'.ckall{padding:12px;border-radius:12px;background:var(--soft);font-weight:700!important}',
+'.pwrap{position:relative;display:block}.pwrap input{width:100%;padding-right:52px}',
+'.pwbtn{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:44px;height:40px;border:0;background:transparent;color:var(--sub);font-size:12px;font-weight:700;cursor:pointer}',
+'.pwrules{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;font-weight:500;color:var(--sub)}.pwrules .on{color:var(--ok)}',
+'.fbar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}.fbar i{display:block;height:100%;background:var(--sea);border-radius:3px}',
+'@media (max-width:860px){form.form .fsticky{position:sticky;bottom:0;background:var(--panel);padding:10px 0;margin:0 -2px;border-top:1px solid var(--line);z-index:5}}',
+'.regionrow{flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}.regionrow::-webkit-scrollbar{display:none}.regionrow .chip{flex:none}',
+'.lmap{height:62vh;min-height:360px;border-radius:16px;overflow:hidden;background:var(--map);position:relative;z-index:0}',
+'@media (max-width:860px){.lmap{height:58vh;min-height:300px}}',
+'.lmap .leaflet-control-attribution{font-size:10px}',
+'.mapbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}',
+'.gal{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:6px;height:300px;border-radius:16px;overflow:hidden}',
+'.gal figure{margin:0;position:relative;overflow:hidden;background:var(--map)}.gal figure:first-child{grid-row:1/3}',
+'.gal img{width:100%;height:100%;object-fit:cover;display:block}',
+'.gal figcaption,.credit{position:absolute;left:0;right:0;bottom:0;padding:4px 8px;font-size:10.5px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.65));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+'.gal figcaption a,.credit a{color:#fff}',
+'@media (max-width:860px){.gal{grid-template-columns:1fr;grid-template-rows:auto;height:auto}.gal figure{height:220px}.gal figure:not(:first-child){display:none}}',
+'.ph1{position:relative;height:150px;border-radius:12px;overflow:hidden;background:var(--map)}.ph1 img{width:100%;height:100%;object-fit:cover}',
+'.lcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}',
+'.lcard{border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px;background:var(--panel)}',
+'.lcard b{font-size:16px}.lcard p{margin:0;font-size:14px;line-height:1.55}.lcard .meta{font-size:13px;color:var(--sub)}',
+'.lcard.warn{border-color:#E9B48A;background:var(--coral-soft)}',
+'.spgrid .sp .ab{font-size:12.5px;color:var(--sub);line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}',
+'.noimg{display:flex;align-items:center;justify-content:center;color:var(--sub)}',
+'.fab{position:fixed;right:18px;bottom:84px;width:56px;height:56px;border-radius:28px;background:var(--sea);color:#fff;font-size:28px;line-height:56px;text-align:center;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:40;border:0;cursor:pointer}',
+'@media (min-width:861px){.fab{bottom:28px}}',
+'.empty-big{text-align:center;padding:36px 16px;display:flex;flex-direction:column;align-items:center;gap:10px}.empty-big b{font-size:17px}',
+'.cmts{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:8px}.cmt{font-size:14px}.cmt b{margin-right:6px}.cmt .small{margin-left:6px}',
+'.cmtf{display:flex;gap:6px}.cmtf input{flex:1;height:40px;border-radius:10px;border:1px solid var(--line);padding:0 10px;background:var(--panel);color:var(--ink);font:14px var(--font-body)}',
+'#loadbar{position:fixed;left:0;top:0;height:3px;width:0;background:var(--coral);z-index:100;transition:width .3s,opacity .3s;opacity:0}#loadbar.on{opacity:1;width:70%}',
+'@media (max-width:860px){body.msearch .gsearch{display:block!important;position:fixed;top:60px;left:8px;right:8px;z-index:60}body.msearch .gsearch input{width:100%}}',
+'@media (max-width:480px){#themeBtn{display:none}}',
+'.msbtn{display:none}@media (max-width:860px){.msbtn{display:flex}}',
+'.bell{position:relative}.bell i{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:4px;background:#D92D20}',
+'.season{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}.season span{font-size:11px;text-align:center;padding:6px 0;border-radius:6px;background:var(--bg);color:var(--sub)}.season span.on{background:var(--sea);color:#fff;font-weight:700}',
+'.foot{margin-top:28px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--sub);display:flex;flex-direction:column;gap:6px}.foot a{color:var(--sub)}',
+'.doc h2{margin-top:22px}.doc p,.doc li{line-height:1.7}',
+'.lnk{display:inline-flex;align-items:center;min-height:44px;font-weight:700}',
+'*:focus-visible{outline:3px solid var(--coral);outline-offset:2px}',
+'.toast{max-width:min(92vw,520px)}',
+'video.vid{width:100%;border-radius:14px;background:#000;max-height:360px}'
+].join('\n');document.head.appendChild(c);
+var lb=document.createElement('div');lb.id='loadbar';document.body.appendChild(lb);})();
+
+/* ---------- 공통 ---------- */
+var REC=LS.get('recent',[]);
+function setTitle(t,d){document.title=(t?t+' · ':'')+'Dive the deep ocean';var m=document.querySelector('meta[name=description]');if(m&&d)m.setAttribute('content',d);}
+function shareLink(title,hash){var url=location.origin+'/'+hash;if(navigator.share){navigator.share({title:title,url:url}).catch(function(){});return;}if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){toast('링크를 복사했어요.');});}else{prompt('링크',url);}}
+var _inflight=0,_f=window.fetch;window.fetch=function(){var lb=document.getElementById('loadbar');_inflight++;if(lb)lb.classList.add('on');return _f.apply(this,arguments).finally(function(){if(--_inflight<=0){_inflight=0;if(lb)lb.classList.remove('on');}});};
+function okUrl(u){return /^https?:\/\//i.test(u||'')?u:'';}
+var MEDIA=null;function loadMedia(){if(MEDIA||loadMedia._r)return;loadMedia._r=1;fetch('/assets/media/media.json').then(function(r){return r.ok?r.json():{};}).then(function(d){MEDIA=d;var c=cur();if(c==='spot'||c==='map'||c==='home')rerender();}).catch(function(){MEDIA={};});}
+function credit(m){return '<a href="'+esc(m.page)+'" target="_blank" rel="noopener">'+esc(m.author)+' · '+esc(m.license)+'</a>';}
+function photosOf(id){return (MEDIA&&MEDIA[id]&&MEDIA[id].photos)||[];}
+function firstPhoto(id){var p=photosOf(id);return p.length?p[0]:null;}
+function th(p){return p.thumb||p.src;}
+
+/* ---------- 계정: 로그인·가입 ---------- */
+var PWRULE=function(v){v=v||'';return {len:v.length>=8,let:/[A-Za-z]/.test(v),num:/[0-9]/.test(v)};};
+FORMS.login.submit='로그인';
+FORMS.login.steps[0].f[1].auto='current-password';
+FORMS.login.steps[0].f[0].auto='email';
+FORMS.login.steps[0].f.push({k:'keep',type:'check',l:'이 기기에서 로그인 상태 유지'});
+(function(){var S=FORMS.signup.steps;
+  S[0].f=[{k:'tos',type:'check',l:'[필수] 이용약관에 동의해요',req:1,doc:'terms'},{k:'priv',type:'check',l:'[필수] 개인정보 수집·이용에 동의해요',req:1,doc:'privacy'},{k:'age',type:'check',l:'[필수] 만 14세 이상이에요',req:1},{k:'health',type:'check',l:'[선택] 수면·심박 등 건강 정보를 컨디션 카드에 쓰는 데 동의해요',doc:'privacy'},{k:'mkt',type:'check',l:'[선택] 특가·출항 알림을 받아요'}];
+  S[1].f.forEach(function(f){if(f.k==='email')f.auto='email';if(f.k==='pw'){f.l='비밀번호';f.rule=1;f.auto='new-password';}if(f.k==='pw2')f.auto='new-password';if(f.k==='nick'){f.nickcheck=1;f.max=20;}});
+  S[1].f.push({k:'ref',type:'text',l:'추천인 코드 (선택)',ph:'강사·센터에게 받은 코드'});
+  FORMS.signup.submit='가입하기';})();
+FORMS.biz.submit='심사 신청하기';FORMS.gearreg.submit='장비 등록';FORMS.sell.submit='판매글 올리기';FORMS.meet.submit='모임 만들기';
+FORMS.biz.steps[1].f.splice(1,0,{k:'bizno',type:'text',l:'사업자등록번호 (한국 사업자)',ph:'000-00-00000',bizno:1,mode:'numeric'});
+FORMS.biz.steps[1].f.forEach(function(f){if(f.k==='tel')f.phone=1;});
+FORMS.sell.steps[0].f.forEach(function(f){if(f.k==='price'){f.mode='numeric';f.ph='예: 350000';}});
+FORMS.sell.steps[1].f.push({k:'rule',type:'check',l:'고압 탱크 택배 발송, 정비 이력을 속이는 판매를 하지 않아요',req:1});
+var _validate=validate;validate=function(id){var ok=_validate(id),F=FORMS[id],st=fstate(id);
+  F.steps[st.step].f.forEach(function(f){var v=st.v[f.k];if(st.e[f.k])return;
+    if(f.rule&&v){var r=PWRULE(v);if(!(r.len&&r.let&&r.num)){st.e[f.k]='8자 이상, 영문과 숫자를 함께 넣어 주세요';ok=false;}}
+    if(f.max&&v&&String(v).length>f.max){st.e[f.k]=f.max+'자 이하로 적어 주세요';ok=false;}
+    if(f.bizno&&v&&!bizOk(v)){st.e[f.k]='사업자등록번호를 다시 확인해 주세요 (10자리)';ok=false;}
+    if(f.nickcheck&&state.nickTaken&&state.nickTaken===v){st.e[f.k]='이미 쓰고 있는 닉네임이에요';ok=false;}});
+  if(st.v._hp)ok=false;return ok;};
+function bizOk(v){var d=String(v).replace(/\D/g,'');if(d.length!==10)return false;var k=[1,3,7,1,3,7,1,3,5],s=0;for(var i=0;i<9;i++)s+=k[i]*+d[i];s+=Math.floor(k[8]*+d[8]/10);return (10-s%10)%10===+d[9];}
+var _fieldHtml=fieldHtml;fieldHtml=function(id,f,st){var h=_fieldHtml(id,f,st);
+  if(f.type==='check')h=h.replace('>'+f.l+'</label>','><span class="ckt">'+f.l+'</span></label>');
+  if(f.doc)h=h.replace(/<\/label>/,' <a href="#'+f.doc+'" target="_blank" rel="noopener">보기</a></label>');
+  if(f.auto)h=h.replace('autocomplete="new-password"','').replace('<input ','<input autocomplete="'+f.auto+'" ');
+  if(f.type==='email')h=h.replace('<input ','<input inputmode="email" autocapitalize="off" ');
+  if(f.type==='number'||f.mode==='numeric')h=h.replace('<input ','<input inputmode="numeric" ');
+  if(f.phone)h=h.replace('<input ','<input inputmode="tel" ');
+  if(f.type==='file')h=h.replace('type="file"','type="file" accept="image/jpeg,image/png,image/webp,image/heic,application/pdf"').replace(/<\/label>$/,'<span class="small">사진(JPG·PNG·HEIC)이나 PDF, 10MB까지</span></label>');
+  if(f.type==='password')h=h.replace(/(<input [^>]*type="password"[^>]*>)/,'<span class="pwrap">$1<button class="pwbtn" type="button" data-pwt aria-label="비밀번호 보기">보기</button></span>');
+  if(f.rule){var r=PWRULE(st.v[f.k]);h=h.replace(/<\/label>$/,'<span class="pwrules" data-pwr><span class="'+(r.len?'on':'')+'">✓ 8자 이상</span><span class="'+(r.let?'on':'')+'">✓ 영문</span><span class="'+(r.num?'on':'')+'">✓ 숫자</span></span></label>');}
+  return h;};
+var _formView=formView;formView=function(id){var F=FORMS[id],st=fstate(id),last=st.step===F.steps.length-1,h=_formView(id);
+  if(F.submit&&last)h=h.replace('>등록하기</button>','>'+F.submit+'</button>');
+  h=h.replace('<div style="grid-column:1/-1;display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap"><button class="btn btn-line" type="button" data-fprev','<input type="text" data-hp tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px"><div class="fsticky" style="grid-column:1/-1;display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap"><button class="btn btn-line" type="button" data-fprev');
+  if(F.steps.length>1)h=h.replace('<ol class="steps">','<div class="fbar" role="progressbar" aria-valuemin="1" aria-valuemax="'+F.steps.length+'" aria-valuenow="'+(st.step+1)+'"><i style="width:'+Math.round((st.step+1)/F.steps.length*100)+'%"></i></div><ol class="steps">');
+  if(id==='signup'&&st.step===0){var all=S0all();h=h.replace('<form class="panel form" data-form="signup" novalidate>','<form class="panel form" data-form="signup" novalidate><label class="ck ckall" for="ckAll" style="grid-column:1/-1"><input id="ckAll" type="checkbox"'+(all?' checked':'')+'>전체 동의 (선택 항목 포함)</label>');}
+  return h;};
+function S0all(){var st=fstate('signup');return FORMS.signup.steps[0].f.every(function(f){return st.v[f.k];});}
+V.login=function(){setTitle('로그인');return formView('login').replace('<ol class="steps">','<ol class="steps" style="display:none">').replace('</form>','<p style="grid-column:1/-1;margin:0;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><a class="lnk" href="#reset">비밀번호를 잊으셨나요?</a><a class="lnk" href="#signup">처음이면 회원가입</a></p></form>')+socialBox();};
+function socialBox(){return '<div class="panel" style="margin-top:16px"><h2>간편 로그인</h2><p class="small" style="margin:0">카카오 · 네이버 · Apple 로그인은 각 회사 개발자 등록이 끝나면 여기에 열려요. 지금은 이메일로 가입해 주세요.</p></div>';}
+V.reset=function(){setTitle('비밀번호 찾기');return '<div class="vh"><div><a class="small" href="#login">← 로그인</a><h1>비밀번호 찾기</h1><p>가입한 이메일로 비밀번호를 새로 정하는 링크를 보내요</p></div></div><form class="panel form" id="resetForm" novalidate><label for="rsEmail" style="grid-column:1/-1">이메일<input id="rsEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" required placeholder="name@example.com"></label><div style="grid-column:1/-1"><button class="btn btn-pri" type="submit">재설정 링크 보내기</button></div><p class="small" id="rsMsg" role="status" style="grid-column:1/-1;margin:0"></p></form>';};
+V.newpw=function(){setTitle('새 비밀번호');if(!BE.user)return '<div class="vh"><div><h1>새 비밀번호</h1><p>메일로 받은 링크를 눌러 이 화면으로 들어와 주세요. 링크가 만료됐다면 다시 받아 주세요.</p></div><a class="btn btn-pri" href="#reset">링크 다시 받기</a></div>';
+  return '<div class="vh"><div><h1>새 비밀번호 정하기</h1><p>'+esc(BE.user.email||'')+'</p></div></div><form class="panel form" id="newpwForm" novalidate><label for="np1">새 비밀번호<span class="pwrap"><input id="np1" type="password" autocomplete="new-password"><button class="pwbtn" type="button" data-pwt aria-label="비밀번호 보기">보기</button></span><span class="pwrules" id="npRules"><span>✓ 8자 이상</span><span>✓ 영문</span><span>✓ 숫자</span></span></label><label for="np2">한 번 더<input id="np2" type="password" autocomplete="new-password"></label><div style="grid-column:1/-1"><button class="btn btn-pri" type="submit">비밀번호 바꾸기</button></div><p class="small" id="npMsg" role="status" style="grid-column:1/-1;margin:0"></p></form>';};
+V.checkmail=function(){setTitle('메일 확인');var e=state.pendingEmail||'';return '<div class="vh"><div><h1>메일함을 확인해 주세요</h1><p>'+(e?'<b>'+esc(e)+'</b>로 ':'')+'인증 메일을 보냈어요. 메일의 링크를 누르면 가입이 끝나요.</p></div></div><div class="panel"><div class="list">'+item({t:'메일이 안 보이면',s:'스팸함과 프로모션함도 확인해 주세요. 도착까지 몇 분 걸릴 수 있어요.'})+item({t:'링크를 누른 뒤',s:'이 사이트로 돌아와 로그인하면 돼요.'})+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn btn-line" type="button" id="resendBtn"'+(e?'':' disabled')+'>인증 메일 다시 보내기</button><a class="btn btn-pri" href="#login">로그인하러 가기</a></div><p class="small" id="resendMsg" role="status" style="margin:8px 0 0"></p></div>';};
+if(BE.on){
+  var _sub=BE.submit;BE.submit=function(id,v){
+    if(id==='signup'){var meta={nick:v.nick,kind:v.kind,cert:v.cert,org:v.org||[],logs:v.logs||'',interest:v.interest||[],health:!!v.health,mkt:!!v.mkt,ref:v.ref||''};
+      return BE.sb.auth.signUp({email:v.email,password:BE._pw,options:{data:meta,emailRedirectTo:location.origin+'/'}}).then(function(r){BE._pw=null;if(r.error)throw r.error;if(r.data.user&&r.data.user.identities&&!r.data.user.identities.length)throw {message:'already registered'};if(!r.data.session){state.pendingEmail=v.email;return 'checkmail';}return 'profile';});}
+    if(id==='login')return BE.sb.auth.signInWithPassword({email:v.email,password:BE._pw}).then(function(r){BE._pw=null;if(r.error)throw r.error;try{if(v.keep)localStorage.removeItem('dtdo.sessOnly');else{localStorage.setItem('dtdo.sessOnly','1');sessionStorage.setItem('dtdo.alive','1');}}catch(e){}var go=state.after||'profile';state.after=null;return go;});
+    return _sub(id,v);};
+  BE.sb.auth.onAuthStateChange(function(ev){if(ev==='PASSWORD_RECOVERY')location.hash='#newpw';});
+  try{if(localStorage.getItem('dtdo.sessOnly')&&!sessionStorage.getItem('dtdo.alive')){localStorage.removeItem('dtdo.sessOnly');BE.sb.auth.signOut();}}catch(e){}
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')BE.sb.auth.getSession();});
+}
+needLogin=function(msg){toast(msg||'먼저 로그인해 주세요');var h=(location.hash||'#home').slice(1);if(h!=='login')state.after=h;location.hash='#login';return Promise.reject('login');};
+
+/* ---------- 계정 관리 ---------- */
+V.account=function(){setTitle('계정 관리');if(!BE.on||!BE.user)return '<div class="vh"><div><h1>계정 관리</h1><p>로그인하면 열려요.</p></div><a class="btn btn-pri" href="#login">로그인</a></div>';
+  return '<div class="vh"><div><a class="small" href="#profile">← 내 정보</a><h1>계정 관리</h1><p>'+esc(BE.user.email||'')+'</p></div></div>'+
+  '<form class="panel form" id="acEmail" novalidate><h2 style="grid-column:1/-1;margin:0">이메일 바꾸기</h2><label for="acE" style="grid-column:1/-1">새 이메일<input id="acE" type="email" inputmode="email" autocomplete="email" autocapitalize="off"></label><div style="grid-column:1/-1"><button class="btn btn-line" type="submit">확인 메일 보내기</button></div><p class="small" style="grid-column:1/-1;margin:0">새 주소와 지금 주소 양쪽에 확인 메일이 가요. 둘 다 누르면 바뀌어요.</p></form>'+
+  '<form class="panel form" id="acPw" novalidate style="margin-top:16px"><h2 style="grid-column:1/-1;margin:0">비밀번호 바꾸기</h2><label for="np1">새 비밀번호<span class="pwrap"><input id="np1" type="password" autocomplete="new-password"><button class="pwbtn" type="button" data-pwt aria-label="비밀번호 보기">보기</button></span><span class="pwrules" id="npRules"><span>✓ 8자 이상</span><span>✓ 영문</span><span>✓ 숫자</span></span></label><label for="np2">한 번 더<input id="np2" type="password" autocomplete="new-password"></label><div style="grid-column:1/-1"><button class="btn btn-line" type="submit">바꾸기</button></div><p class="small" id="npMsg" role="status" style="grid-column:1/-1;margin:0"></p></form>'+
+  '<div class="panel" style="margin-top:16px"><h2>내 데이터</h2><p style="margin:0 0 10px">로그, 장비, 게시물, 업체 신청 내용을 파일로 받아요.</p><button class="btn btn-line" type="button" id="dlData">내 데이터 받기 (JSON)</button></div>'+
+  '<div class="panel" style="margin-top:16px;border-color:#E4A6A0"><h2>회원 탈퇴</h2><p style="margin:0 0 10px">계정과 함께 로그, 장비, 게시물, 댓글, 판매글, 모임, 업체 신청이 모두 지워지고 되돌릴 수 없어요.</p><label class="form" style="display:block"><span class="small">확인을 위해 <b>탈퇴</b>라고 적어 주세요</span><input id="delTxt" style="margin-top:6px;max-width:240px"></label><button class="btn" type="button" id="delAcc" style="margin-top:10px;background:#B42318;color:#fff">회원 탈퇴</button></div>';};
+
+/* ---------- 법적 문서 ---------- */
+var COMPANY=window.DTDO_COMPANY||null;
+V.terms=function(){setTitle('이용약관');return '<div class="vh"><div><h1>이용약관</h1><p>시행일 2026년 11월 12일</p></div></div><div class="panel doc">'+
+'<h2>1. 목적</h2><p>이 약관은 Dive the deep ocean(이하 "서비스")이 제공하는 다이빙 정보, 기록, 커뮤니티, 업체 연결 서비스의 이용 조건을 정해요.</p>'+
+'<h2>2. 계정</h2><p>만 14세 이상이면 이메일로 가입할 수 있어요. 계정 정보는 본인이 관리하고, 다른 사람에게 빌려주거나 넘길 수 없어요. 언제든 내 정보 → 계정 관리에서 탈퇴할 수 있어요.</p>'+
+'<h2>3. 다이버 이용 요금</h2><p>다이버가 쓰는 기능은 무료예요. 중고 장비 안전거래를 고르면 구매자 수수료 3%가 붙고, 이 경우 결제 화면에서 금액을 먼저 보여드려요.</p>'+
+'<h2>4. 정보의 성격</h2><p>포인트 수심·수온·시즌, 계산기 결과, 정비 주기는 참고용 일반 정보예요. 실제 다이빙은 다이브 컴퓨터, 교육받은 절차, 현지 가이드 브리핑을 따라야 하고, 서비스는 이 정보만으로 생긴 사고에 책임지지 않아요.</p>'+
+'<h2>5. 게시물</h2><p>올린 사진과 글의 권리는 올린 사람에게 있어요. 서비스는 화면에 보여주고 공유 미리보기를 만드는 범위에서만 써요. 다른 사람의 권리를 침해하거나 광고·욕설·불법 거래에 해당하는 게시물은 알리지 않고 내릴 수 있어요.</p>'+
+'<h2>6. 중고 거래</h2><p>판매자와 구매자가 직접 거래해요. 고압 탱크 택배 발송, 정비 이력 허위 기재, 보호종으로 만든 물건 판매는 금지예요. 안전거래를 쓰지 않은 직거래 분쟁은 당사자 사이에서 해결해야 해요.</p>'+
+'<h2>7. 업체</h2><p>입점 업체는 심사를 통과해야 노출돼요. 예약 수수료와 요금제는 입점·광고 화면에 적힌 대로 적용하고, 바뀌면 30일 전에 알려드려요.</p>'+
+'<h2>8. 이용 제한</h2><p>다른 이용자를 괴롭히거나, 자동화된 방법으로 대량 가입·수집하거나, 서비스 운영을 방해하면 이용을 제한할 수 있어요.</p>'+
+'<h2>9. 문의</h2><p>'+(COMPANY&&COMPANY.email?esc(COMPANY.email):'고객 문의 창구는 곧 열려요.')+'</p></div>'+foot();};
+V.privacy=function(){setTitle('개인정보 처리방침');return '<div class="vh"><div><h1>개인정보 처리방침</h1><p>시행일 2026년 11월 12일</p></div></div><div class="panel doc">'+
+'<h2>1. 모으는 정보</h2><ul><li>가입: 이메일, 비밀번호(암호화 저장), 닉네임</li><li>선택 입력: 다이빙 종류, 자격, 단체, 로그 수, 관심사, 추천인 코드</li><li>이용 중 올린 것: 로그, 로그북 사진, 장비, 게시물, 댓글, 판매글, 모임</li><li>업체 신청: 담당자 이름, 연락처, 사업자 정보와 서류</li><li>건강 정보(선택 동의한 경우만): 연결한 기기의 수면·심박 값</li></ul>'+
+'<h2>2. 쓰는 곳</h2><p>로그인, 기록 보관, 커뮤니티 표시, 업체 심사, 부정 이용 방지, 문의 응대에만 써요. 광고 동의를 한 경우에만 특가·출항 알림을 보내요.</p>'+
+'<h2>3. 보관 기간</h2><p>탈퇴하면 바로 지워요. 법에 따라 남겨야 하는 거래 기록은 정해진 기간(전자상거래 계약·결제 기록 5년 등) 동안만 따로 보관해요.</p>'+
+'<h2>4. 맡기는 곳</h2><ul><li>Supabase Inc. (회원 인증, 데이터 저장) — 서울 리전</li><li>Vercel Inc. (웹 호스팅)</li></ul>'+
+'<h2>5. 사진 위치 정보</h2><p>사진은 올리기 전에 기기에서 다시 저장해, 사진 속 위치(EXIF) 정보가 서버로 가지 않아요.</p>'+
+'<h2>6. 내 권리</h2><p>내 정보 → 계정 관리에서 내 데이터 받기, 정보 수정, 탈퇴를 직접 할 수 있어요.</p>'+
+'<h2>7. 책임자</h2><p>'+(COMPANY&&COMPANY.privacy?esc(COMPANY.privacy):'개인정보 보호책임자 정보는 사업자 등록 정보와 함께 곧 적어 둘게요.')+'</p></div>'+foot();};
+V.rules=function(){setTitle('커뮤니티 규칙');return '<div class="vh"><div><h1>커뮤니티 규칙</h1><p>바다를 좋아하는 사람들끼리 지킬 것</p></div></div><div class="panel doc"><ol><li>해양생물을 만지거나 쫓는 사진, 채집을 자랑하는 글은 올리지 않아요.</li><li>다른 사람 얼굴이 크게 나온 사진은 본인 동의를 받고 올려요.</li><li>욕설, 비하, 성적인 내용, 광고 도배는 바로 내려요.</li><li>업체 홍보는 입점 페이지와 광고로만 해요.</li><li>안전 수칙을 무시하라고 권하는 글은 지워요.</li></ol><p>신고가 들어온 글은 운영자가 확인해 처리하고, 반복되면 이용을 제한해요.</p></div>'+foot();};
+V.refund=function(){setTitle('취소·환불 규정');return '<div class="vh"><div><h1>취소·환불 규정</h1><p>예약 결제가 열리면 이 기준을 기본으로 써요</p></div></div><div class="panel doc">'+tbl(['취소 시점','환불'],[['출발 14일 전까지','전액'],['7~13일 전','결제액의 70%'],['3~6일 전','결제액의 50%'],['2일 전부터','환불 없음 (업체 규정이 더 유리하면 그 기준)'],['기상 악화로 출항 취소','해당 다이빙 전액']])+'<p>업체가 따로 정한 규정이 있으면 예약 화면에 먼저 보여드려요.</p></div>'+foot();};
+function foot(){var c=COMPANY;return '<div class="foot"><div><a href="#terms">이용약관</a> · <a href="#privacy"><b>개인정보 처리방침</b></a> · <a href="#rules">커뮤니티 규칙</a> · <a href="#refund">취소·환불</a> · <a href="#credits">사진·데이터 출처</a></div>'+(c&&c.name?'<div>'+esc(c.name)+' · 대표 '+esc(c.ceo||'')+' · 사업자등록번호 '+esc(c.bizno||'')+(c.mailorder?' · 통신판매업 '+esc(c.mailorder):'')+(c.addr?' · '+esc(c.addr):'')+'</div>':'')+'<div>© Dive the deep ocean</div></div>';}
+V.credits=function(){setTitle('사진·데이터 출처');var rows=[];if(MEDIA)Object.keys(MEDIA).forEach(function(id){var s=spot(id);(MEDIA[id].photos||[]).concat(MEDIA[id].video?[MEDIA[id].video]:[]).forEach(function(m){rows.push(['<a href="#spot-'+id+'">'+(s?s.name:id)+'</a>','<a href="'+esc(m.page)+'" target="_blank" rel="noopener">'+esc(m.title.replace(/^File:/,'').slice(0,60))+'</a>',esc(m.author),esc(m.license)]);});});else loadMedia();
+  return '<div class="vh"><div><h1>사진·데이터 출처</h1><p>공개 라이선스 자료만 써요</p></div></div><div class="panel doc"><p>해양생물 이름·사진: iNaturalist (CC BY · CC BY-SA · CC0 사진만). 해양 종 판별: OBIS. 한글 이름: Wikidata. 생물 설명: 위키백과 요약 (CC BY-SA, 각 종에 원문 링크). 다이빙 센터·포인트 위치: © OpenStreetMap contributors (ODbL). 지도: © OpenStreetMap. 바다 날씨: Open-Meteo. 근처 관찰 기록: iNaturalist (CC 라이선스 사진만). 공유 미리보기 이미지 배경: Per Edin, "Underwater Moalboal 1", CC BY 2.0.</p></div><div class="panel"><h2>포인트 사진·영상 '+rows.length+'건 (Wikimedia Commons)</h2>'+(rows.length?tbl(['포인트','파일','촬영자','라이선스'],rows):'<p class="empty">불러오는 중이에요.</p>')+'</div>'+foot();};
+
+/* ---------- 홈 ---------- */
+V.home=function(){setTitle('','전 세계 스쿠버·프리다이빙 포인트, 리조트, 강사, 로그와 장비 정비까지 한 곳에서');loadMedia();
+  var s=spot(state.sel),p=firstPhoto(s.id),R=REC.map(spot).filter(Boolean).slice(0,4);
+  var meets=(state.pubMeets||[]).slice(0,3).map(function(x){var m=mapMeet(x),sp=spot(m.spot)||{};return item({href:'#meet-d'+x.id,tags:[[m.kind,'']],t:esc(m.title),s:esc(m.date)+' · '+(sp.name||'')+' · 최대 '+esc(m.max)+'명'});}).join('');
+  var g=(state.gearL||[]).map(function(x){return {g:x,d:due(x)};}).filter(function(x){return x.d;}).sort(function(a,b){return a.d.days-b.d.days;})[0];
+  var intro=LS.get('introDone',false)?'':'<div class="panel" style="border:2px solid var(--sea)"><h2>처음 오셨나요? <button class="chip" type="button" id="introX">닫기</button></h2><div class="list">'+item({href:'#map',t:'1. 지도에서 다음 바다 고르기',s:'추천 포인트 '+SPOTS.length+'곳과 다이빙 센터 7,700여 곳'})+item({href:'#life',t:'2. 그 바다에 사는 생물 미리 보기',s:'2만6천 종 도감'})+item({href:'#signup',t:'3. 가입하고 로그·장비 정리하기',s:'다이버는 전부 무료'})+'</div></div>';
+  return '<div class="vh"><div><h1>다음 바다, 여기서 고르세요</h1><p>포인트부터 리조트, 강사, 이동 경로, 내 로그와 장비 정비까지 한 곳에서 · 다이버는 모두 무료</p></div>'+modeChips()+'</div>'+intro+
+  '<form class="panel msbox" id="homeSearch" role="search" style="padding:12px"><label for="hq" style="position:absolute;left:-9999px">통합 검색</label><input id="hq" type="search" placeholder="포인트 · 리조트 · 생물 · 장비 검색" style="width:100%;height:46px;border-radius:12px;border:1px solid var(--line);padding:0 14px;font:15px var(--font-body);background:var(--panel);color:var(--ink)"></form>'+
+  '<div class="cols"><a class="panel" href="#spot-'+s.id+'" style="padding:0;overflow:hidden;text-decoration:none;color:inherit"><div class="ph1" style="height:220px;border-radius:0">'+(p?'<img src="'+esc(p.src)+'" alt="'+esc(s.name)+'" loading="lazy"><span class="credit">'+esc(p.author)+' · '+esc(p.license)+'</span>':'<div style="height:100%;background:'+s.color+'"></div>')+'</div><div class="item" style="padding:14px 18px;border:0"><span class="tx"><span>'+s.country+' · '+s.kind+'</span><b>'+s.name+'</b><span>'+s.desc+'</span></span><span class="rt">자세히</span></div></a>'+condCard()+'</div>'+
+  '<div class="panel" id="seaToday"><h2>'+s.name+' 오늘 바다 <span class="small">Open-Meteo</span></h2><p class="empty" style="margin:0">불러오는 중이에요.</p></div>'+
+  '<div class="cats">'+[['map','포인트',I.map],['resorts','리조트',I.resort],['edu','강사 · 자격증',I.edu],['trip','코스 · 비용',I.trip],['life','해양생물',I.fish],['safety','맛집 · 안전',I.food],['community','모임',I.people],['feed','피드','M4 5h16v14H4z M4 15l4-4 4 4 3-3 5 5 M15 9h.01'],['gear','장비 마켓',I.gear],['gear','정비 · 수리',I.wrench],['log','다이브 로그',I.log],['tools','계산기 · 체크',I.edu]].map(function(c){return '<a class="cat" href="#'+c[0]+'"><i>'+ic(c[2],22)+'</i>'+c[1]+'</a>';}).join('')+'</div>'+
+  (R.length?'<div class="panel"><h2>최근 본 포인트</h2><div class="list">'+R.map(function(x){return item({href:'#spot-'+x.id,thumb:x.color,t:x.name,s:x.country+' · '+x.kind});}).join('')+'</div></div>':'')+
+  '<div class="cols3"><div class="panel"><h2>이번 시즌 추천 <a href="#map">지도에서 보기</a></h2><div class="list">'+inSeason().slice(0,4).map(function(x){return item({href:'#spot-'+x.id,thumb:x.color,t:x.name,s:x.country+' · 시즌 '+x.season});}).join('')+'</div></div>'+
+  '<div class="panel"><h2>모집 중인 모임 <a href="#community">전체</a></h2>'+(meets?'<div class="list">'+meets+'</div>':'<p class="empty">지금 모집 중인 모임이 없어요.</p><a class="btn btn-line" href="#meet">모임 만들기</a>')+'</div>'+
+  '<div class="panel"><h2>내 장비 <a href="#gear">관리</a></h2>'+(g?'<div class="notice">'+esc(g.g.cat)+' '+esc(g.g.brand)+' 정비까지 '+(g.d.days<0?(-g.d.days)+'일 지났어요':g.d.days+'일 남았어요')+'</div>':'<p class="empty">장비를 등록하면 오버홀 시기를 미리 알려드려요.</p><a class="btn btn-line" href="#gearreg">장비 등록</a>')+'</div></div>'+foot();};
+function months(str){var m=[],s=String(str||'');if(/연중|사계절|1년 내내|연간/.test(s))return [1,2,3,4,5,6,7,8,9,10,11,12];var re=/(\d{1,2})\s*[~\-–]\s*(\d{1,2})\s*월?/g,x;while((x=re.exec(s))){var a=+x[1],b=+x[2];if(a<1||a>12||b<1||b>12)continue;for(var i=a;;i=i%12+1){m.push(i);if(i===b||m.length>24)break;}}
+  var one=s.replace(re,'').match(/(\d{1,2})월/g);if(one)one.forEach(function(t){var n=parseInt(t,10);if(n>=1&&n<=12)m.push(n);});return m.filter(function(v,i,a){return a.indexOf(v)===i;});}
+function inSeason(){var mo=new Date().getMonth()+1;var L=SPOTS.filter(function(s){return vis(s)&&months(s.season).indexOf(mo)>=0;});return L.length?L:SPOTS.slice(0,4);}
+function seasonBar(s){var m=months(s.season);if(!m.length)return '';return '<div class="season" aria-label="시즌 '+esc(s.season)+'">'+[1,2,3,4,5,6,7,8,9,10,11,12].map(function(i){return '<span class="'+(m.indexOf(i)>=0?'on':'')+'">'+i+'월</span>';}).join('')+'</div>';}
+function seaToday(s){var el=document.getElementById('seaToday');if(!el)return;var key=s.id;if(seaToday.c[key]){fill(seaToday.c[key]);return;}
+  fetch('https://marine-api.open-meteo.com/v1/marine?latitude='+s.lat+'&longitude='+s.lon+'&current=wave_height,sea_surface_temperature,wave_period&timezone=auto').then(function(r){return r.json();}).then(function(d){seaToday.c[key]=d;fill(d);}).catch(function(){el.querySelector('p').textContent='바다 정보를 불러오지 못했어요.';});
+  function fill(d){var c=d&&d.current;if(!c||c.wave_height==null&&c.sea_surface_temperature==null){el.querySelector('p').textContent='이 위치는 바다 예보가 없어요 (호수·실내 시설 등).';return;}
+    el.innerHTML='<h2>'+esc(s.name)+' 지금 바다 <span class="small">Open-Meteo 예보 · '+esc((c.time||'').replace('T',' '))+' 현지</span></h2><div class="stats"><div class="stat"><small>수면 수온</small><b>'+(c.sea_surface_temperature!=null?c.sea_surface_temperature.toFixed(1)+'℃':'—')+'</b></div><div class="stat"><small>파고</small><b>'+(c.wave_height!=null?c.wave_height.toFixed(1)+'m':'—')+'</b></div><div class="stat"><small>파도 주기</small><b>'+(c.wave_period!=null?c.wave_period.toFixed(0)+'초':'—')+'</b></div><div class="stat"><small>시즌</small><b style="font-size:14px">'+esc(s.season)+'</b></div></div><p class="small" style="margin:8px 0 0">모델 예보값이라 실제와 다를 수 있어요. 출항 여부는 현지 센터 판단을 따르세요.</p>';}}
+seaToday.c={};
+condCard=function(){var L=state.userLogs||[],last=L.filter(function(l){return l.date;}).sort(function(a,b){return a.date<b.date?1:-1;})[0];
+  var since=last?Math.round((Date.now()-new Date(last.date+'T12:00:00'))/36e5):null;
+  return '<div class="cond"><div class="row"><b>오늘의 컨디션</b><span>기기 연결 전</span></div><div class="mgrid"><div><small>수면 · 심박</small><b style="font-size:15px">연결 필요</b><em class="m">Garmin · Apple 건강</em></div><div><small>마지막 다이브 후</small><b>'+(since!=null?(since<72?since+'시간':Math.round(since/24)+'일'):'—')+'</b><em class="c">'+(last?'내 로그 기준':'로그가 없어요')+'</em></div><div><small>비행 전 대기</small><b>'+(since!=null&&since<18?(18-since)+'시간 더':'지남')+'</b><em class="c">여러 번 다이빙 기준 18시간</em></div></div><a class="btn btn-line" href="#devices" style="margin-top:10px;width:100%;background:transparent;color:inherit;border-color:currentColor">기기 연결하기</a></div>';};
+
+/* ---------- 지도 (실제 지도 타일) ---------- */
+var LF={p:null};
+function loadLeaflet(){if(window.L&&window.L.markerClusterGroup)return Promise.resolve();if(LF.p)return LF.p;
+  var SRI={"leaflet.css": "sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H", "MarkerCluster.css": "sha384-pmjIAcz2bAn0xukfxADbZIb3t8oRT9Sv0rvO+BR5Csr6Dhqq+nZs59P0pPKQJkEV", "MarkerCluster.Default.css": "sha384-wgw+aLYNQ7dlhK47ZPK7FRACiq7ROZwgFNg0m04avm4CaXS+Z9Y7nMu8yNjBKYC+", "leaflet.js": "sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH", "leaflet.markercluster.js": "sha384-eXVCORTRlv4FUUgS/xmOyr66XBVraen8ATNLMESp92FKXLAMiKkerixTiBvXriZr"};function sri(u){var f=u.split('/').pop();return SRI[f];}function css(h){var l=document.createElement('link');l.rel='stylesheet';l.href=h;l.integrity=sri(h);l.crossOrigin='anonymous';document.head.appendChild(l);}
+  function js(s){return new Promise(function(ok,no){var e=document.createElement('script');e.src=s;e.integrity=sri(s);e.crossOrigin='anonymous';e.onload=ok;e.onerror=no;document.head.appendChild(e);});}
+  css('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css');css('https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.css');css('https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css');
+  LF.p=js('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js').then(function(){return js('https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js');});return LF.p;}
+state.lv=LS.get('mapView',null);state.osm=true;state.lvl='전체';
+var RB={'전체':[[-50,-170],[65,190]],'한국':[[33,124.5],[38.6,131.5]],'일본':[[24,122],[45,146]],'필리핀':[[5,116],[19,127]],'동남아':[[-10,95],[20,130]],'미크로네시아':[[5,130],[22,170]],'인도양·홍해':[[-25,30],[30,80]],'호주·태평양':[[-45,110],[0,190]],'아메리카':[[-30,-120],[40,-55]],'유럽':[[28,-20],[62,40]]};
+function spotPopup(s){var p=firstPhoto(s.id);return '<div style="width:220px">'+(p?'<img src="'+esc(th(p))+'" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px">':'')+'<b style="display:block;margin-top:6px">'+esc(s.name)+'</b><span style="font-size:12px;color:#4A5B68">'+esc(EN[s.id])+'<br>'+esc(s.country)+' · '+esc(s.kind)+' · 시즌 '+esc(s.season)+'</span><br><a href="#spot-'+s.id+'" style="display:inline-block;margin-top:6px;font-weight:700">포인트 보기 →</a></div>';}
+function initMap(el,opt){loadLeaflet().then(function(){if(!document.body.contains(el))return;var L=window.L;
+  var m=L.map(el,{worldCopyJump:true,zoomControl:true,attributionControl:true,minZoom:2,maxZoom:17});el._m=m;
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(m);
+  if(opt.view)m.setView(opt.view.c,opt.view.z);else if(opt.bounds)m.fitBounds(opt.bounds);else m.setView([15,140],3);
+  if(opt.sites&&DB.sites){var cl=L.markerClusterGroup({chunkedLoading:true,maxClusterRadius:50,showCoverageOnHover:false});var C=['#475467','#0A5C8A','#B4530A'],N=['다이빙 센터·샵','다이빙 포인트','리조트·숙소'];
+    DB.sites.forEach(function(x){if(opt.near&&km(opt.near.lat,opt.near.lon,x[0],x[1])>opt.near.r)return;cl.addLayer(L.circleMarker([x[0],x[1]],{radius:5,color:'#fff',weight:1,fillColor:C[x[3]]||C[0],fillOpacity:.9}).bindPopup('<b>'+esc(x[2])+'</b><br><span style="font-size:12px">'+N[x[3]]+(x[4]?' · '+esc(x[4]):'')+'</span><br><a href="https://www.google.com/maps/search/?api=1&query='+x[0]+','+x[1]+'" target="_blank" rel="noopener">길찾기</a>'));});m.addLayer(cl);}
+  (opt.spots||[]).forEach(function(s){var on=s.id===state.sel;L.circleMarker([s.lat,s.lon],{radius:on?11:8,color:'#fff',weight:2,fillColor:s.t==='free'?'#F6A04D':'#0A5C8A',fillOpacity:1}).addTo(m).bindPopup(spotPopup(s)).on('click',function(){state.sel=s.id;});});
+  if(opt.save)m.on('moveend',function(){var c=m.getCenter();state.lv={c:[c.lat,c.lng],z:m.getZoom()};LS.set('mapView',state.lv);});
+  if(opt.me&&state.myPos)L.circleMarker([state.myPos.lat,state.myPos.lon],{radius:7,color:'#fff',weight:2,fillColor:'#D92D20',fillOpacity:1}).addTo(m).bindPopup('내 위치');
+  setTimeout(function(){m.invalidateSize();},60);}).catch(function(){el.innerHTML='<p class="empty" style="color:#fff;padding:20px">지도를 불러오지 못했어요. 연결을 확인해 주세요.</p>';});}
+function lvlOk(s){return state.lvl==='전체'||String(s.lv).indexOf(state.lvl)>=0;}
+V.map=function(){setTitle('다이빙 지도','전 세계 다이빙 포인트와 다이빙 센터 지도');loadMedia();
+  var list=SPOTS.filter(function(s){return vis(s)&&lvlOk(s);}),mo=+state.mon||0;if(mo)list=list.filter(function(s){return months(s.season).indexOf(mo)>=0;});
+  if(state.myPos)list=list.slice().sort(function(a,b){return km(state.myPos.lat,state.myPos.lon,a.lat,a.lon)-km(state.myPos.lat,state.myPos.lon,b.lat,b.lon);});
+  var LV=['전체','초급','중급','상급'];
+  return '<div class="vh"><div><h1>다이빙 지도</h1><p>추천 포인트 '+SPOTS.length+'곳'+(DB.sites?' · 다이빙 센터와 포인트 '+DB.sites.length.toLocaleString()+'곳':'')+'</p></div>'+modeChips()+'</div>'+
+  '<div class="chips regionrow" role="group" aria-label="지역">'+REGIONS.map(function(r){return '<button class="chip" type="button" data-lregion="'+r+'" aria-pressed="'+(state.region===r)+'">'+r+'</button>';}).join('')+'</div>'+
+  '<div class="mapbar"><button class="chip" type="button" id="myLoc">내 위치</button><label class="chip" style="display:inline-flex;align-items:center;gap:6px"><input type="checkbox" id="osmToggle"'+(state.osm?' checked':'')+'> 센터·포인트 '+(DB.sites?DB.sites.length.toLocaleString():'')+'곳</label><label class="chip" style="display:inline-flex;align-items:center;gap:6px">난이도 <select id="lvlSel" style="border:0;background:transparent;color:inherit;font:inherit">'+LV.map(function(l){return '<option'+(state.lvl===l?' selected':'')+'>'+l+'</option>';}).join('')+'</select></label><label class="chip" style="display:inline-flex;align-items:center;gap:6px">가는 달 <select id="monSel" style="border:0;background:transparent;color:inherit;font:inherit"><option value="0">아무 때</option>'+[1,2,3,4,5,6,7,8,9,10,11,12].map(function(i){return '<option value="'+i+'"'+(mo===i?' selected':'')+'>'+i+'월</option>';}).join('')+'</select></label></div>'+
+  '<div id="lmap" class="lmap" role="region" aria-label="다이빙 지도"></div>'+
+  '<p class="small" style="margin:0">파란 점은 스쿠버, 주황 점은 프리다이빙 중심 추천 포인트예요. 작은 점과 숫자 묶음은 OpenStreetMap에 등록된 센터·포인트예요. 영업 여부는 직접 확인하세요. 지도 © OpenStreetMap contributors</p>'+
+  (state.cmp.length?'<div class="panel"><h2>비교 '+state.cmp.length+'곳 <a href="#compare">비교표 보기</a></h2><div class="chips">'+state.cmp.map(function(id){return cmpBtn(id).replace('비교에 담김',spot(id).name+' ×');}).join('')+'</div></div>':'')+
+  '<div class="panel"><h2>추천 포인트 '+list.length+'곳'+(state.myPos?' · 가까운 순':'')+'</h2><div class="lcards">'+list.map(function(x){var p=firstPhoto(x.id);return '<a class="lcard" href="#spot-'+x.id+'" style="text-decoration:none;color:inherit;padding:0;overflow:hidden"><div class="ph1" style="border-radius:0;height:130px">'+(p?'<img src="'+esc(th(p))+'" alt="" loading="lazy">':'<div style="height:100%;background:'+x.color+'"></div>')+'</div><div style="padding:10px 12px;display:flex;flex-direction:column;gap:3px"><span>'+tags([['추천','ok'],[x.kind,x.t==='free'?'fr':''],[x.lv,'gray']])+'</span><b>'+x.name+'</b><span class="en">'+EN[x.id]+'</span><span class="meta">'+x.country+' · 시즌 '+x.season+' · '+x.depth+(state.myPos?' · '+Math.round(km(state.myPos.lat,state.myPos.lon,x.lat,x.lon)).toLocaleString()+'km':'')+'</span></div></a>';}).join('')+'</div></div>'+foot();};
+function mapAfter(){var el=document.getElementById('lmap');if(!el)return;need('map');var list=SPOTS.filter(function(s){return vis(s)&&lvlOk(s);});
+  var b=state.region!=='전체'?RB[state.region]:null;initMap(el,{spots:list,sites:state.osm,view:b?null:state.lv,bounds:b||RB['전체'],save:1,me:1});}
+
+/* ---------- 포인트 상세 ---------- */
+V.spot=function(id){var s=spot(id)||spot('anilao');state.sel=s.id;loadMedia();REC=[s.id].concat(REC.filter(function(x){return x!==s.id;})).slice(0,8);LS.set('recent',REC);setTitle(s.name,s.name+' ('+EN[s.id]+') 다이빙 정보 · 시즌 '+s.season+' · 수심 '+s.depth+' · 수온 '+s.temp);
+  var P=photosOf(s.id),vid=MEDIA&&MEDIA[s.id]&&MEDIA[s.id].video;
+  var gal=P.length?'<div class="gal">'+P.slice(0,3).map(function(p,i){return '<figure><img src="'+esc(p.src)+'" alt="'+esc(s.name)+' 사진 '+(i+1)+'" loading="'+(i?'lazy':'eager')+'"><figcaption>'+credit(p)+'</figcaption></figure>';}).join('')+'</div>':'<div class="hero" style="background:'+s.color+'"><span>이곳 사진을 아직 찾지 못했어요. 피드에 첫 사진을 올려 주세요.</span></div>';
+  var rs=RESORTS.filter(function(r){return r.spot===s.id;}),ap=(state.pubBiz||[]).filter(function(b){return b.spot===s.id;});
+  var near=SPOTS.filter(function(x){return x.region===s.region&&x.id!==s.id;}).slice(0,5),ns=nearSites(s,80).slice(0,12);
+  var lifeLinks=s.life.length?'<div class="chips">'+s.life.map(function(l){return '<a class="chip" href="#life" data-lifeq="'+esc(l)+'" style="display:inline-flex;align-items:center;text-decoration:none">'+esc(l)+'</a>';}).join('')+'</div>':'<p class="empty">실내 시설이거나 생물보다 지형이 중심인 곳이에요.</p>';
+  return '<div class="vh"><div><a href="#map" class="small">← 지도</a><h1>'+s.name+'</h1><p><span class="en">'+EN[s.id]+'</span> · '+s.country+' · '+s.kind+'</p></div><div style="display:flex;gap:8px;flex-wrap:wrap">'+fav(s.id)+cmpBtn(s.id)+'<button class="chip" type="button" data-share="'+s.id+'">공유</button><a class="btn btn-line" href="#community">동행 찾기</a><a class="btn btn-pri" href="#trip">코스 · 비용</a></div></div>'+gal+
+  '<div class="stats"><div class="stat"><small>수심</small><b>'+s.depth+'</b></div><div class="stat"><small>수온</small><b>'+s.temp+'</b></div><div class="stat"><small>시즌</small><b style="font-size:15px">'+s.season+'</b></div><div class="stat"><small>난이도</small><b style="font-size:15px">'+s.lv+'</b></div></div>'+seasonBar(s)+'<p class="small" style="margin:-6px 0 0">일반적으로 알려진 범위예요. 실제 상황은 날짜와 포인트마다 다르니 현지 브리핑을 따르세요.</p>'+
+  '<div class="panel" id="seaToday"><h2>지금 바다</h2><p class="empty" style="margin:0">불러오는 중이에요.</p></div>'+
+  '<div class="cols"><div style="display:flex;flex-direction:column;gap:20px"><div class="panel"><h2>소개</h2><p style="margin:0">'+s.desc+'</p></div>'+
+  (vid?'<div class="panel"><h2>영상</h2><video class="vid" controls preload="none" src="'+esc(vid.src)+'"'+(vid.poster?' poster="'+esc(vid.poster)+'"':'')+'></video><p class="small" style="margin:6px 0 0">'+credit(vid)+' · Wikimedia Commons</p></div>':'')+
+  '<div class="panel"><h2>만날 수 있는 생물 <a href="#life">도감</a></h2>'+lifeLinks+'</div>'+'<div class="panel" id="obsBox"><h2>이 근처 다이버 관찰 기록 <span class="small">iNaturalist</span></h2><p class="empty" style="margin:0">불러오는 중이에요.</p></div>'+
+  '<div class="panel"><h2>리조트 · 업체 <a href="#resorts">전체</a></h2><div class="list">'+ap.map(function(b){return item({href:'#resorts',tags:[['입점','ok']],t:esc(b.name),s:esc((b.services||[]).slice(0,3).join(' · ')),r:esc(b.price||'')});}).join('')+rs.map(function(r){return item({href:'#resorts',thumb:r.c,tags:r.tags,t:r.n,s:r.sub,r:'견적 문의'});}).join('')+(ap.length||rs.length?'':'<p class="empty">아직 입점한 업체가 없어요. 이곳 업체라면 입점·광고 메뉴에서 문의해 주세요.</p>')+'</div></div></div>'+
+  '<div style="display:flex;flex-direction:column;gap:20px"><div class="panel"><h2>위치 <a href="https://www.google.com/maps/search/?api=1&query='+s.lat+','+s.lon+'" target="_blank" rel="noopener">길찾기</a></h2><div id="smap" class="lmap" style="height:260px;min-height:0"></div></div><div class="panel"><h2>가는 길</h2><div class="tl">'+s.route.map(function(r){return '<div><span><b>'+r[0]+'</b><span>'+r[1]+'</span></span></div>';}).join('')+'</div></div>'+
+  '<div class="panel"><h2>주변 다이빙 센터 · 포인트</h2>'+(DB.sites?(ns.length?'<div class="list">'+ns.map(function(x){return item({tags:[[['센터 · 샵','포인트','리조트 · 숙소'][x.t],['gray','','fr'][x.t]]],t:esc(x.n),s:Math.round(x.d)+'km',r:'<a href="https://www.google.com/maps/search/?api=1&query='+x.lat+','+x.lon+'" target="_blank" rel="noopener">길찾기</a>'});}).join('')+'</div>':'<p class="empty">80km 안에 등록된 곳이 없어요.</p>'):'<p class="empty">불러오는 중이에요.</p>')+'<p class="small" style="margin:8px 0 0">© OpenStreetMap contributors · 영업 여부는 직접 확인하세요.</p></div>'+
+  '<div class="panel"><h2>같은 지역 포인트</h2><div class="list">'+near.map(function(x){return item({href:'#spot-'+x.id,thumb:x.color,t:x.name,s:x.kind+' · '+x.lv});}).join('')+'</div></div>'+
+  '<div class="panel"><h2>안전</h2><div class="list">'+item({href:'#safety',t:'응급 연락처 · 감압 챔버',s:s.country})+'</div></div>'+
+  '<div class="panel"><h2>정보가 틀렸나요?</h2><button class="btn btn-line" type="button" data-report="spot" data-rid="'+(SPOTS.indexOf(s)+1)+'">수정 제안하기</button></div></div></div>'+foot();};
+function obsLoad(s){var el=document.getElementById('obsBox');if(!el)return;var c=obsLoad.c[s.id];if(c)return fill(c);
+  fetch('https://api.inaturalist.org/v1/observations?lat='+s.lat+'&lng='+s.lon+'&radius=12&photo_license=cc-by,cc-by-sa,cc0&quality_grade=research&per_page=12&order_by=votes&locale=ko&iconic_taxa=Actinopterygii,Mollusca,Animalia,Reptilia,Mammalia').then(function(r){return r.json();}).then(function(d){obsLoad.c[s.id]=d.results||[];fill(obsLoad.c[s.id]);}).catch(function(){el.querySelector('p').textContent='관찰 기록을 불러오지 못했어요.';});
+  function fill(R){var L={'cc-by':'CC BY','cc-by-sa':'CC BY-SA','cc0':'CC0'};R=R.filter(function(o){return o.photos&&o.photos[0]&&L[o.photos[0].license_code];});if(!R.length){el.innerHTML='<h2>이 근처 다이버 관찰 기록</h2><p class="empty" style="margin:0">12km 안에 공개된 관찰 기록이 아직 없어요.</p>';return;}
+   el.innerHTML='<h2>이 근처 다이버 관찰 기록 <a href="https://www.inaturalist.org/observations?lat='+s.lat+'&lng='+s.lon+'&radius=12" target="_blank" rel="noopener">더 보기</a></h2><div class="spgrid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">'+R.map(function(o){var p=o.photos[0],t=o.taxon||{},nm=t.preferred_common_name||t.name||'';var u=okUrl(p.url)?p.url.replace('square','medium'):'';return '<a class="sp" href="https://www.inaturalist.org/observations/'+o.id+'" target="_blank" rel="noopener" style="flex-direction:column;align-items:stretch"><img loading="lazy" src="'+esc(u)+'" alt="'+esc(nm)+'" style="width:100%;height:120px;object-fit:cover;border-radius:8px"><span class="tx"><b>'+esc(nm)+'</b><i>'+esc(t.name||'')+'</i><span class="small">'+esc((o.user&&(o.user.name||o.user.login))||'')+' · '+L[p.license_code]+'</span></span></a>';}).join('')+'</div>';}}
+obsLoad.c={};
+function spotAfter(){var el=document.getElementById('smap'),s=spot(state.sel);if(el&&s){need('spot');initMap(el,{spots:[s],sites:true,near:{lat:s.lat,lon:s.lon,r:80},view:{c:[s.lat,s.lon],z:10}});}if(s){seaToday(s);obsLoad(s);}}
+
+/* ---------- 리조트 · 코스 ---------- */
+V.resorts=function(){setTitle('리조트');var ko=state.rko;
+  var AP=(state.pubBiz||[]).filter(function(b){return !ko||(b.langs||[]).indexOf('한국어')>=0;}).map(function(b){var s=spot(b.spot)||{};return item({href:'#spot-'+b.spot,thumb:s.color,tags:[['입점','ok']].concat((b.langs||[]).indexOf('한국어')>=0?[['한국어','fr']]:[]),t:esc(b.name)+(b.name_en?' · '+esc(b.name_en):''),s:(s.name||'')+' · '+esc((b.services||[]).slice(0,3).join(' · ')),r:esc(b.price||'')});}).join('');
+  var RL=RESORTS.filter(function(r){return !ko||(r.tags||[]).some(function(t){return /한국어|한인/.test(t[0]);});});
+  return '<div class="vh"><div><h1>리조트</h1><p>한국어 가능, 교육, 나이트록스, 프리다이빙 시설로 골라 보세요</p></div></div><div class="chips"><button class="chip" type="button" id="rkoBtn" aria-pressed="'+(!!ko)+'">한국어 가능만</button></div>'+
+  '<div class="panel"><div class="list">'+AP+RL.map(function(r){var s=spot(r.spot);return item({href:'#spot-'+r.spot,thumb:r.c,tags:r.tags,t:r.n,s:s.name+' · '+r.sub,r:'견적 문의'});}).join('')+'</div></div>'+
+  '<p class="small">가격은 시즌과 인원마다 달라 업체 견적으로 확인해요. 후기는 예약 인증된 이용자만 남길 수 있고, 유료 노출은 ‘광고’로 표시돼요.</p>'+foot();};
+var _trip=V.trip;V.trip=function(){setTitle('코스 · 비용');var h=_trip(),k=state.cost,tot=k.air+k.pick+k.pack+k.rent+k.etc;
+  var calc='<div class="panel"><h2>내 여행 경비 계산</h2><div class="form">'+[['air','항공'],['pick','공항 픽업'],['pack','리조트 패키지'],['rent','장비 렌탈'],['etc','현지 비용 (입장료 · 팁)']].map(function(x){return '<label for="c_'+x[0]+'">'+x[1]+' (원)<input id="c_'+x[0]+'" data-cost="'+x[0]+'" type="number" inputmode="numeric" step="10000" value="'+k[x[0]]+'"></label>';}).join('')+'<label for="c_ppl">인원<input id="c_ppl" data-cost="ppl" type="number" inputmode="numeric" min="1" value="'+k.ppl+'"></label></div><div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:12px"><div class="stat"><small>1인 합계</small><b>'+tot.toLocaleString()+'원</b></div><div class="stat"><small>'+k.ppl+'명 합계</small><b>'+(tot*Math.max(1,k.ppl)).toLocaleString()+'원</b></div></div><p class="small" style="margin:8px 0 0">받은 견적을 넣어 비교해 보세요. 이 기기에서만 계산해요.</p><a class="btn btn-pri" href="#resorts" style="margin-top:10px;width:100%">리조트 견적 요청</a></div>';
+  var wait='<div class="panel"><h2>돌아오는 날 비행</h2><p style="margin:0">마지막 다이빙 뒤 무감압 1회는 최소 12시간, 여러 번 · 여러 날이면 18시간을 비우고 비행기를 타세요 (DAN 권고). 다이빙 보험은 <a href="https://www.diversalertnetwork.org" target="_blank" rel="noopener">DAN</a> 같은 다이버 전용 보험을 확인하세요.</p></div>';
+  return h.replace(/<div class="panel"><h2>비용 항목<\/h2>[\s\S]*?리조트 견적 요청<\/a><\/div>/,calc+wait)+foot();};
+
+/* ---------- 해양생물 ---------- */
+state.seen=LS.get('seen',{});
+_life=function(){var list=LIFE.filter(function(l){return state.lcat==='전체'||l[1]===state.lcat;});
+  return '<div class="vh"><div><h1>해양생물 도감</h1><p>대표 '+LIFE.length+'종과 전체 2만6천여 종 · 어디서 볼 수 있는지와 특징</p></div></div>'+
+  '<div class="chips" role="group" aria-label="분류">'+LCATS.map(function(c){return '<button class="chip" type="button" data-lcat="'+c+'" aria-pressed="'+(state.lcat===c)+'">'+c+'</button>';}).join('')+'</div>'+
+  '<div class="panel"><h2>'+state.lcat+' '+list.length+'종 <span class="small">본 생물 '+Object.keys(state.seen).filter(function(k){return state.seen[k];}).length+'종</span></h2><div class="lcards">'+list.map(function(l){var i=LIFE.indexOf(l),w=l[1]==='주의 생물',sp=SPOTS.filter(function(s){return s.life.indexOf(l[0])>=0;}).slice(0,4);
+    return '<div class="lcard'+(w?' warn':'')+'"><span>'+tags([[l[1],w?'fr':'']])+'</span><b>'+l[0]+'</b><span class="en">'+LEN[i]+'</span><p>'+(LABOUT[i]||'')+'</p><span class="meta"><b style="font-size:13px">볼 수 있는 곳</b> '+l[2]+'</span>'+(sp.length?'<span class="meta">'+sp.map(function(s){return '<a href="#spot-'+s.id+'">'+s.name+'</a>';}).join(' · ')+'</span>':'')+'<span class="meta"><b style="font-size:13px">관찰 팁</b> '+l[3]+'</span>'+(w?'<span class="meta"><b style="font-size:13px">쏘이거나 찔리면</b> 물 밖으로 나와 가이드에게 알리고, 통증이 심하거나 숨쉬기 힘들면 바로 응급 번호로 연락하세요.</span>':'')+'<button class="chip" type="button" data-seen="'+i+'" aria-pressed="'+(!!state.seen[i])+'" style="align-self:flex-start">'+(state.seen[i]?'봤어요 ✓':'봤어요')+'</button></div>';}).join('')+'</div></div>'+
+  '<p class="small">만지지 않기, 먹이 주지 않기, 쫓지 않기. 세 가지만 지켜도 대부분의 사고와 훼손을 막을 수 있어요.</p>';};
+BE.species=function(q,g,page,per){var s=BE.sb.from('species').select('sci,ko,en,grp,obs,photo,inat_id'+(state.noAbout?'':',about,about_src'),{count:'estimated'}).order('obs',{ascending:false}).range(page*per,page*per+per-1);
+  if(g>=0)s=s.eq('grp',g);q=q.toLowerCase().replace(/[%_,()*\\]/g,' ').trim();if(q)s=s.ilike('search','%'+q+'%');return s.then(function(r){if(r.error&&!state.noAbout&&/about/.test(r.error.message||'')){state.noAbout=true;return BE.species(q,g,page,per);}return r;});};
+spBE=function(){var key=state.lq+'|'+state.lg+'|'+state.lpage;if(_SR&&_SR.key===key)return true;if(state._spk!==key){state._spk=key;BE.species(state.lq,SPG.indexOf(state.lg),state.lpage,40).then(function(r){if(state._spk!==key)return;var rows=(r.data||[]).map(function(x){return [x.sci,x.ko,x.en,x.grp,x.obs,x.photo,x.inat_id,x.about,x.about_src];});_SR={key:key,rows:rows,count:r.count||0};if(!state.lq&&state.lg==='전체')SPTOTAL=r.count||0;if(cur()==='life')rerender();});}return false;};
+var SPAB=null;function loadAbout(){if(SPAB||loadAbout.r)return;loadAbout.r=1;fetch('/assets/media/species_about.json').then(function(r){return r.ok?r.json():{a:{},n:{}};}).then(function(d){SPAB=d;if(cur()==='life')rerender();}).catch(function(){SPAB={a:{},n:{}};});}
+var _lifeV=V.life;V.life=function(){setTitle('해양생물 도감','바다거북, 만타, 고래상어부터 갯민숭달팽이까지 2만6천여 종의 사진과 특징');loadAbout();var h=_lifeV();
+  if(SPAB){h=h.replace(/<span class="tx"><b>([^<]*)<\/b>(<span class="en">[^<]*<\/span>)?<i>([^<]*)<\/i><span class="small">/g,function(m,name,en,sci){var a=SPAB.a[sci],ko=SPAB.n[sci];var nm=name;if(ko&&(!en)&&name!==ko){nm=esc(ko);en='<span class="en">'+name+'</span>';}
+      return '<span class="tx"><b>'+nm+'</b>'+(en||'')+'<i>'+sci+'</i>'+(a?'<span class="ab"'+(a[1]==='e'?' lang="en"':'')+'>'+esc(a[0])+'</span>':'')+'<span class="small">';});}
+  h=h.replace(/<span class="noimg"><\/span>/g,'<span class="noimg" aria-hidden="true">🐟</span>');
+  h=h.replace('한글 이름이 아직 없는 종은 영어 이름과 학명으로 보여요.','한글 이름이 아직 없는 종은 영어 이름과 학명으로 보여요. 생물 설명은 위키백과 요약을 바탕으로 했고 (CC BY-SA), 관찰이 많은 종부터 한국어로 옮기고 있어요. 아직 옮기지 않은 종은 영어 요약이 보여요.');
+  return h;};
+
+/* ---------- 피드 ---------- */
+state.cm={};state.cmOpen={};state.fsort=state.fsort||'new';
+var BADW=/(시발|씨발|병신|좆|개새|fuck|shit|카지노|토토|바카라|대출문의)/i;
+V.feed=function(){setTitle('피드');var posts=BE.on?(state.pubPosts||[]):state.posts.slice();var blk=LS.get('hidePosts',{});posts=posts.filter(function(p){return !blk[p.id];});
+  if(state.fsort==='top')posts=posts.slice().sort(function(a,b){return (b.likes||0)-(a.likes||0);});
+  var mine=function(p){return BE.user&&p.owner===BE.user.id;};
+  var form='<form class="panel" id="postForm" style="display:flex;flex-direction:column;gap:10px'+(state.compose?'':';display:none')+'"><h2 style="margin:0">새 게시물 <button class="chip" type="button" id="composeX">닫기</button></h2><div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start">'+(state.draft?'<img src="'+state.draft+'" alt="올릴 사진" style="width:120px;height:120px;border-radius:12px;object-fit:cover">':'<label class="drop" for="postPhoto" style="width:120px;height:120px;padding:0;justify-content:center"><b>사진 선택</b></label>')+'<input id="postPhoto" type="file" accept="image/*" style="position:absolute;left:-9999px"><div class="form" style="flex:1;min-width:220px"><label for="postSpot">포인트<select id="postSpot">'+SPOTS.map(function(s){return '<option value="'+s.id+'"'+(s.id===state.sel?' selected':'')+'>'+s.name+'</option>';}).join('')+'</select></label><label for="postText" style="grid-column:1/-1">내용<input id="postText" maxlength="500" placeholder="오늘 바다는 어땠나요?"></label><label style="flex-direction:row;align-items:center;gap:8px;font-weight:500"><input id="postLog" type="checkbox" style="width:20px;height:20px">최근 로그 붙이기</label><button class="btn btn-pri" type="submit">올리기</button></div></div><p class="small" id="postMsg" role="status" style="margin:0">사진은 올리기 전에 줄여서 다시 저장해요. 사진 속 위치 정보는 함께 올라가지 않아요. <a href="#rules">커뮤니티 규칙</a></p></form>';
+  var empty='<div class="panel empty-big"><b>아직 올라온 사진이 없어요</b><span class="small">다녀온 바다 사진을 처음으로 올려 주세요.</span><button class="btn btn-pri" type="button" data-compose>첫 사진 올리기</button></div>';
+  var list=state.fview==='grid'?'<div class="fgrid">'+posts.map(function(p){return '<img src="'+esc(p.url)+'" alt="'+esc(p.spot)+' 사진" loading="lazy">';}).join('')+'</div>':
+  '<div class="feed">'+posts.map(function(p){var liked=state.likes[p.id],C=state.cm[p.dbid];return '<article class="post"><header><span class="av" style="width:36px;height:36px"></span><span class="tx" style="display:flex;flex-direction:column;flex:1"><b>'+esc(p.user)+'</b><a class="small" href="#spot-'+esc(p.sid)+'">'+esc(p.spot)+'</a></span>'+(mine(p)?'<button class="chip" type="button" data-pedit="'+p.dbid+'">수정</button><button class="chip" type="button" data-pdel="'+p.dbid+'">삭제</button>':'<button class="chip" type="button" data-report="post" data-rid="'+p.dbid+'" aria-label="신고">신고</button><button class="chip" type="button" data-hide="'+p.id+'">숨기기</button>')+'</header>'+(p.url?'<img class="ph" src="'+esc(p.url)+'" alt="'+esc(p.spot)+' 사진" loading="lazy" decoding="async" width="560" height="560">':'')+'<div class="pb">'+(p.log?'<span class="tag'+(p.fr?' fr':'')+'">'+esc(p.log)+'</span>':'')+'<p>'+esc(p.text)+'</p><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="chip" type="button" data-like="'+p.id+'" aria-pressed="'+(!!liked)+'">좋아요 '+(p.likes||0)+'</button>'+(BE.on?'<button class="chip" type="button" data-cmt="'+p.dbid+'">댓글'+(C?' '+C.length:'')+'</button>':'')+'<button class="chip" type="button" data-pshare="'+esc(p.sid)+'">공유</button></div>'+(state.cmOpen[p.dbid]?cmtBox(p.dbid):'')+'</div></article>';}).join('')+'</div>';
+  return '<div class="vh"><div><h1>피드</h1><p>다이버들이 올린 바다 · 사진에 포인트와 로그를 붙여요</p></div><div class="chips"><button class="chip" type="button" data-fsort="new" aria-pressed="'+(state.fsort==='new')+'">최신</button><button class="chip" type="button" data-fsort="top" aria-pressed="'+(state.fsort==='top')+'">인기</button><button class="chip" type="button" data-fview="card" aria-pressed="'+(state.fview==='card')+'">크게</button><button class="chip" type="button" data-fview="grid" aria-pressed="'+(state.fview==='grid')+'">모아</button></div></div>'+form+(BE.on&&state.pubPosts===null?'<p class="empty">불러오는 중이에요.</p>':posts.length?list:empty)+'<button class="fab" type="button" data-compose aria-label="새 게시물">+</button>';};
+function cmtBox(pid){var C=state.cm[pid];if(!C){loadCm(pid);return '<div class="cmts"><span class="small">댓글 불러오는 중…</span></div>';}
+  return '<div class="cmts">'+C.map(function(c){var me=BE.user&&c.owner===BE.user.id;return '<div class="cmt"'+(c.parent_id?' style="margin-left:18px"':'')+'><b>'+esc(c.author_nick)+'</b>'+esc(c.body)+'<span class="small">'+c.created_at.slice(5,16).replace('T',' ')+'</span> '+(me?'<button class="chip" type="button" data-cdel="'+c.id+'" data-pid="'+pid+'" style="min-height:28px;height:28px">삭제</button>':'<button class="chip" type="button" data-creply="'+c.id+'" data-pid="'+pid+'" style="min-height:28px;height:28px">답글</button> <button class="chip" type="button" data-report="comment" data-rid="'+c.id+'" style="min-height:28px;height:28px">신고</button>')+'</div>';}).join('')+(C.length?'':'<span class="small">첫 댓글을 남겨 주세요.</span>')+'<form class="cmtf" data-cform="'+pid+'"><input maxlength="300" placeholder="'+(state.replyTo&&state.replyTo.pid==pid?'답글 쓰기':'댓글 쓰기')+'" aria-label="댓글"><button class="btn btn-pri" type="submit" style="height:40px">등록</button></form></div>';}
+function loadCm(pid){if(loadCm[pid])return;loadCm[pid]=1;BE.sb.from('comments').select('*').eq('post_id',pid).order('created_at').limit(200).then(function(r){loadCm[pid]=0;var a=r.data||[],top=a.filter(function(c){return !c.parent_id;}),o=[];top.forEach(function(t){o.push(t);a.filter(function(c){return c.parent_id===t.id;}).forEach(function(c){o.push(c);});});state.cm[pid]=o;if(cur()==='feed')rerender();});}
+
+/* ---------- 로그 ---------- */
+V.log=function(){setTitle('로그 · 컨디션');var L=(state.userLogs||[]).slice().sort(function(a,b){return (b.date||'')>(a.date||'')?1:-1;});
+  var mx=L.reduce(function(m,l){return Math.max(m,+l.depth||0);},0),tm=L.reduce(function(m,l){return m+(+l.time||0);},0),yr=new Date().getFullYear(),thisYr=L.filter(function(l){return String(l.date||'').slice(0,4)==String(yr);}).length;
+  var scans=state.scans.map(function(sc,i){return '<div class="scan"><img src="'+sc.url+'" alt="올린 로그북 사진"><div class="form" style="flex:1"><label for="sd'+i+'">날짜<input id="sd'+i+'" type="date"></label><label for="ss'+i+'">포인트<input id="ss'+i+'" placeholder="예: 문섬"></label><label for="sp'+i+'">최대 수심 (m)<input id="sp'+i+'" inputmode="decimal" placeholder="18"></label><label for="st'+i+'">시간 (분)<input id="st'+i+'" inputmode="numeric" placeholder="42"></label><button class="btn btn-pri" type="button" data-savescan="'+i+'">로그로 저장</button></div></div>';}).join('');
+  var rows=L.map(function(l){return '<div class="item">'+(l.url?'<img src="'+esc(l.url)+'" alt="로그북 사진" style="flex:none;width:56px;height:56px;border-radius:12px;object-fit:cover" loading="lazy">':'')+'<span class="tx"><span>'+esc(l.date||'날짜 없음')+(l.src?' '+tags([[l.src,'gray']]):'')+'</span><b>'+esc(l.site||'포인트 없음')+'</b><span>최대 '+esc(l.depth||'—')+'m · '+esc(l.time||'—')+'분</span></span>'+(BE.on&&l.id?'<button class="chip" type="button" data-ldel="'+l.id+'">삭제</button>':'')+'</div>';}).join('');
+  return '<div class="vh"><div><h1>로그 · 컨디션</h1><p>직접 쓰거나, 다이브 컴퓨터 파일과 종이 로그북 사진으로 옮겨요</p></div>'+(L.length?'<button class="btn btn-line" type="button" id="csvBtn">CSV로 받기</button>':'')+'</div>'+
+  '<div class="stats"><div class="stat"><small>총 다이브</small><b>'+L.length+'회</b></div><div class="stat"><small>최대 수심</small><b>'+(mx?mx+'m':'—')+'</b></div><div class="stat"><small>누적 시간</small><b>'+(tm?Math.floor(tm/60)+'시간 '+tm%60+'분':'—')+'</b></div><div class="stat"><small>'+yr+'년</small><b>'+thisYr+'회</b></div></div>'+
+  '<div class="cols"><form class="panel form" id="quickLog" novalidate><h2 style="grid-column:1/-1;margin:0">빠른 기록</h2><label for="qd">날짜<input id="qd" type="date" value="'+new Date().toISOString().slice(0,10)+'"></label><label for="qs">포인트<input id="qs" list="spotList" placeholder="예: 모알보알"></label><datalist id="spotList">'+SPOTS.map(function(s){return '<option value="'+s.name+'">';}).join('')+'</datalist><label for="qp">최대 수심 (m)<input id="qp" inputmode="decimal"></label><label for="qt">시간 (분)<input id="qt" inputmode="numeric"></label><div style="grid-column:1/-1"><button class="btn btn-pri" type="submit">기록하기</button></div></form>'+
+  '<div style="display:flex;flex-direction:column;gap:20px">'+condCard()+'<div class="panel"><h2>다이브 컴퓨터 파일 가져오기</h2><p style="margin:0 0 10px">Shearwater Cloud · Subsurface · Suunto 등에서 내보낸 <b>UDDF</b>나 Subsurface <b>.ssrf/.xml</b> 파일을 고르면 날짜, 최대 수심, 시간을 읽어 와요.</p><label class="drop" for="uddfIn"><b>파일 고르기</b><span class="small">여러 개도 돼요</span></label><input id="uddfIn" type="file" accept=".uddf,.xml,.ssrf,.udcf" multiple style="position:absolute;left:-9999px"><p class="small" id="uddfMsg" role="status" style="margin:8px 0 0"></p></div></div></div>'+
+  '<div class="panel"><h2>종이 로그북 옮기기</h2><p style="margin:0 0 10px">예전 로그북을 사진으로 찍어 올리고 날짜와 수심을 적으면 내 로그에 합쳐져요.</p><label class="drop" for="scanInput"><b>로그북 사진 올리기</b><span class="small">여러 장을 한 번에 고를 수 있어요</span></label><input id="scanInput" type="file" accept="image/*" multiple style="position:absolute;left:-9999px">'+scans+'</div>'+
+  '<div class="panel"><h2>내 로그 '+L.length+'개</h2>'+(rows?'<div class="list">'+rows+'</div>':'<p class="empty">아직 로그가 없어요. 위에서 빠른 기록으로 첫 로그를 남겨 보세요.</p>')+'</div>';};
+V.devices=function(){setTitle('기기 연결');return '<div class="vh"><div><a class="small" href="#log">← 로그</a><h1>기기 연결</h1><p>지금 되는 것과 준비 중인 것</p></div></div><div class="panel"><div class="list">'+item({tags:[['지금 가능','ok']],t:'UDDF · Subsurface 파일',s:'Shearwater Cloud, Subsurface, Suunto DM5, MacDive에서 내보낸 파일을 로그 화면에서 가져와요',r:'<a href="#log">가져오기</a>'})+item({tags:[['준비 중','gray']],t:'Garmin Connect (수면 · 심박 · Descent 로그)',s:'Garmin 개발자 프로그램 승인 뒤 열려요'})+item({tags:[['준비 중','gray']],t:'Apple 건강 · Apple Watch Ultra 수심',s:'iOS 앱이 나와야 연결할 수 있어요'})+item({tags:[['준비 중','gray']],t:'Shearwater 블루투스 직접 연결',s:'앱 버전에서 지원할 예정이에요'})+'</div><p class="small" style="margin:10px 0 0">건강 정보는 가입할 때 선택 동의한 경우에만, 컨디션 카드를 보여주는 데만 써요.</p></div>';};
+function parseDiveXml(txt,name){var doc=new DOMParser().parseFromString(txt,'application/xml'),out=[];if(doc.querySelector('parsererror'))return out;
+  var dives=doc.getElementsByTagName('dive');[].forEach.call(dives,function(d){var o={src:'파일'};
+    var dt=d.getAttribute('date')||(d.getElementsByTagName('datetime')[0]||{}).textContent||'';o.date=String(dt).slice(0,10);
+    var dur=d.getAttribute('duration');if(dur){var m=dur.match(/(\d+):(\d+)/);if(m)o.time=+m[1]+Math.round(+m[2]/60);}
+    var dc=d.getElementsByTagName('divecomputer')[0],depthEl=dc&&dc.getElementsByTagName('depth')[0];if(depthEl&&depthEl.getAttribute('max'))o.depth=parseFloat(depthEl.getAttribute('max'));
+    var gm=d.getElementsByTagName('greatestdepth')[0];if(gm)o.depth=parseFloat(gm.textContent);var dt2=d.getElementsByTagName('diveduration')[0];if(dt2)o.time=Math.round(parseFloat(dt2.textContent)/60);
+    if(!o.depth){var mx=0;[].forEach.call(d.getElementsByTagName('depth'),function(e){var v=parseFloat(e.textContent);if(v>mx)mx=v;});if(mx)o.depth=mx;}
+    var site=d.getAttribute('divesiteid');if(site){var ds=doc.querySelector('site[uuid="'+site+'"]');if(ds)o.site=ds.getAttribute('name');}
+    var lk=d.getElementsByTagName('link')[0];if(lk&&!o.site){var sid=lk.getAttribute('ref'),se=sid&&doc.querySelector('site[id="'+sid+'"]'),nm=se&&se.getElementsByTagName('name')[0];if(nm)o.site=nm.textContent;}
+    if(o.depth)o.depth=Math.round(o.depth*10)/10;if(o.date||o.depth)out.push(o);});return out;}
+
+/* ---------- 모임 · 커뮤니티 ---------- */
+_comm2=function(){var t=state.tab,body='';
+  if(t==='meet')body='';
+  if(t==='jobs')body='<p class="empty">아직 올라온 구인 글이 없어요. 입점한 업체가 채용 공고를 올릴 수 있게 준비 중이에요.</p>';
+  if(t==='board')body='<p class="empty">게시판은 피드 댓글로 먼저 열었어요. 질문은 <a href="#feed">피드</a>에 사진과 함께 올려 주세요.</p>';
+  return '<div class="vh"><div><h1>모임 · 구인구직</h1><p>함께 갈 사람, 일할 곳, 다녀온 이야기</p></div><a class="btn btn-pri" href="#community">글쓰기</a></div>'+
+  '<div class="chips" role="tablist">'+[['meet','모임'],['jobs','구인구직'],['board','게시판']].map(function(x){return '<button class="chip" type="button" role="tab" data-tab="'+x[0]+'" aria-pressed="'+(t===x[0])+'" aria-selected="'+(t===x[0])+'">'+x[1]+'</button>';}).join('')+'</div>'+
+  '<div class="panel"><div class="list">'+body+'</div></div>';};
+var _commV=V.community;V.community=function(){setTitle('모임 · 구인구직');var h=_commV();if(state.tab==='meet'&&!((BE.on?state.pubMeets:state.meets)||[]).length)h=h.replace('<div class="panel"><div class="list"></div></div>','<div class="panel empty-big"><b>모집 중인 모임이 없어요</b><span class="small">함께 갈 사람을 먼저 모아 보세요.</span><a class="btn btn-pri" href="#meet">모임 만들기</a></div>');return h+foot();};
+
+/* ---------- 장비 ---------- */
+state.mcat='전체';
+_gear2=function(){var MC=['전체','호흡기','BCD','다이브 컴퓨터','슈트','핀 · 마스크','프리다이빙','기타'];
+  return '<div class="vh"><div><h1>장비 · 정비</h1><p>오버홀 시기를 먼저 알려주고, 중고 거래까지 연결해요</p></div><a class="btn btn-pri" href="#gearreg">장비 등록</a></div>'+
+  (state.gearL.length?'':'<div class="panel empty-big"><b>등록한 장비가 없어요</b><span class="small">호흡기, BCD, 컴퓨터를 등록하면 정비 시기를 계산해 알려드려요.</span><a class="btn btn-pri" href="#gearreg">장비 등록</a></div>')+
+  '<div class="notice" style="font-size:14px">호흡기MARKER</div>'+
+  '<div class="panel"><h2>장비 마켓 <a href="#sell">판매 등록</a></h2><div class="chips" style="margin-bottom:10px">'+MC.map(function(c){return '<button class="chip" type="button" data-mcat="'+c+'" aria-pressed="'+(state.mcat===c)+'">'+c+'</button>';}).join('')+'</div><div class="grid2"><div class="mk"></div></div><p class="small" style="margin:10px 0 0">직거래는 사람이 많은 곳에서 물건을 확인하고 거래하세요. 선입금 요구, 메신저로 다른 결제 링크를 보내는 경우는 사기일 가능성이 커요. 고압 탱크는 택배로 보낼 수 없어요.</p></div>'+
+  '<div class="panel"><h2>정비 주기</h2>'+tbl(['장비','주기','평소 관리'],[['호흡기','제조사 권장 1~2년 또는 다이브 100회 안팎에 오버홀','민물에 충분히 헹구고 더스트캡 확인'],['BCD','해마다 점검','안쪽까지 민물로 헹구고 공기를 조금 넣어 보관'],['탱크','육안 검사 해마다 · 내압 검사는 나라별 법정 주기','공기를 조금 남겨 보관'],['다이브 컴퓨터','배터리 교체 때 방수 점검','충전식은 오래 둘 때 절반쯤 충전'],['웻슈트','보온이 떨어지면 교체 (보통 몇 해)','민물 헹굼 · 그늘 건조 · 넓은 옷걸이'],['드라이슈트','씰 · 지퍼 수시 점검, 씰은 몇 해마다 교체','지퍼 왁스 · 씰에 탤크'],['마스크 · 핀','스트랩 균열 점검','직사광선 피해 보관']])+'<p class="small" style="margin:8px 0 0">정확한 주기는 브랜드와 모델마다 달라요. 제조사 안내가 우선이에요.</p></div>';};
+var _gearV=V.gear;V.gear=function(){setTitle('장비 · 정비');var h=_gearV();h=h.replace(/<div class="notice" style="font-size:14px">(예시 · )?호흡기MARKER<\/div>/,'');
+  if(state.mcat!=='전체')h=h.replace(/<a class="mk" [^>]*>[\s\S]*?<\/a>/g,function(m){return m.indexOf('<span class="small">'+esc(state.mcat)+'</span>')>=0?m:'';});
+  if(h.indexOf('<a class="mk"')<0)h=h.replace('<div class="grid2"><div class="mk"></div></div>','<p class="empty">'+(state.mcat==='전체'?'아직 올라온 판매글이 없어요.':'이 분류에는 판매글이 없어요.')+'</p>');else h=h.replace('<div class="mk"></div>','');
+  return h+foot();};
+
+/* ---------- 내 정보 ---------- */
+_profile=function(){var m=state.me,L=state.userLogs||[],F=Object.keys(state.favs).filter(function(k){return state.favs[k];}).length;
+  return '<div class="vh"><div><h1>내 정보</h1><p>'+(BE.user?'로그·장비·게시물이 계정에 저장돼요':'로그인하면 예약, 로그, 장비가 기기 사이에서 이어져요')+'</p></div>'+(BE.user?'<a class="btn btn-line" href="#account">계정 관리</a>':'')+'</div>'+
+  '<div class="cols">'+(m?'<div class="panel"><div class="item" style="border:0"><span class="av" style="width:64px;height:64px"></span><span class="tx"><b style="font-size:18px">'+esc(m.nick||'다이버')+'</b><span>'+esc([m.cert,(m.org||[]).join(' · ')].filter(Boolean).join(' · ')||'자격 정보 없음')+'</span></span></div><div class="stats" style="margin-top:6px"><div class="stat"><small>기록한 다이브</small><b>'+L.length+'회</b></div><div class="stat"><small>저장한 포인트</small><b>'+F+'곳</b></div><div class="stat"><small>장비</small><b>'+state.gearL.length+'개</b></div><div class="stat"><small>본 생물</small><b>'+Object.keys(state.seen||{}).filter(function(k){return state.seen[k];}).length+'종</b></div></div></div>':'')+
+  '<div class="panel"><h2>바로가기</h2><div class="list">'+item({href:'#log',t:'다이브 로그'})+item({href:'#gear',t:'내 장비'})+item({href:'#community',t:'모임'})+(BE.user?item({href:'#notice',t:'알림'}):'')+item({href:'#partner',t:'파트너 센터',s:'리조트 · 강사 · 정비점'})+'</div></div></div>'+
+  (BE.user&&state.myPosts&&state.myPosts.length?'<div class="panel"><h2>내 게시물 '+state.myPosts.length+'개</h2><div class="fgrid">'+state.myPosts.map(function(p){return '<img src="'+esc(p.url)+'" alt="" loading="lazy">';}).join('')+'</div></div>':'')+
+  '<div class="panel" style="border:2px solid var(--sea)"><h2>다이버는 모두 무료</h2><p style="margin:0">지도와 검색, 포인트 정보, 로그, 장비 정비 알림, 모임까지 다이버가 쓰는 기능은 0원이에요. 중고 장비 안전거래를 고를 때만 구매자 수수료 3%가 붙어요.</p></div>';};
+var _profV=V.profile;V.profile=function(){setTitle('내 정보');var h=_profV()+'<div class="panel"><h2>화면</h2><button class="btn btn-line" type="button" id="themeBtn2">밝게 · 어둡게 바꾸기</button></div>';h=h.replace('<button class="chip" type="button" id="logoutBtn">로그아웃</button>','<button class="chip" type="button" id="logoutBtn">로그아웃</button> <a class="chip" href="#account" style="display:inline-flex;align-items:center;text-decoration:none">계정 관리</a>');return h+foot();};
+
+/* ---------- 알림 ---------- */
+state.notes=null;
+V.notice=function(){setTitle('알림');if(!BE.user)return '<div class="vh"><div><h1>알림</h1><p>로그인하면 볼 수 있어요.</p></div><a class="btn btn-pri" href="#login">로그인</a></div>';if(!state.notes){loadNotes();return '<div class="vh"><div><h1>알림</h1><p>불러오는 중이에요.</p></div></div>';}
+  return '<div class="vh"><div><h1>알림</h1><p>내 게시물 댓글, 업체 심사 결과, 장비 정비</p></div></div><div class="panel">'+(state.notes.length?'<div class="list">'+state.notes.map(function(n){return item({href:n.h,tags:[[n.k,n.c||'']],t:esc(n.t),s:esc(n.s||'')});}).join('')+'</div>':'<p class="empty">새 알림이 없어요.</p>')+'</div>';};
+function loadNotes(){if(loadNotes.b)return;loadNotes.b=1;var N=[];
+  (state.biz||[]).forEach(function(b,i){if(b.status!=='심사 중')N.push({k:'업체 심사',c:b.status==='승인됨'?'ok':'fr',t:b.name+' '+b.status,s:b.reject?'사유: '+b.reject:'',h:'#bizpage-'+i});});
+  (state.gearL||[]).forEach(function(g){var d=due(g);if(d&&d.days<45)N.push({k:'정비',c:'fr',t:g.cat+' '+g.brand+' 정비 '+(d.days<0?(-d.days)+'일 지남':d.days+'일 남음'),s:'다음 정비 '+d.date,h:'#gear'});});
+  BE.sb.from('posts').select('id').eq('owner',BE.user.id).then(function(r){var ids=(r.data||[]).map(function(x){return x.id;});if(!ids.length)return {data:[]};return BE.sb.from('comments').select('post_id,author_nick,body,created_at,owner').in('post_id',ids).neq('owner',BE.user.id).order('created_at',{ascending:false}).limit(30);}).then(function(r){(r.data||[]).forEach(function(c){N.push({k:'댓글',t:c.author_nick+': '+c.body,s:c.created_at.slice(0,16).replace('T',' '),h:'#feed'});});state.notes=N;loadNotes.b=0;LS.set('noteSeen',Date.now());if(cur()==='notice')rerender();paintAuth();}).catch(function(){state.notes=N;loadNotes.b=0;if(cur()==='notice')rerender();});}
+
+/* ---------- 업체 페이지 · 운영자 ---------- */
+var _bizpage=V.bizpage;V.bizpage=function(i){var b=state.biz[+i],h=_bizpage(i);if(!b)return h;
+  if(b.status==='반려됨')h=h.replace('<p class="small" style="margin:8px 0 0">심사를 통과하면','<div class="notice" style="margin-top:8px">반려 사유: '+esc(b.reject||'운영자가 사유를 남기지 않았어요')+'</div><button class="btn btn-pri" type="button" data-resubmit="'+b.dbid+'" style="margin-top:8px">고쳐서 다시 심사 받기</button><p class="small" style="margin:8px 0 0">심사를 통과하면');
+  if(b.status==='승인됨')h=h.replace('<span class="tag fr">승인됨</span>','<span class="tag ok">인증 업체 ✓</span>');
+  h=h.replace('<div class="hero" style="background:','<div class="hero" style="height:140px;background:').replace('<span>업체 사진을 올리는 자리</span>','<span>업체 사진 등록은 업체 페이지 편집에서 열릴 예정이에요</span>');
+  return h;};
+var _pull=BE.pull;BE.pull=function(){return _pull().then(function(){if(!BE.on||!BE.user)return;return Promise.all([BE.sb.from('businesses').select('id,reject_reason').eq('owner',BE.user.id).then(function(r){(r.data||[]).forEach(function(x){state.biz.forEach(function(b){if(b.dbid===x.id)b.reject=x.reject_reason;});});}),
+  BE.sb.from('posts').select('id,photo').eq('owner',BE.user.id).order('created_at',{ascending:false}).limit(60).then(function(r){state.myPosts=(r.data||[]).map(function(p){return {url:pubUrl(p.photo)};});}),
+  BE.sb.from('posts').select('id,owner').order('created_at',{ascending:false}).limit(60).then(function(r){var o={};(r.data||[]).forEach(function(x){o[x.id]=x.owner;});(state.pubPosts||[]).forEach(function(p){p.owner=o[p.dbid];});}),
+  BE.sb.from('dive_logs').select('id,source').eq('owner',BE.user.id).then(function(r){var o={};(r.data||[]).forEach(function(x){o[x.id]=x.source;});(state.userLogs||[]).forEach(function(l){var s=o[l.id];l.src=s==='logbook_photo'?'로그북 사진':s==='file'?'파일':s==='manual'?'직접 기록':'';});})]).then(function(){rerender();});});};
+var _admin=V.admin;V.admin=function(){var A=state.adm;if(A.biz&&!A.rep&&!A.repReq){A.repReq=1;BE.sb.from('reports').select('*').order('created_at',{ascending:false}).limit(200).then(function(r){A.rep=r.data||[];if(cur()==='admin')rerender();});}
+  var orig=A.biz;if(orig&&A.q){var q=A.q.toLowerCase();A.biz=orig.filter(function(b){var s=spot(b.spot)||{};return [b.name,b.name_en,b.email,b.owner_name,s.name,b.addr].join(' ').toLowerCase().indexOf(q)>=0;});}
+  var h=_admin();A.biz=orig;if(!orig)return h;
+  var openRep=(A.rep||[]).filter(function(r){return r.status==='open';});
+  h=h.replace('<div class="chips" role="tablist">','<div class="form" style="margin-bottom:10px"><label for="admQ" style="grid-column:1/-1">업체 이름 · 이메일 · 포인트 검색<input id="admQ" value="'+esc(A.q||'')+'" placeholder="예: 모알보알"></label></div><div class="chips" role="tablist"><button class="chip" type="button" data-admtab="rep" aria-pressed="'+(A.tab==='rep')+'">신고 '+openRep.length+'</button>');
+  if(A.tab==='rep'){var body=(A.rep||[]).length?tbl(['받은 날','대상','사유','상태',''],A.rep.map(function(r){return [r.created_at.slice(0,16).replace('T',' '),esc(r.target_type)+' #'+r.target_id,esc(r.reason),r.status==='open'?'<span class="tag fr">처리 전</span>':'<span class="tag ok">'+(r.status==='done'?'처리함':'기각')+'</span>',r.status==='open'?'<button class="chip" type="button" data-repdone="'+r.id+'" data-st="done">처리함</button> <button class="chip" type="button" data-repdone="'+r.id+'" data-st="dismissed">기각</button>'+(r.target_type==='post'||r.target_type==='comment'?' <button class="chip" type="button" data-repdel="'+r.target_type+'" data-tid="'+r.target_id+'" data-rid="'+r.id+'">글 내리기</button>':''):''];})):'<p class="empty">들어온 신고가 없어요.</p>';
+    h=h.replace('<p class="empty">해당하는 업체가 없어요.</p>','<div class="panel">'+body+'</div>');}
+  if(A.tab==='inq')h=h.replace(/<tr><td>([^<]*)<\/td><td><b>([^<]*)<\/b><\/td><td>([^<]*)<\/td><td>([^<]*)<\/td><\/tr>/g,function(m,d,n,t,c){var x=A.inq.filter(function(y){return y.created_at.slice(0,16).replace('T',' ')===d;})[0];if(!x)return m;return '<tr><td>'+d+'</td><td><b>'+n+'</b></td><td>'+t+'</td><td>'+c+' <button class="chip" type="button" data-inqdone="'+x.id+'" aria-pressed="'+(!!x.handled)+'">'+(x.handled?'처리함 ✓':'처리 전')+'</button></td></tr>';});
+  return h;};
+admSetStatus=function(id,st){var reason=null;if(st==='rejected'){reason=prompt('반려 사유를 적어 주세요 (업체에 보여요)','서류가 흐리거나 업체 이름과 달라요');if(reason===null){rerender();return;}}
+  var up={status:st,reviewed_at:new Date().toISOString()};if(st==='rejected')up.reject_reason=reason;if(st==='approved')up.reject_reason=null;
+  return BE.sb.from('businesses').update(up).eq('id',id).select('id,status').then(function(r){if(r.error||!r.data||!r.data.length||r.data[0].status!==st)throw r.error||'no';state.adm.biz.forEach(function(b){if(b.id===id){b.status=st;b.reject_reason=up.reject_reason;}});BE.sb.from('admin_log').insert({action:'biz:'+st,target:'business#'+id,note:reason});toast(st==='approved'?'승인했어요. 이제 리조트 목록에 보여요.':st==='rejected'?'반려했어요. 업체 화면에 사유가 보여요.':'심사 대기로 돌렸어요.');rerender();}).catch(function(){toast('바꾸지 못했어요. 운영자 계정으로 로그인했는지 확인해 주세요.');rerender();});};
+
+/* ---------- 신고 ---------- */
+function report(type,id){if(!BE.on)return toast('실제 서비스에서 신고할 수 있어요.');if(!BE.user)return needLogin('신고하려면 로그인해 주세요');var r=prompt('신고 사유를 적어 주세요','광고 · 욕설 · 부적절한 사진 · 잘못된 정보');if(!r)return;
+  var tt=type==='spot'?'business':type;BE.sb.from('reports').insert({target_type:tt,target_id:+id,reason:(type==='spot'?'[포인트 정보 수정] ':'')+r.slice(0,280)}).then(function(x){toast(x.error?'보내지 못했어요. 잠시 뒤 다시 시도해 주세요.':'접수했어요. 운영자가 확인할게요.');});}
+
+/* ---------- 라우트 후처리 · 이벤트 ---------- */
+var NOTFOUND={};
+var _route=route;route=function(){var h=(location.hash||'#home').slice(1),id=h,dash=h.indexOf('-');if(!V[h]&&dash>0&&V[h.slice(0,dash)])id=h.slice(0,dash);
+  if(h&&!V[id]&&h!=='home'){main.innerHTML='<div class="view"><div class="vh"><div><h1>페이지를 찾을 수 없어요</h1><p>주소가 바뀌었거나 지워진 화면이에요.</p></div><a class="btn btn-pri" href="#home">홈으로</a></div></div>';setTitle('찾을 수 없음');return;}
+  var prev=route._last;route._last=h;_route();
+  var back=route._stack.length>1&&route._stack[route._stack.length-2]===h;if(back){route._stack.pop();var y=route._pos[h];if(y)main.scrollTop=y;}else route._stack.push(h);if(route._stack.length>40)route._stack.shift();
+  after();};
+route._stack=[];route._pos={};
+main.addEventListener('scroll',function(){route._pos[route._last]=main.scrollTop;},{passive:true});
+var _rerender=rerender;rerender=function(){var y=main.scrollTop;_route();after();main.scrollTop=y;};
+function after(){var c=cur();if(FORMS[c])setTitle(FORMS[c].title);if(c==='map')mapAfter();if(c==='spot')spotAfter();if(c==='home')seaToday(spot(state.sel));bindUp();}
+function bindUp(){
+  main.querySelectorAll('[data-pwt]').forEach(function(b){b.onclick=function(){var i=b.parentNode.querySelector('input');var s=i.type==='password';i.type=s?'text':'password';b.textContent=s?'숨기기':'보기';b.setAttribute('aria-label',s?'비밀번호 숨기기':'비밀번호 보기');};});
+  var pr=main.querySelector('[data-pwr]');if(pr){var pi=pr.closest('label').querySelector('input');pi.addEventListener('input',function(){var r=PWRULE(pi.value),s=pr.children;s[0].className=r.len?'on':'';s[1].className=r.let?'on':'';s[2].className=r.num?'on':'';});}
+  var np=document.getElementById('np1');if(np){var nr=document.getElementById('npRules');np.addEventListener('input',function(){var r=PWRULE(np.value),s=nr.children;s[0].className=r.len?'on':'';s[1].className=r.let?'on':'';s[2].className=r.num?'on':'';});}
+  var hp=main.querySelector('[data-hp]');if(hp)hp.addEventListener('input',function(){var f=hp.closest('form');fstate(f.dataset.form).v._hp=hp.value;});
+  var ca=document.getElementById('ckAll');if(ca)ca.addEventListener('change',function(){var st=fstate('signup');FORMS.signup.steps[0].f.forEach(function(f){st.v[f.k]=ca.checked;});rerender();});
+  main.querySelectorAll('input[data-f="nick"]').forEach(function(i){i.addEventListener('blur',function(){var v=i.value.trim();if(!BE.on||v.length<2)return;BE.sb.rpc('nick_taken',{n:v}).then(function(r){var st=fstate('signup');if(r.data){state.nickTaken=v;st.e.nick='이미 쓰고 있는 닉네임이에요';}else{if(state.nickTaken===v)state.nickTaken=null;if(st.e.nick==='이미 쓰고 있는 닉네임이에요')delete st.e.nick;}var l=i.closest('label'),e=l.querySelector('.err');if(r.data&&!e){l.insertAdjacentHTML('beforeend','<span class="err" role="alert">이미 쓰고 있는 닉네임이에요</span>');}else if(!r.data&&e)e.remove();});});});
+  main.querySelectorAll('input[inputmode="tel"]').forEach(function(i){i.addEventListener('blur',function(){var d=i.value.replace(/\D/g,'');if(/^0\d{8,10}$/.test(d)&&!/[^\d\- ]/.test(i.value)){i.value=d.length===11?d.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3'):d.length===10?d.replace(/^(02)(\d{4})(\d{4})$/,'$1-$2-$3').replace(/^(\d{3})(\d{3})(\d{4})$/,'$1-$2-$3'):d.replace(/^(02)(\d{3})(\d{4})$/,'$1-$2-$3');i.dispatchEvent(new Event('change'));}});});
+  main.querySelectorAll('input[type=file][data-ff]').forEach(function(i){i.addEventListener('change',function(e){var f=i.files[0];if(f&&f.size>10485760){e.stopImmediatePropagation();i.value='';toast('10MB 이하 파일만 올릴 수 있어요.');}},true);});
+  var rf=document.getElementById('resetForm');if(rf)rf.onsubmit=function(e){e.preventDefault();var em=document.getElementById('rsEmail').value.trim(),msg=document.getElementById('rsMsg');if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){msg.textContent='이메일 형식을 확인해 주세요.';return;}if(!BE.on){msg.textContent='실제 서비스에서 동작해요.';return;}rf.querySelector('button').disabled=true;BE.sb.auth.resetPasswordForEmail(em,{redirectTo:location.origin+'/#newpw'}).then(function(r){rf.querySelector('button').disabled=false;msg.textContent=r.error?(/rate/i.test(r.error.message)?'요청이 많아 잠시 뒤 다시 보내 주세요.':'보내지 못했어요: '+r.error.message):'가입된 주소라면 몇 분 안에 메일이 도착해요. 스팸함도 확인해 주세요.';});};
+  ['newpwForm','acPw'].forEach(function(fid){var f=document.getElementById(fid);if(f)f.onsubmit=function(e){e.preventDefault();var a=document.getElementById('np1').value,b=document.getElementById('np2').value,msg=document.getElementById('npMsg'),r=PWRULE(a);if(!(r.len&&r.let&&r.num)){msg.textContent='8자 이상, 영문과 숫자를 함께 넣어 주세요.';return;}if(a!==b){msg.textContent='두 비밀번호가 서로 달라요.';return;}BE.sb.auth.updateUser({password:a}).then(function(x){if(x.error){msg.textContent=/different|same/i.test(x.error.message)?'지금 비밀번호와 다른 비밀번호로 정해 주세요.':'바꾸지 못했어요: '+x.error.message;return;}toast('비밀번호를 바꿨어요.');location.hash='#profile';});};});
+  var ae=document.getElementById('acEmail');if(ae)ae.onsubmit=function(e){e.preventDefault();var v=document.getElementById('acE').value.trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v))return toast('이메일 형식을 확인해 주세요.');BE.sb.auth.updateUser({email:v},{emailRedirectTo:location.origin+'/#account'}).then(function(x){toast(x.error?'바꾸지 못했어요: '+x.error.message:'확인 메일을 보냈어요. 두 메일의 링크를 모두 눌러 주세요.');});};
+  var dl=document.getElementById('dlData');if(dl)dl.onclick=function(){var sb=BE.sb;Promise.all(['profiles','dive_logs','gear','posts','comments','market_items','meetups','businesses'].map(function(t){return sb.from(t).select('*').eq(t==='profiles'?'id':'owner',BE.user.id).then(function(r){return [t,r.data||[]];});})).then(function(a){var o={email:BE.user.email,exported_at:new Date().toISOString()};a.forEach(function(x){o[x[0]]=x[1];});var bl=new Blob([JSON.stringify(o,null,2)],{type:'application/json'}),u=URL.createObjectURL(bl),k=document.createElement('a');k.href=u;k.download='divedeepocean-my-data.json';k.click();setTimeout(function(){URL.revokeObjectURL(u);},2000);});};
+  var da=document.getElementById('delAcc');if(da)da.onclick=function(){if(document.getElementById('delTxt').value.trim()!=='탈퇴'){toast('확인란에 탈퇴라고 적어 주세요.');return;}if(!confirm('정말 탈퇴할까요? 되돌릴 수 없어요.'))return;da.disabled=true;BE.sb.rpc('delete_my_account').then(function(r){if(r.error){da.disabled=false;toast('탈퇴하지 못했어요: '+r.error.message);return;}BE.sb.auth.signOut().then(function(){state.me=null;toast('탈퇴했어요. 그동안 고마웠어요.');location.hash='#home';});});};
+  var lo=document.getElementById('logoutBtn');if(lo){var n=lo.cloneNode(true);lo.parentNode.replaceChild(n,lo);n.onclick=doLogout;}
+  var t2=document.getElementById('themeBtn2');if(t2)t2.onclick=function(){document.getElementById('themeBtn').click();};
+  var ix=document.getElementById('introX');if(ix)ix.onclick=function(){LS.set('introDone',true);rerender();};
+  var hs=document.getElementById('homeSearch');if(hs)hs.onsubmit=function(e){e.preventDefault();var gq=document.getElementById('gq');gq.value=document.getElementById('hq').value;gq.dispatchEvent(new Event('input'));document.body.classList.add('msearch');gq.focus();};
+  main.querySelectorAll('[data-lregion]').forEach(function(b){b.onclick=function(){state.region=b.dataset.lregion;state.lv=null;rerender();};});
+  var ml=document.getElementById('myLoc');if(ml)ml.onclick=function(){if(!navigator.geolocation)return toast('이 브라우저는 위치를 지원하지 않아요.');ml.textContent='찾는 중…';navigator.geolocation.getCurrentPosition(function(p){state.myPos={lat:p.coords.latitude,lon:p.coords.longitude};state.lv={c:[state.myPos.lat,state.myPos.lon],z:8};state.region='전체';rerender();},function(){ml.textContent='내 위치';toast('위치를 가져오지 못했어요. 브라우저 권한을 확인해 주세요.');},{timeout:10000,maximumAge:600000});};
+  var ot=document.getElementById('osmToggle');if(ot)ot.onchange=function(){state.osm=ot.checked;rerender();};
+  var ls=document.getElementById('lvlSel');if(ls)ls.onchange=function(){state.lvl=ls.value;rerender();};
+  var ms=document.getElementById('monSel');if(ms)ms.onchange=function(){state.mon=+ms.value;rerender();};
+  main.querySelectorAll('[data-share]').forEach(function(b){b.onclick=function(){var s=spot(b.dataset.share);shareLink(s.name,'#spot-'+s.id);};});
+  main.querySelectorAll('[data-pshare]').forEach(function(b){b.onclick=function(){shareLink('피드','#spot-'+b.dataset.pshare);};});
+  main.querySelectorAll('[data-lifeq]').forEach(function(a){a.onclick=function(){state.lq=a.dataset.lifeq.replace(/\(.*?\)| 떼|·.*$/g,'').trim();state.lpage=0;};});
+  main.querySelectorAll('[data-seen]').forEach(function(b){b.onclick=function(){var i=b.dataset.seen;state.seen[i]=!state.seen[i];LS.set('seen',state.seen);rerender();};});
+  var rk=document.getElementById('rkoBtn');if(rk)rk.onclick=function(){state.rko=!state.rko;rerender();};
+  main.querySelectorAll('[data-compose]').forEach(function(b){b.onclick=function(){if(BE.on&&!BE.user){needLogin('사진을 올리려면 로그인해 주세요');return;}state.compose=true;rerender();main.scrollTop=0;};});
+  var cx=document.getElementById('composeX');if(cx)cx.onclick=function(){state.compose=false;state.draft=null;rerender();};
+  var pf=document.getElementById('postForm');if(pf){pf.addEventListener('submit',function(e){var t=document.getElementById('postText');if(t&&BADW.test(t.value)){e.stopImmediatePropagation();e.preventDefault();document.getElementById('postMsg').textContent='커뮤니티 규칙에 맞지 않는 표현이 있어요. 고쳐서 올려 주세요.';}},true);pf.addEventListener('submit',function(){setTimeout(function(){state.compose=false;},0);});}
+  main.querySelectorAll('[data-fsort]').forEach(function(b){b.onclick=function(){state.fsort=b.dataset.fsort;rerender();};});
+  main.querySelectorAll('[data-hide]').forEach(function(b){b.onclick=function(){var h=LS.get('hidePosts',{});h[b.dataset.hide]=1;LS.set('hidePosts',h);toast('이 게시물을 숨겼어요.');rerender();};});
+  main.querySelectorAll('[data-report]').forEach(function(b){b.onclick=function(){report(b.dataset.report,b.dataset.rid);};});
+  main.querySelectorAll('[data-pdel]').forEach(function(b){b.onclick=function(){if(!confirm('이 게시물을 지울까요?'))return;BE.sb.from('posts').delete().eq('id',+b.dataset.pdel).then(function(r){toast(r.error?'지우지 못했어요.':'지웠어요.');BE.pull();});};});
+  main.querySelectorAll('[data-pedit]').forEach(function(b){b.onclick=function(){var p=(state.pubPosts||[]).filter(function(x){return x.dbid==b.dataset.pedit;})[0];var t=prompt('내용 고치기',p?p.text:'');if(t===null)return;if(BADW.test(t))return toast('커뮤니티 규칙에 맞지 않는 표현이 있어요.');BE.sb.from('posts').update({body:t.slice(0,500)}).eq('id',+b.dataset.pedit).then(function(r){toast(r.error?'고치지 못했어요.':'고쳤어요.');BE.pull();});};});
+  main.querySelectorAll('[data-cmt]').forEach(function(b){b.onclick=function(){var id=b.dataset.cmt;state.cmOpen[id]=!state.cmOpen[id];rerender();};});
+  main.querySelectorAll('[data-creply]').forEach(function(b){b.onclick=function(){state.replyTo={pid:b.dataset.pid,cid:+b.dataset.creply};var i=main.querySelector('[data-cform="'+b.dataset.pid+'"] input');if(i){i.placeholder='답글 쓰기';i.focus();}};});
+  main.querySelectorAll('[data-cdel]').forEach(function(b){b.onclick=function(){BE.sb.from('comments').delete().eq('id',+b.dataset.cdel).then(function(){delete state.cm[b.dataset.pid];rerender();});};});
+  main.querySelectorAll('[data-cform]').forEach(function(f){f.onsubmit=function(e){e.preventDefault();if(!BE.user)return needLogin('댓글은 로그인 후에 쓸 수 있어요');var i=f.querySelector('input'),v=i.value.trim(),pid=f.dataset.cform;if(!v)return;if(BADW.test(v))return toast('커뮤니티 규칙에 맞지 않는 표현이 있어요.');var row={post_id:+pid,author_nick:(state.me&&state.me.nick)||'다이버',body:v};if(state.replyTo&&state.replyTo.pid==pid)row.parent_id=state.replyTo.cid;f.querySelector('button').disabled=true;BE.sb.from('comments').insert(row).then(function(r){if(r.error){toast('등록하지 못했어요.');f.querySelector('button').disabled=false;return;}state.replyTo=null;delete state.cm[pid];rerender();});};});
+  var ql=document.getElementById('quickLog');if(ql)ql.onsubmit=function(e){e.preventDefault();var o={date:document.getElementById('qd').value,site:document.getElementById('qs').value.trim(),depth:document.getElementById('qp').value,time:document.getElementById('qt').value};if(!o.date||!o.site)return toast('날짜와 포인트를 적어 주세요.');
+    if(BE.on){if(!BE.user)return needLogin('로그를 저장하려면 로그인해 주세요');ql.querySelector('button').disabled=true;BE.sb.from('dive_logs').insert({dive_date:o.date,site:o.site,max_depth:+o.depth||null,minutes:+o.time||null,source:'manual'}).then(function(r){if(r.error){toast('저장하지 못했어요.');ql.querySelector('button').disabled=false;return;}toast('기록했어요.');BE.pull();});}else{state.userLogs.unshift(o);persist();rerender();}};
+  var ui=document.getElementById('uddfIn');if(ui)ui.onchange=function(){var msg=document.getElementById('uddfMsg'),all=[],n=ui.files.length;if(!n)return;msg.textContent='읽는 중…';[].forEach.call(ui.files,function(f){var r=new FileReader();r.onload=function(){all=all.concat(parseDiveXml(r.result,f.name));if(--n===0)done();};r.onerror=function(){if(--n===0)done();};r.readAsText(f);});
+    function done(){if(!all.length){msg.textContent='읽을 수 있는 다이브를 찾지 못했어요. UDDF나 Subsurface XML 파일인지 확인해 주세요.';return;}
+      var have={};(state.userLogs||[]).forEach(function(l){have[(l.date||'')+'|'+(+l.depth||0)]=1;});var neu=all.filter(function(o){return !have[(o.date||'')+'|'+(+o.depth||0)];});
+      if(!neu.length){msg.textContent=all.length+'개를 읽었지만 모두 이미 있는 로그예요.';return;}
+      if(BE.on){if(!BE.user){needLogin('로그를 저장하려면 로그인해 주세요');return;}BE.sb.from('dive_logs').insert(neu.map(function(o){return {dive_date:o.date||null,site:o.site||'파일에서 가져옴',max_depth:o.depth||null,minutes:o.time||null,source:'file'};})).then(function(r){msg.textContent=r.error?'저장하지 못했어요: '+r.error.message:neu.length+'개 다이브를 가져왔어요'+(all.length>neu.length?' (겹치는 '+(all.length-neu.length)+'개 제외)':'')+'.';BE.pull();});}
+      else{state.userLogs=neu.concat(state.userLogs);persist();msg.textContent=neu.length+'개를 이 기기에 넣었어요.';rerender();}}};
+  main.querySelectorAll('[data-ldel]').forEach(function(b){b.onclick=function(){if(!confirm('이 로그를 지울까요?'))return;BE.sb.from('dive_logs').delete().eq('id',+b.dataset.ldel).then(function(){toast('지웠어요.');BE.pull();});};});
+  var cb=document.getElementById('csvBtn');if(cb)cb.onclick=function(){var rows=[['날짜','포인트','최대수심(m)','시간(분)','출처']].concat((state.userLogs||[]).map(function(l){return [l.date||'',l.site||'',l.depth||'',l.time||'',l.src||''];}));var csv='﻿'+rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');var u=URL.createObjectURL(new Blob([csv],{type:'text/csv'})),a=document.createElement('a');a.href=u;a.download='dive-logs.csv';a.click();setTimeout(function(){URL.revokeObjectURL(u);},2000);};
+  var rb=document.getElementById('resendBtn');if(rb)rb.onclick=function(){rb.disabled=true;BE.sb.auth.resend({type:'signup',email:state.pendingEmail,options:{emailRedirectTo:location.origin+'/'}}).then(function(r){document.getElementById('resendMsg').textContent=r.error?(/rate|seconds/i.test(r.error.message)?'잠시 뒤 다시 보낼 수 있어요.':'보내지 못했어요: '+r.error.message):'다시 보냈어요.';setTimeout(function(){rb.disabled=false;},30000);});};
+  main.querySelectorAll('[data-mcat]').forEach(function(b){b.onclick=function(){state.mcat=b.dataset.mcat;rerender();};});
+  main.querySelectorAll('[data-resubmit]').forEach(function(b){b.onclick=function(){b.disabled=true;BE.sb.from('businesses').update({status:'pending'}).eq('id',+b.dataset.resubmit).then(function(r){toast(r.error?'보내지 못했어요.':'다시 심사를 신청했어요.');BE.pull();});};});
+  var aq=document.getElementById('admQ');if(aq)aq.oninput=function(){clearTimeout(aq._t);aq._t=setTimeout(function(){state.adm.q=aq.value.trim();rerender();var n=document.getElementById('admQ');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length);}},300);};
+  main.querySelectorAll('[data-inqdone]').forEach(function(b){b.onclick=function(){var x=state.adm.inq.filter(function(y){return y.id==b.dataset.inqdone;})[0];BE.sb.from('partner_inquiries').update({handled:!x.handled}).eq('id',x.id).then(function(r){if(!r.error){x.handled=!x.handled;rerender();}});};});
+  main.querySelectorAll('[data-repdone]').forEach(function(b){b.onclick=function(){BE.sb.from('reports').update({status:b.dataset.st}).eq('id',+b.dataset.repdone).then(function(){BE.sb.from('admin_log').insert({action:'report:'+b.dataset.st,target:'report#'+b.dataset.repdone});state.adm.rep=null;state.adm.repReq=0;rerender();});};});
+  main.querySelectorAll('[data-repdel]').forEach(function(b){b.onclick=function(){if(!confirm('이 글을 내릴까요?'))return;var t=b.dataset.repdel==='post'?'posts':'comments';BE.sb.from(t).delete().eq('id',+b.dataset.tid).then(function(r){if(r.error)return toast('내리지 못했어요. 게시물은 작성자만 지울 수 있게 되어 있어 운영자 삭제 권한을 열어야 해요.');return BE.sb.from('reports').update({status:'done'}).eq('id',+b.dataset.rid).then(function(){BE.sb.from('admin_log').insert({action:'takedown',target:b.dataset.repdel+'#'+b.dataset.tid});state.adm.rep=null;state.adm.repReq=0;toast('내렸어요.');rerender();});});};});
+}
+function doLogout(){if(!confirm('로그아웃할까요?'))return;var done=function(){state.me=null;state.notes=null;paintAuth();toast('로그아웃했어요.');location.hash='#home';};if(BE.on)BE.sb.auth.signOut().then(done);else{LS.set('me',null);done();}}
+
+/* ---------- 헤더 ---------- */
+paintAuth=function(){var el=document.getElementById('authAct');if(!el)return;var inn=BE.on?!!BE.user:!!state.me;
+  var seen=LS.get('noteSeen',0),dot=state.notes&&state.notes.length&&!loadNotes.b&&false;
+  el.innerHTML=(inn?(BE.on?'<a class="iconbtn bell" href="#notice" aria-label="알림"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/></svg>'+(dot?'<i></i>':'')+'</a>':'')+'<a class="btn btn-line" href="#profile">내 정보</a><button class="btn btn-pri" type="button" id="hdrLogout">로그아웃</button>':'<a class="btn btn-line" href="#login">로그인</a><a class="btn btn-pri" href="#signup">회원가입</a>');
+  var b=document.getElementById('hdrLogout');if(b)b.onclick=doLogout;};
+(function(){var ta=document.querySelector('.topact');if(!ta)return;var sb=document.createElement('button');sb.className='iconbtn msbtn';sb.type='button';sb.setAttribute('aria-label','검색');sb.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z"/><path d="M21 21l-5-5"/></svg>';ta.insertBefore(sb,ta.firstChild);sb.onclick=function(){document.body.classList.toggle('msearch');if(document.body.classList.contains('msearch'))document.getElementById('gq').focus();};
+  document.getElementById('gres').addEventListener('click',function(){document.body.classList.remove('msearch');});
+  var th=LS.get('theme',null);if(th)document.documentElement.dataset.theme=th;document.getElementById('themeBtn').addEventListener('click',function(){LS.set('theme',document.documentElement.dataset.theme);});
+  var tb=document.getElementById('themeBtn');tb.setAttribute('title','밝게 · 어둡게');})();
+/* 검색 색인에 생물 특징 추가 */
+LIFE.forEach(function(l,i){INDEX.push({t:l[0],s:LEN[i]+' · '+l[1],h:'#life',k:l[0]+LEN[i]+(LABOUT[i]||'')});});
+/* 서비스워커 새 버전 */
+if('serviceWorker' in navigator){navigator.serviceWorker.getRegistration().then(function(r){if(!r)return;r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller){var t=document.getElementById('toast');toast('새 버전이 있어요. 화면을 눌러 새로고침하면 적용돼요.');t.style.cursor='pointer';t.onclick=function(){location.reload();};}});});});}
+/* iOS 설치 안내 */
+var _prof3=V.profile;V.profile=function(){var h=_prof3();if(/iphone|ipad/i.test(navigator.userAgent)&&!navigator.standalone)h=h.replace('<b>홈 화면에 추가</b>를 누르면','<b>공유 버튼 → 홈 화면에 추가</b>를 누르면');return h;};
+
+/*UP-END*/
 window.addEventListener('hashchange',route);
 route();
 })();
