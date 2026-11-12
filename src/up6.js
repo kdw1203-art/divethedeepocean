@@ -29,3 +29,10 @@
 var _after6=after;after=function(){_after6();skel();};
 function skel(){document.querySelectorAll('p.empty, .small').forEach(function(e){if(/^\s*(불러오는 중|목록을 불러오는 중|센터 목록을 불러오는 중)/.test(e.textContent))e.classList.add('skel');});}
 var _rer6=rerender;rerender=function(){_rer6();skel();};
+/* 221·233·240 첫 화면 먼저: 홈 지도는 페이지가 그려진 뒤 한가할 때 띄워요 */
+var _hmi6=homeMapInit,_hmLoaded=document.readyState==='complete';window.addEventListener('load',function(){_hmLoaded=true;});
+homeMapInit=function(){var el=document.getElementById('homemap');if(!el)return;if(homeMapInit.first){return _hmi6();}homeMapInit.first=true;
+  var go=function(){if(document.body.contains(el))_hmi6();};var idle=function(){(window.requestIdleCallback||function(f){setTimeout(f,300);})(go,{timeout:2500});};
+  if(_hmLoaded)idle();else window.addEventListener('load',idle,{once:true});};
+/* 234 글꼴: 화면을 막지 않게 나중에 붙여요 (display=swap) */
+(function(){var h='https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap';if(!document.querySelector('link[href="'+h+'"][rel="stylesheet"]')){var l=document.createElement('link');l.rel='stylesheet';l.href=h;document.head.appendChild(l);}})();
