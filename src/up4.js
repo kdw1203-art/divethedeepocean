@@ -124,7 +124,7 @@ var _notice4=V.notice;V.notice=function(){var h=_notice4();if(!BE.user)return h;
   var G=(state.gearL||[]).map(function(x){return {g:x,d:due(x)};}).filter(function(x){return x.d&&x.d.days<=60;}).sort(function(a,b){return a.d.days-b.d.days;});
   var cr=LS.get('certRenew',''),cd=cr?Math.round((new Date(cr)-new Date())/864e5):null;
   var rows=G.map(function(x){return item({href:'#gear',tags:[[x.d.days<0?'지남':'정비',x.d.days<0?'fr':'']],t:esc(x.g.cat)+' '+esc(x.g.brand||''),s:x.d.days<0?(-x.d.days)+'일 지났어요':x.d.days+'일 남았어요'});}).join('')+(cd!=null&&cd<=90?item({tags:[[cd<0?'지남':'갱신',cd<0?'fr':'']],t:'자격·응급처치 갱신',s:cd<0?(-cd)+'일 지났어요':cd+'일 남았어요'}):'');
-  var p='<div class="panel"><h2>다가오는 정비 · 갱신</h2>'+(rows?'<div class="list">'+rows+'</div>':'<p class="empty">60일 안에 챙길 정비가 없어요.</p>')+'<div class="form" style="margin-top:10px;grid-template-columns:1fr auto;align-items:end"><label for="certR">응급처치·자격 갱신일 (예: EFR 2년)<input id="certR" type="date" value="'+esc(cr)+'"></label><button class="btn btn-line" type="button" id="certSave">저장</button></div><p class="small" style="margin:6px 0 0">정비일은 장비 등록일과 종류별 권장 주기로 계산해요. 갱신일은 이 기기에만 저장돼요.</p></div>';
+  var p='<div class="panel"><h2>다가오는 정비 · 갱신</h2>'+(rows?'<div class="list">'+rows+'</div>':'<p class="empty">60일 안에 챙길 정비가 없어요.</p>')+'<div class="form" style="margin-top:10px;grid-template-columns:minmax(0,1fr) auto;align-items:end"><label for="certR">응급처치·자격 갱신일 (예: EFR 2년)<input id="certR" type="date" value="'+esc(cr)+'"></label><button class="btn btn-line" type="button" id="certSave">저장</button></div><p class="small" style="margin:6px 0 0">정비일은 장비 등록일과 종류별 권장 주기로 계산해요. 갱신일은 이 기기에만 저장돼요.</p></div>';
   var k=h.indexOf('<div class="panel">');return k<0?h+p:h.slice(0,k)+p+h.slice(k);};
 
 /* 이벤트 */
