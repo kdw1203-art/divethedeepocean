@@ -94,3 +94,21 @@ document.addEventListener('click',function(e){var t=e.target.closest('[data-mf],
   state.mf[t.dataset.mf]=t.dataset.v;LS.set('mapF',state.mf);rerender();mapHashSync();});
 var _after8b=after;after=function(){_after8b();if(cur()==='map'){setTimeout(mapHashSync,50);var el=document.getElementById('lmap');if(el&&el._m&&!el._hs){el._hs=1;el._m.on('moveend',function(){setTimeout(mapHashSync,30);});}}};
 document.addEventListener('change',function(e){if(cur()==='map')setTimeout(mapHashSync,60);});
+
+/* 156 입력 예시를 실제 예로 */
+(function(){var PH={biz:{name:'예: 블루코너 다이브 리조트',addr:'예: Brgy. Tabinay, Puerto Galera, Oriental Mindoro',owner:'예: 김바다',email:'예: hello@bluecorner.com'},gearreg:{model:'예: MK25 EVO / S620Ti',serial:'예: 2304A1187 (호흡기 1단계에 각인)'},sell:{title:'예: 스쿠바프로 MK25/S620Ti 호흡기 세트 (2023 오버홀)',brand:'예: Scubapro MK25 EVO',price:'예: 650000'},meet:{title:'예: 12월 첫 주 문섬 펀다이빙 (보트 2회)'}};
+  Object.keys(PH).forEach(function(id){var F=FORMS[id];if(!F)return;F.steps.forEach(function(s){s.f.forEach(function(f){if(PH[id][f.k]&&!f.ph)f.ph=PH[id][f.k];});});});})();
+
+/* 152 제출 뒤 '다음 할 일' 안내 · 157 완료 기록 */
+state.justDone=null;
+var NEXT={biz:{t:'업체 등록을 접수했어요',s:['운영자가 서류를 보고 보통 1~3일 안에 심사해요.','결과는 알림과 휴대폰 알림으로 알려드려요. 알림 화면에서 \'이 기기로 알림 받기\'를 켜 두세요.','기다리는 동안 업체 사진, 가격표, 운영 시간을 채워 두면 승인 직후 바로 손님을 받을 수 있어요.'],a:[['#notice','알림 켜기']]},
+  sell:{t:'판매글을 올렸어요',s:['장비 화면과 검색에 바로 보여요.','사고 싶은 사람이 메시지를 보내면 알림이 와요.','팔리면 판매글에서 \'판매 완료\'로 바꿔 주세요.'],a:[['#inbox','메시지함']]},
+  meet:{t:'모임을 만들었어요',s:['모임 화면에 바로 공개돼요.','참가자가 생기면 아래 참가자 채팅에서 집결 시간과 장비를 정해요.','링크를 친구에게 보내 함께 모아 보세요.'],a:[['#community','모임 목록']]},
+  gearreg:{t:'장비를 등록했어요',s:['정비 시기가 가까워지면 알림 화면에 표시돼요.','판매할 때는 정비 이력이 있으면 더 빨리 팔려요.'],a:[['#notice','알림 보기']]},
+  signup:{t:'가입을 마쳤어요',s:['처음 할 일: 다녀온 포인트에 \'다녀왔어요\'를 누르면 홈 지도에 표시돼요.','로그 화면에서 첫 다이브를 기록해 보세요.','알림 화면에서 휴대폰 알림을 켜 두면 메시지를 놓치지 않아요.'],a:[['#map','포인트 찾기'],['#log','첫 로그 쓰기']]}};
+if(BE.submit){var _sub8=BE.submit;BE.submit=function(id){var r=_sub8.apply(this,arguments);if(r&&r.then)return r.then(function(x){state.justDone={f:id,t:Date.now()};fev(id,'ok');return x;},function(e){fev(id,'fail');throw e;});state.justDone={f:id,t:Date.now()};return r;};}
+Object.keys(FORMS).forEach(function(k){var d=FORMS[k].done;if(typeof d==='function')FORMS[k].done=function(){state.justDone={f:k,t:Date.now()};return d.apply(this,arguments);};});
+var _after8c=after;after=function(){_after8c();var j=state.justDone;if(!j||Date.now()-j.t>120000||cur()===j.f)return;var n=NEXT[j.f];if(!n)return;var v=document.querySelector('#main .view, main .view');if(!v||v.querySelector('#nextBox'))return;
+  var box=document.createElement('div');box.className='panel';box.id='nextBox';box.style.border='2px solid var(--ok)';box.innerHTML='<h2>✓ '+esc(n.t)+' <button class="chip" type="button" id="nextX">닫기</button></h2><ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px">'+n.s.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ol><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">'+n.a.map(function(a){return '<a class="btn btn-line" href="'+a[0]+'">'+esc(a[1])+'</a>';}).join('')+'</div>';
+  var vh=v.querySelector('.vh');if(vh&&vh.nextSibling)v.insertBefore(box,vh.nextSibling);else v.prepend(box);};
+document.addEventListener('click',function(e){if(e.target.id==='nextX'){state.justDone=null;var b=document.getElementById('nextBox');if(b)b.remove();}});
