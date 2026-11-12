@@ -40,3 +40,14 @@ var _notice7=V.notice;V.notice=function(){var h=_notice7();if(!BE.user)return h;
   var p='<div class="panel"><h2>휴대폰 알림</h2><p class="small" style="margin:0 0 10px">새 메시지, 모임 채팅, 예약 요청·확정 소식을 이 기기로 받아요.'+(/iPhone|iPad/.test(navigator.userAgent)?' 아이폰은 Safari 공유 → \'홈 화면에 추가\' 뒤 그 앱에서 켜 주세요.':'')+'</p><button class="btn '+(on?'btn-line':'btn-pri')+'" type="button" id="'+(on?'pushOff':'pushOn')+'">'+(on?'이 기기 알림 끄기':'이 기기로 알림 받기')+'</button></div>';
   var k=h.indexOf('<div class="panel">');return k<0?h+p:h.slice(0,k)+p+h.slice(k);};
 document.addEventListener('click',function(e){var t=e.target.closest('#pushOn,#pushOff');if(!t)return;if(t.id==='pushOn')pushOn(t);else pushOff(t);});
+
+/* 201·285 리조트 확충: 포인트 주변 지도 데이터(OSM) 리조트·센터 · 219 입점 업체 평점 */
+state.rsp=state.rsp||'';state.bavg=null;
+function bavgLoad(){if(state.bavg||!BE.on||bavgLoad.b)return;bavgLoad.b=1;BE.sb.from('biz_reviews').select('business_id,rating').limit(5000).then(function(r){var o={};(r.data||[]).forEach(function(x){var a=o[x.business_id]||(o[x.business_id]={s:0,n:0});a.s+=x.rating;a.n++;});state.bavg=o;if(cur()==='resorts')rerender();});}
+var _resorts7=V.resorts;V.resorts=function(){var h=_resorts7();bavgLoad();
+  if(state.bavg)Object.keys(state.bavg).forEach(function(id){var a=state.bavg[id];h=h.replace('href="#biz-d'+id+'"','href="#biz-d'+id+'" data-avg="1"').replace(new RegExp('(href="#biz-d'+id+'" data-avg="1"[\\s\\S]*?<b>)'),'$1★ '+(a.s/a.n).toFixed(1)+' ('+a.n+') · ');});
+  var s=spot(state.rsp),L=[];if(s){if(!DB.sites){fetch('/assets/sites.json').then(function(r){return r.json();}).then(function(d){DB.sites=d;if(cur()==='resorts')rerender();});}else L=nearSites(s,60).filter(function(x){return x.t!==1;}).slice(0,40);}
+  var opts='<option value="">포인트 고르기</option>'+SPOTS.map(function(x){return '<option value="'+x.id+'"'+(x.id===state.rsp?' selected':'')+'>'+esc(x.country+' · '+x.name)+'</option>';}).join('');
+  var p='<div class="panel"><h2>이 바다 근처 리조트 · 다이빙 센터 전체</h2><div class="form"><label for="rspSel">포인트<select id="rspSel">'+opts+'</select></label></div>'+(s?(DB.sites?(L.length?'<div class="list" style="margin-top:10px">'+L.map(function(x){return item({tags:[[x.t===2?'리조트 · 숙소':'센터 · 샵',x.t===2?'fr':'gray']],t:esc(x.n),s:Math.round(x.d)+'km',r:'<a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(x.n+' '+s.country)+'" target="_blank" rel="noopener">지도</a>'});}).join('')+'</div>':'<p class="empty">60km 안에 등록된 곳이 없어요.</p>'):'<p class="empty">불러오는 중이에요.</p>'):'<p class="small" style="margin:8px 0 0">전 세계 다이빙 센터·리조트 4,000여 곳(OpenStreetMap)을 포인트별로 보여줘요. 입점하지 않은 곳은 직접 연락해야 해요.</p>')+'</div>';
+  var k=h.lastIndexOf('<div class="foot">');return k<0?h+p:h.slice(0,k)+p+h.slice(k);};
+document.addEventListener('change',function(e){if(e.target.id==='rspSel'){state.rsp=e.target.value;rerender();}});
