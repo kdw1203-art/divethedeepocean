@@ -210,7 +210,7 @@ function initMap(el,opt){loadLeaflet().then(function(){if(!document.body.contain
   if(opt.view)m.setView(opt.view.c,opt.view.z);else if(opt.bounds)m.fitBounds(opt.bounds);else m.setView([15,140],3);
   if(opt.sites&&DB.sites){var cl=L.markerClusterGroup({chunkedLoading:true,maxClusterRadius:50,showCoverageOnHover:false});var C=['#475467','#0A5C8A','#B4530A'],N=['다이빙 센터·샵','다이빙 포인트','리조트·숙소'];
     DB.sites.forEach(function(x){if(opt.near&&km(opt.near.lat,opt.near.lon,x[0],x[1])>opt.near.r)return;cl.addLayer(L.circleMarker([x[0],x[1]],{radius:5,color:'#fff',weight:1,fillColor:C[x[3]]||C[0],fillOpacity:.9}).bindPopup('<b>'+esc(x[2])+'</b><br><span style="font-size:12px">'+N[x[3]]+(x[4]?' · '+esc(x[4]):'')+'</span><br><a href="https://www.google.com/maps/search/?api=1&query='+x[0]+','+x[1]+'" target="_blank" rel="noopener">길찾기</a>'));});m.addLayer(cl);}
-  (opt.spots||[]).forEach(function(s){var on=s.id===state.sel;L.circleMarker([s.lat,s.lon],{radius:on?11:8,color:'#fff',weight:2,fillColor:s.t==='free'?'#F6A04D':'#0A5C8A',fillOpacity:1}).addTo(m).bindPopup(spotPopup(s)).on('click',function(){state.sel=s.id;});});
+  (opt.spots||[]).forEach(function(s){var on=s.id===state.sel;L.circleMarker([s.lat,s.lon],{radius:on?11:8,color:'#fff',weight:2,dashArray:s.t==='free'?'3 2':null,fillColor:s.t==='free'?'#F6A04D':'#0A5C8A',fillOpacity:1}).addTo(m).bindPopup(spotPopup(s)).on('click',function(){state.sel=s.id;});});
   if(opt.save)m.on('moveend',function(){var c=m.getCenter();state.lv={c:[c.lat,c.lng],z:m.getZoom()};LS.set('mapView',state.lv);});
   if(opt.me&&state.myPos)L.circleMarker([state.myPos.lat,state.myPos.lon],{radius:7,color:'#fff',weight:2,fillColor:'#D92D20',fillOpacity:1}).addTo(m).bindPopup('내 위치');
   setTimeout(function(){m.invalidateSize();},60);}).catch(function(){el.innerHTML='<p class="empty" style="color:#fff;padding:20px">지도를 불러오지 못했어요. 연결을 확인해 주세요.</p>';});}
@@ -256,11 +256,11 @@ obsLoad.c={};
 function spotAfter(){var el=document.getElementById('smap'),s=spot(state.sel);if(el&&s){need('spot');initMap(el,{spots:[s],sites:true,near:{lat:s.lat,lon:s.lon,r:80},view:{c:[s.lat,s.lon],z:10}});}if(s){seaToday(s);obsLoad(s);}}
 
 /* ---------- 리조트 · 코스 ---------- */
-V.resorts=function(){setTitle('리조트');var ko=state.rko;
-  var AP=(state.pubBiz||[]).filter(function(b){return !ko||(b.langs||[]).indexOf('한국어')>=0;}).map(function(b){var s=spot(b.spot)||{};return item({href:'#spot-'+b.spot,thumb:s.color,tags:[['입점','ok']].concat((b.langs||[]).indexOf('한국어')>=0?[['한국어','fr']]:[]),t:esc(b.name)+(b.name_en?' · '+esc(b.name_en):''),s:(s.name||'')+' · '+esc((b.services||[]).slice(0,3).join(' · ')),r:esc(b.price||'')});}).join('');
+V.resorts=function(){setTitle('리조트');loadMedia();var ko=state.rko;
+  var AP=(state.pubBiz||[]).filter(function(b){return !ko||(b.langs||[]).indexOf('한국어')>=0;}).map(function(b){var s=spot(b.spot)||{};var p=firstPhoto(b.spot);return item({href:'#biz-d'+b.id,thumb:p?'url('+p.thumb+') center/cover':s.color,tags:[['입점','ok']].concat((b.langs||[]).indexOf('한국어')>=0?[['한국어','fr']]:[]),t:esc(b.name)+(b.name_en?' · '+esc(b.name_en):''),s:(s.name||'')+' · '+esc((b.services||[]).slice(0,3).join(' · ')),r:esc(b.price||'')});}).join('');
   var RL=RESORTS.filter(function(r){return !ko||(r.tags||[]).some(function(t){return /한국어|한인/.test(t[0]);});});
   return '<div class="vh"><div><h1>리조트</h1><p>한국어 가능, 교육, 나이트록스, 프리다이빙 시설로 골라 보세요</p></div></div><div class="chips"><button class="chip" type="button" id="rkoBtn" aria-pressed="'+(!!ko)+'">한국어 가능만</button></div>'+
-  '<div class="panel"><div class="list">'+AP+RL.map(function(r){var s=spot(r.spot);return item({href:'#spot-'+r.spot,thumb:r.c,tags:r.tags,t:r.n,s:s.name+' · '+r.sub,r:'견적 문의'});}).join('')+'</div></div>'+
+  '<div class="panel"><div class="list">'+AP+RL.map(function(r){var s=spot(r.spot),p=firstPhoto(r.spot);return item({href:'#spot-'+r.spot,thumb:p?'url('+p.thumb+') center/cover':r.c,tags:r.tags,t:r.n,s:flag(s.country)+' '+s.name+' · '+r.sub,r:'견적 문의'});}).join('')+'</div></div>'+
   '<p class="small">가격은 시즌과 인원마다 달라 업체 견적으로 확인해요. 후기는 예약 인증된 이용자만 남길 수 있고, 유료 노출은 ‘광고’로 표시돼요.</p>'+foot();};
 var _trip=V.trip;V.trip=function(){setTitle('코스 · 비용');var h=_trip(),k=state.cost,tot=k.air+k.pick+k.pack+k.rent+k.etc;
   var calc='<div class="panel"><h2>내 여행 경비 계산</h2><div class="form">'+[['air','항공'],['pick','공항 픽업'],['pack','리조트 패키지'],['rent','장비 렌탈'],['etc','현지 비용 (입장료 · 팁)']].map(function(x){return '<label for="c_'+x[0]+'">'+x[1]+' (원)<input id="c_'+x[0]+'" data-cost="'+x[0]+'" type="number" inputmode="numeric" step="10000" value="'+k[x[0]]+'"></label>';}).join('')+'<label for="c_ppl">인원<input id="c_ppl" data-cost="ppl" type="number" inputmode="numeric" min="1" value="'+k.ppl+'"></label></div><div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:12px"><div class="stat"><small>1인 합계</small><b>'+tot.toLocaleString()+'원</b></div><div class="stat"><small>'+k.ppl+'명 합계</small><b>'+(tot*Math.max(1,k.ppl)).toLocaleString()+'원</b></div></div><p class="small" style="margin:8px 0 0">받은 견적을 넣어 비교해 보세요. 이 기기에서만 계산해요.</p><a class="btn btn-pri" href="#resorts" style="margin-top:10px;width:100%">리조트 견적 요청</a></div>';
@@ -403,7 +403,7 @@ var _route=route;route=function(){killMaps();var h=(location.hash||'#home').slic
 route._stack=[];route._pos={};
 main.addEventListener('scroll',function(){route._pos[route._last]=main.scrollTop;},{passive:true});
 var _rerender=rerender;rerender=function(){var y=main.scrollTop;killMaps();_route();after();main.scrollTop=y;};
-function after(){var c=cur();if(FORMS[c])setTitle(FORMS[c].title);if(c==='map')mapAfter();if(c==='spot')spotAfter();if(c==='home')seaToday(spot(state.sel));bindUp();}
+function after(){var c=cur();if(FORMS[c]&&(location.hash||'').slice(1)===c)setTitle(FORMS[c].title);if(c==='map')mapAfter();if(c==='spot')spotAfter();if(c==='home')seaToday(spot(state.sel));bindUp();}
 function bindUp(){
   main.querySelectorAll('[data-pwt]').forEach(function(b){b.onclick=function(){var i=b.parentNode.querySelector('input');var s=i.type==='password';i.type=s?'text':'password';b.textContent=s?'숨기기':'보기';b.setAttribute('aria-label',s?'비밀번호 숨기기':'비밀번호 보기');};});
   var pr=main.querySelector('[data-pwr]');if(pr){var pi=pr.closest('label').querySelector('input');pi.addEventListener('input',function(){var r=PWRULE(pi.value),s=pr.children;s[0].className=r.len?'on':'';s[1].className=r.let?'on':'';s[2].className=r.num?'on':'';});}
