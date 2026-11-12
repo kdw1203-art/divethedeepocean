@@ -1092,7 +1092,7 @@ state.noAbout=true;var SPAB=null;function loadAbout(){if(SPAB||loadAbout.r)retur
 var _lifeV=V.life;V.life=function(){setTitle('해양생물 도감','바다거북, 만타, 고래상어부터 갯민숭달팽이까지 2만6천여 종의 사진과 특징');loadAbout();var h=_lifeV();
   if(SPAB){h=h.replace(/<span class="tx"><b>([^<]*)<\/b>(<span class="en">[^<]*<\/span>)?<i>([^<]*)<\/i><span class="small">/g,function(m,name,en,sci){var a=SPAB.a[sci],ko=SPAB.n[sci];var nm=name;if(ko&&(!en)&&name!==ko){nm=esc(ko);en='<span class="en">'+name+'</span>';}
       return '<span class="tx"><b>'+nm+'</b>'+(en||'')+'<i>'+sci+'</i>'+(a?'<span class="ab"'+(a[1]==='e'?' lang="en"':'')+'>'+esc(a[0])+'</span>':'')+'<span class="small">';});}
-  h=h.replace(/<span class="noimg"><\/span>/g,'<span class="noimg" aria-hidden="true">🐟</span>');
+  h=h.replace(/<span class="noimg"><\/span><span class="tx"><b>([^<]*)<\/b>(<span class="en">[^<]*<\/span>)?<i>([^<]*)<\/i>/g,function(m,a,b,sci){var p=SPAB&&SPAB.p&&SPAB.p[sci];if(!p||!okUrl(p[0]))return m.replace('<span class="noimg"></span>','<span class="noimg" aria-hidden="true">🐟</span>');return m.replace('<span class="noimg"></span>','<img loading="lazy" decoding="async" src="'+esc(p[0])+'" alt="" title="'+esc(p[2]||p[1])+'">');}).replace(/<span class="noimg"><\/span>/g,'<span class="noimg" aria-hidden="true">🐟</span>');
   h=h.replace('한글 이름이 아직 없는 종은 영어 이름과 학명으로 보여요.','한글 이름이 아직 없는 종은 영어 이름과 학명으로 보여요. 생물 설명은 위키백과 요약을 바탕으로 했고 (CC BY-SA), 관찰이 많은 종부터 한국어로 옮기고 있어요. 아직 옮기지 않은 종은 영어 요약이 보여요.');
   return h;};
 
