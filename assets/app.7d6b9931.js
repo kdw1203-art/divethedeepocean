@@ -564,7 +564,8 @@ var _gear2=V.gear,_prof2=V.profile,_partner2=V.partner,_comm2=V.community;
 V.gear=function(){return _gear2().replace('<button class="btn btn-pri" type="button">장비 등록</button>','<a class="btn btn-pri" href="#gearreg">장비 등록</a>').replace('<div class="notice" style="font-size:14px">호흡기',myGear()+'<div class="notice" style="font-size:14px">예시 · 호흡기').replace('<a href="#gear">판매 등록</a>','<a href="#sell">판매 등록</a>').replace('<div class="grid2"><div class="mk">','<div class="grid2">'+(BE.on?state.pubItems.map(mapItem).map(function(b){b._h='#item-d'+b.dbid;return b;}):state.items.map(function(b,i){b._h='#item-'+i;return b;})).map(function(b,i){return '<a class="mk" href="'+b._h+'" style="text-decoration:none;color:inherit">'+(b.url?'<img src="'+b.url+'" alt="" style="width:100%;height:110px;object-fit:cover;display:block">':'<div></div>')+'<p><span class="tag">'+(BE.on?'판매중':'내 판매글')+'</span><span class="small">'+esc(b.cat)+'</span><b>'+esc(b.title)+'</b><b style="color:var(--sea)">'+(+b.price).toLocaleString()+'원</b></p></a>';}).join('')+'<div class="mk">');};
 V.profile=function(){var m=state.me,h=_prof2();
   var top=m?'<div class="panel"><h2>내 프로필 '+(BE.on?'<button class="chip" type="button" id="logoutBtn">로그아웃</button>':'<a href="#signup">수정</a>')+'</h2>'+kvl([['닉네임',m.nick],['이메일',m.email],['다이빙',m.kind],['최고 자격',m.cert],['단체',m.org],['로그',m.logs?m.logs+'회':''],['관심',m.interest]])+'</div>':'<div class="panel" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><b>아직 가입 전이에요</b><br><span class="small">가입하면 프로필과 자격 정보를 저장해요</span></div><span style="display:flex;gap:8px">'+(BE.on?'<a class="btn btn-line" href="#login">로그인</a>':'')+'<a class="btn btn-pri" href="#signup">회원가입</a></span></div>';
-  var mine='<div class="panel"><h2>내가 등록한 것</h2><div class="list">'+state.biz.map(function(b,i){return item({href:'#bizpage-'+i,tags:[['업체','fr']],t:esc(b.name),s:b.status});}).join('')+state.items.map(function(b,i){return item({href:'#item-'+i,tags:[['판매글','']],t:esc(b.title),s:(+b.price).toLocaleString()+'원'});}).join('')+state.meets.map(function(b,i){return item({href:'#meet-'+i,tags:[['모임','ok']],t:esc(b.title),s:esc(b.date)});}).join('')+item({href:'#gear',t:'장비 '+state.gearL.length+'개'})+'</div><div class="chips" style="margin-top:10px"><a class="chip" href="#biz" style="display:inline-flex;align-items:center;text-decoration:none">업체 등록</a><a class="chip" href="#gearreg" style="display:inline-flex;align-items:center;text-decoration:none">장비 등록</a><a class="chip" href="#sell" style="display:inline-flex;align-items:center;text-decoration:none">판매 등록</a><a class="chip" href="#meet" style="display:inline-flex;align-items:center;text-decoration:none">모임 만들기</a></div></div>';
+  var admin=(m&&m.admin)?'<div class="panel" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border:2px solid var(--sea)"><div><b>운영자 콘솔</b><br><span class="small">업체 심사 · 입점 문의</span></div><a class="btn btn-pri" href="#admin">열기</a></div>':'';
+  var mine=admin+'<div class="panel"><h2>내가 등록한 것</h2><div class="list">'+state.biz.map(function(b,i){return item({href:'#bizpage-'+i,tags:[['업체','fr']],t:esc(b.name),s:b.status});}).join('')+state.items.map(function(b,i){return item({href:'#item-'+i,tags:[['판매글','']],t:esc(b.title),s:(+b.price).toLocaleString()+'원'});}).join('')+state.meets.map(function(b,i){return item({href:'#meet-'+i,tags:[['모임','ok']],t:esc(b.title),s:esc(b.date)});}).join('')+item({href:'#gear',t:'장비 '+state.gearL.length+'개'})+'</div><div class="chips" style="margin-top:10px"><a class="chip" href="#biz" style="display:inline-flex;align-items:center;text-decoration:none">업체 등록</a><a class="chip" href="#gearreg" style="display:inline-flex;align-items:center;text-decoration:none">장비 등록</a><a class="chip" href="#sell" style="display:inline-flex;align-items:center;text-decoration:none">판매 등록</a><a class="chip" href="#meet" style="display:inline-flex;align-items:center;text-decoration:none">모임 만들기</a></div></div>';
   var inst='<div class="panel"><h2>앱으로 쓰기</h2><p style="margin:0">휴대폰 브라우저 메뉴에서 <b>홈 화면에 추가</b>를 누르면 앱처럼 설치돼요. 한 번 연 화면과 응급 정보는 연결이 끊겨도 볼 수 있어요.</p><button class="btn btn-line" type="button" id="installBtn" style="margin-top:10px;display:none">앱 설치</button></div>';
   return h.replace('<div class="cols">',top+'<div class="cols">')+mine+inst;};
 V.partner=function(){return _partner2().replace('<form class="panel form" id="applyForm">','<div class="panel" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><b>업체 등록하고 내 페이지 만들기</b><br><span class="small">종류 · 연락처 · 서비스 · 서류 4단계</span></div><a class="btn btn-pri" href="#biz">업체 등록 시작</a></div><form class="panel form" id="applyForm">');};
@@ -643,6 +644,41 @@ var SPG=['어류','상어·가오리','갯민숭달팽이','연체동물','두�
 var _SR=null,SPTOTAL=0;
 function spBE(){var key=state.lq+'|'+state.lg+'|'+state.lpage;if(_SR&&_SR.key===key)return true;if(state._spk!==key){state._spk=key;BE.species(state.lq,SPG.indexOf(state.lg),state.lpage,40).then(function(r){if(state._spk!==key)return;var rows=(r.data||[]).map(function(x){return [x.sci,x.ko,x.en,x.grp,x.obs,x.photo,x.inat_id];});_SR={key:key,rows:rows,count:r.count||0};if(!state.lq&&state.lg==='전체')SPTOTAL=r.count||0;if(cur()==='life')rerender();});}return false;}
 state.pubPosts=null;state.pubItems=[];state.pubMeets=[];state.pubBiz=[];
+/* ---------- 운영자 콘솔 ---------- */
+state.adm={tab:'pending',biz:null,inq:null,busy:false};
+function admLoad(){if(!BE.on||!BE.user||state.adm.busy)return;state.adm.busy=true;var sb=BE.sb;
+  Promise.all([sb.from('businesses').select('*').order('created_at',{ascending:false}).limit(200),sb.from('partner_inquiries').select('*').order('created_at',{ascending:false}).limit(200)])
+  .then(function(r){state.adm.biz=r[0].data||[];state.adm.inq=r[1].data||[];state.adm.busy=false;if(cur()==='admin')rerender();},function(){state.adm.busy=false;});}
+function admSetStatus(id,st){return BE.sb.from('businesses').update({status:st}).eq('id',id).select('id,status').then(function(r){if(r.error||!r.data||!r.data.length||r.data[0].status!==st)throw r.error||'no';state.adm.biz.forEach(function(b){if(b.id===id)b.status=st;});toast(st==='approved'?'승인했어요. 이제 리조트 목록에 보여요.':st==='rejected'?'반려했어요.':'심사 대기로 돌렸어요.');rerender();}).catch(function(){toast('바꾸지 못했어요. 운영자 계정으로 로그인했는지 확인해 주세요.');});}
+function admDoc(path){BE.sb.storage.from('docs').createSignedUrl(path,300).then(function(r){if(r.error){toast('서류를 열지 못했어요.');return;}window.open(r.data.signedUrl,'_blank','noopener');});}
+V.admin=function(){
+  if(!BE.on)return '<div class="vh"><div><h1>운영자 콘솔</h1><p>실제 사이트(divedeepocean.com)에서 운영자 계정으로 로그인하면 열려요.</p></div></div>';
+  if(!BE.user)return '<div class="vh"><div><h1>운영자 콘솔</h1><p>먼저 로그인해 주세요.</p></div><a class="btn btn-pri" href="#login">로그인</a></div>';
+  if(!state.me||!state.me.admin)return '<div class="vh"><div><h1>운영자 콘솔</h1><p>운영자 계정만 볼 수 있어요.</p></div></div>';
+  if(!state.adm.biz){admLoad();return '<div class="vh"><div><h1>운영자 콘솔</h1><p>불러오는 중이에요.</p></div></div>';}
+  var A=state.adm,B=A.biz,cnt=function(s){return B.filter(function(b){return b.status===s;}).length;};
+  var tabs=[['pending','심사 대기',cnt('pending')],['approved','승인',cnt('approved')],['rejected','반려',cnt('rejected')],['inq','입점 문의',A.inq.length]];
+  var body;
+  if(A.tab==='inq')body=A.inq.length?tbl(['받은 날','업체 이름','종류','연락처'],A.inq.map(function(q){return [q.created_at.slice(0,16).replace('T',' '),'<b>'+esc(q.name)+'</b>',esc(q.biz_type||''),esc(q.contact)];})):'<p class="empty">아직 들어온 입점 문의가 없어요.</p>';
+  else{var L=B.filter(function(b){return b.status===A.tab;});
+    body=L.length?L.map(function(b){var s=spot(b.spot)||{},d=b.docs||{};
+      var docs=[['d_biz','영업 허가'],['d_ins','보험 증권'],['d_cert','강사 자격']].map(function(x){return d[x[0]]?'<button class="chip" type="button" data-admdoc="'+esc(d[x[0]])+'">'+x[1]+' 보기</button>':'<span class="chip" style="cursor:default;opacity:.55">'+x[1]+' 없음</span>';}).join('');
+      var acts=(b.status!=='approved'?'<button class="btn btn-pri" type="button" data-admset="'+b.id+'" data-st="approved">승인</button>':'')+(b.status!=='rejected'?'<button class="btn btn-line" type="button" data-admset="'+b.id+'" data-st="rejected">반려</button>':'')+(b.status!=='pending'?'<button class="btn btn-line" type="button" data-admset="'+b.id+'" data-st="pending">심사 대기로</button>':'');
+      return '<div class="panel" style="display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><b style="font-size:17px">'+esc(b.name)+'</b>'+(b.name_en?' <span class="en">'+esc(b.name_en)+'</span>':'')+'<br><span class="small">'+esc(b.biz_type)+' · '+(s.name||esc(b.spot||''))+' · 신청 '+b.created_at.slice(0,10)+'</span></div><div style="display:flex;gap:8px;flex-wrap:wrap">'+acts+'</div></div>'+
+      kvl([['담당자',b.owner_name],['이메일',b.email],['연락',b.tel],['홈페이지',b.web],['주소',b.addr],['응대 언어',b.langs],['서비스',b.services],['단체',b.orgs],['시설',b.facilities],['대표 상품',b.price]])+
+      '<p style="margin:0;white-space:pre-wrap">'+esc(b.intro||'')+'</p><div class="chips">'+docs+'</div></div>';}).join(''):'<p class="empty">해당하는 업체가 없어요.</p>';}
+  return '<div class="vh"><div><h1>운영자 콘솔</h1><p>업체 등록 심사와 입점 문의 확인</p></div><button class="btn btn-line" type="button" id="admReload">새로고침</button></div>'+
+  '<div class="stats"><div class="stat"><small>심사 대기</small><b>'+cnt('pending')+'</b></div><div class="stat"><small>승인된 업체</small><b>'+cnt('approved')+'</b></div><div class="stat"><small>반려</small><b>'+cnt('rejected')+'</b></div><div class="stat"><small>입점 문의</small><b>'+A.inq.length+'</b></div></div>'+
+  '<div class="chips" role="tablist">'+tabs.map(function(t){return '<button class="chip" type="button" role="tab" data-admtab="'+t[0]+'" aria-pressed="'+(A.tab===t[0])+'" aria-selected="'+(A.tab===t[0])+'">'+t[1]+' '+t[2]+'</button>';}).join('')+'</div>'+
+  (A.tab==='inq'?'<div class="panel">'+body+'</div>':body)+
+  '<p class="small">승인한 업체만 리조트 목록과 포인트 화면에 보여요. 서류 링크는 5분 동안만 열려요.</p>';
+};
+function bindAdmin(){
+  main.querySelectorAll('[data-admtab]').forEach(function(b){b.addEventListener('click',function(){state.adm.tab=b.dataset.admtab;rerender();});});
+  main.querySelectorAll('[data-admset]').forEach(function(b){b.addEventListener('click',function(){b.disabled=true;admSetStatus(+b.dataset.admset,b.dataset.st);});});
+  main.querySelectorAll('[data-admdoc]').forEach(function(b){b.addEventListener('click',function(){admDoc(b.dataset.admdoc);});});
+  var r=document.getElementById('admReload');if(r)r.addEventListener('click',function(){state.adm.biz=null;rerender();});
+}
 var main=document.getElementById('main');
 function route(){
   var h=(location.hash||'#home').slice(1), id=h, arg=null;
@@ -651,7 +687,7 @@ function route(){
   need(id);
   main.innerHTML='<div class="view">'+V[id](arg)+'</div>';
   main.scrollTop=0;
-  var cur=({login:'profile',spot:'map',compare:'map',signup:'profile',biz:'partner',bizpage:'partner',gearreg:'gear',sell:'gear',item:'gear',meet:'community'})[id]||id;
+  var cur=({admin:'profile',login:'profile',spot:'map',compare:'map',signup:'profile',biz:'partner',bizpage:'partner',gearreg:'gear',sell:'gear',item:'gear',meet:'community'})[id]||id;
   document.querySelectorAll('[data-nav]').forEach(function(a){if(a.dataset.nav===cur)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
   bind();
 }
@@ -673,7 +709,7 @@ function bind(){
   var pp=document.getElementById('postPhoto');if(pp)pp.addEventListener('change',function(){if(pp.files[0]){shrink(pp.files[0],function(u){state.draft=u;rerender();});}});
   var pf=document.getElementById('postForm');if(pf)pf.addEventListener('submit',function(e){e.preventDefault();if(!state.draft){document.getElementById('postMsg').textContent='사진을 먼저 골라 주세요.';return;}var sp=spot(document.getElementById('postSpot').value);var o={id:'u'+Date.now(),user:(state.me&&state.me.nick)||'나',sid:sp.id,spot:sp.name,url:state.draft,log:document.getElementById('postLog').checked&&state.userLogs[0]?(state.userLogs[0].depth?state.userLogs[0].depth+'m':'')+(state.userLogs[0].time?' · '+state.userLogs[0].time+'분':''):'',text:document.getElementById('postText').value.trim()||' ',likes:0,cm:0};if(BE.on){var sb2=pf.querySelector('button[type=submit]');sb2.disabled=true;BE.post(o).then(function(){state.draft=null;toast('게시물을 올렸어요.');}).catch(function(e){sb2.disabled=false;if(e!=='login')toast('올리지 못했어요. 다시 시도해 주세요.');});return;}state.posts.unshift(o);state.draft=null;persist();rerender();});
   main.querySelectorAll('[data-tab]').forEach(function(b){b.addEventListener('click',function(){state.tab=b.dataset.tab;rerender();});});
-  bindAdv();bindReg();
+  bindAdv();bindReg();bindAdmin();
   var tto=document.getElementById('tto');if(tto)tto.addEventListener('change',function(){state.sel=tto.value;rerender();});
   var tf=document.getElementById('tripForm');if(tf)tf.addEventListener('submit',function(e){e.preventDefault();});
   var af=document.getElementById('applyForm');if(af)af.addEventListener('submit',function(e){e.preventDefault();var n=document.getElementById('pname').value.trim()||'업체',out=document.getElementById('applyDone');if(BE.on){BE.inquiry({name:n,biz_type:document.getElementById('ptype').value,contact:document.getElementById('pcontact').value.trim()}).then(function(){out.textContent=n+' 문의가 접수됐어요. 담당자가 남겨주신 연락처로 연락드려요.';af.reset();}).catch(function(){out.textContent='접수하지 못했어요. 연락처를 확인하고 다시 시도해 주세요.';});return;}out.textContent=n+' 문의 내용을 확인했어요. 미리보기에서는 접수되지 않아요.';});
