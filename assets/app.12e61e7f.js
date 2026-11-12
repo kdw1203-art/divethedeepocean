@@ -635,8 +635,8 @@ BE.delGear=function(i){var g=state.gearL[i];return BE.sb.from('gear').delete().e
 BE.inquiry=function(o){return BE.sb.from('partner_inquiries').insert(o).then(function(r){if(r.error)throw r.error;});};
 BE.species=function(q,g,page,per){var s=BE.sb.from('species').select('sci,ko,en,grp,obs,photo,inat_id',{count:'estimated'}).order('obs',{ascending:false}).range(page*per,page*per+per-1);
   if(g>=0)s=s.eq('grp',g);q=q.toLowerCase().replace(/[%_,()*\\]/g,' ').trim();if(q)s=s.ilike('search','%'+q+'%');return s;};
-if(BE.on){BE.sb.auth.getSession().then(function(r){BE.user=r.data.session?r.data.session.user:null;BE.pull();});
-  BE.sb.auth.onAuthStateChange(function(ev,ses){var nu=ses?ses.user:null;if((nu&&nu.id)!==(BE.user&&BE.user.id)){BE.user=nu;if(!nu){state.me=null;state.gearL=[];state.userLogs=[];state.biz=[];state.items=[];state.meets=[];state.likes={};}BE.pull();}});}
+if(BE.on){BE.sb.auth.getSession().then(function(r){BE.user=r.data.session?r.data.session.user:null;paintAuth();BE.pull();});
+  BE.sb.auth.onAuthStateChange(function(ev,ses){var nu=ses?ses.user:null;if((nu&&nu.id)!==(BE.user&&BE.user.id)){BE.user=nu;paintAuth();if(!nu){state.me=null;state.gearL=[];state.userLogs=[];state.biz=[];state.items=[];state.meets=[];state.likes={};}BE.pull();}});}
 FORMS.login={title:'로그인',sub:'가입한 이메일과 비밀번호로 로그인해요',back:'profile',steps:[{t:'로그인',f:[{k:'email',type:'email',l:'이메일',req:1,pat:/^[^@\s]+@[^@\s]+\.[^@\s]+$/,err:'이메일 형식을 확인해 주세요'},{k:'pw',type:'password',l:'비밀번호',req:1,nosave:1}]}],done:function(){return 'profile';},doneMsg:'로그인했어요.'};
 V.login=function(){return formView('login').replace('<ol class="steps">','<p style="margin:0">처음이면 <a href="#signup">회원가입</a>부터 해 주세요.</p><ol class="steps" style="display:none">');};
 
@@ -680,6 +680,9 @@ function bindAdmin(){
   var r=document.getElementById('admReload');if(r)r.addEventListener('click',function(){state.adm.biz=null;rerender();});
 }
 var main=document.getElementById('main');
+function paintAuth(){var el=document.getElementById('authAct');if(!el)return;var inn=(typeof BE!=='undefined'&&BE.on)?!!BE.user:!!state.me;
+  el.innerHTML=inn?'<a class="btn btn-line" href="#profile">내 정보</a><button class="btn btn-pri" type="button" id="hdrLogout">로그아웃</button>':'<a class="btn btn-line" href="#login">로그인</a><a class="btn btn-pri" href="#signup">회원가입</a>';
+  var b=document.getElementById('hdrLogout');if(b)b.onclick=function(){var done=function(){state.me=null;paintAuth();toast('로그아웃했어요.');location.hash='#home';};if(typeof BE!=='undefined'&&BE.on)BE.sb.auth.signOut().then(done);else{LS.set&&LS.set('me',null);done();}};}
 function route(){
   var h=(location.hash||'#home').slice(1), id=h, arg=null;
   var dash=h.indexOf('-');if(!V[h]&&dash>0&&V[h.slice(0,dash)]){id=h.slice(0,dash);arg=h.slice(dash+1);}
@@ -689,7 +692,7 @@ function route(){
   main.scrollTop=0;
   var cur=({admin:'profile',login:'profile',spot:'map',compare:'map',signup:'profile',biz:'partner',bizpage:'partner',gearreg:'gear',sell:'gear',item:'gear',meet:'community'})[id]||id;
   document.querySelectorAll('[data-nav]').forEach(function(a){if(a.dataset.nav===cur)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
-  bind();
+  bind();paintAuth();
 }
 function rerender(){var y=main.scrollTop;route();main.scrollTop=y;}
 function bind(){
