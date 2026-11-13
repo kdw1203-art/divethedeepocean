@@ -25,3 +25,10 @@ V.brand=function(){setTitle('브랜드 자료','Dive the deep ocean 로고와 �
   '<div class="panel"><h2>3. 뱃지</h2><div class="bk-grid">'+card('뱃지','스티커, 패치, 인증 표시, 굿즈','badge.svg','#F3F6F8',[['badge.svg','SVG'],['png/badge.png','PNG']])+'</div></div>'+
   '<div class="panel"><h2>색상</h2><div class="sw">'+[['#5CC8F0','하늘'],['#2C8FC4','바다'],['#0A5C8A','깊은 바다'],['#0B1F2E','심해 남색'],['#1C5C84','소나 바깥'],['#8FD3F2','옅은 하늘'],['#F6A04D','코랄 포인트'],['#F3F6F8','배경']].map(function(c){return '<span><i style="background:'+c[0]+'"></i>'+c[0]+'<br>'+c[1]+'</span>';}).join('')+'</div><p class="small" style="margin:10px 0 0">글꼴은 Sora (영문), IBM Plex Sans KR (한글)이에요.</p></div>'+
   '<div class="panel"><h2>사용 규칙</h2><div class="list">'+item({t:'메인은 물결 로고',s:'처음 보는 사람에게는 물결 로고를 먼저 보여 줘요.'})+item({t:'홈페이지',s:'밝은 화면은 물결 로고, 어두운 화면은 소나 로고, 바닥글은 뱃지'})+item({t:'최소 크기',s:'가로 로고는 높이 24px(인쇄 10mm) 아래로 줄이지 않아요. 더 작으면 심볼을 써요.'})+item({t:'여백',s:'로고 둘레에 물결 한 줄 높이만큼 빈 공간을 둬요.'})+item({t:'하지 않기',s:'색 바꾸기, 늘리거나 눕히기, 그림자·테두리 넣기, 사진 위 대비가 낮은 곳에 놓기'})+'</div><p class="small" style="margin:8px 0 0">파일의 글자는 모두 선(아웃라인)으로 바꿔 두어서, 글꼴이 없어도 인쇄소에서 그대로 쓸 수 있어요. PNG는 배경이 투명해요.</p></div>'+foot();};
+
+/* 자리표시 데이터 숨기기: 이름이 정해지지 않은 예시 리조트·강사는 화면에 내보내지 않아요 */
+RESORTS.length=0;PROS.length=0;
+var _resorts10=V.resorts;V.resorts=function(){if(!state.rsp)state.rsp='anilao';var h=_resorts10();return h.replace('<div class="panel"><div class="list"></div></div>','<div class="panel"><p class="empty" style="margin:0">심사를 통과한 입점 리조트가 아직 없어요. 아래에서 포인트를 고르면 그 바다 근처 리조트·다이빙 센터를 지도 데이터로 볼 수 있어요.</p><a class="btn btn-line" href="#partner" style="margin-top:10px">리조트 입점 안내</a></div>');};
+/* 이미 생긴 기능인데 '준비 중'으로 남은 문구 고치기 */
+var _log10=V.log;V.log=function(){return _log10().replace('사진에서 날짜 · 수심을 자동으로 읽는 기능은 준비 중이에요.','사진마다 \'사진에서 글자 읽기\'를 누르면 날짜·수심·시간을 읽어 칸을 채워요.');};
+var _dev10=V.devices;V.devices=function(){var h=_dev10();return h.replace("Shearwater Cloud, Subsurface, Suunto DM5, MacDive에서 내보낸 파일을 로그 화면에서 가져와요","Shearwater Cloud, Subsurface, Suunto DM5, MacDive에서 내보낸 파일과 Garmin Descent의 .fit 파일을 로그 화면에서 가져와요").replace('UDDF · Subsurface 파일','UDDF · Subsurface · Garmin FIT 파일');};
