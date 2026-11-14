@@ -35,7 +35,7 @@ var EN_D={
 '한국어 가능, 교육, 나이트록스, 프리다이빙 시설로 골라 보세요':'Filter by Korean-speaking staff, training, nitrox and freediving facilities','한국어 가능만':'Korean-speaking only',
 '심사를 통과한 입점 리조트가 아직 없어요. 아래에서 포인트를 고르면 그 바다 근처 리조트·다이빙 센터를 지도 데이터로 볼 수 있어요.':'No verified resorts listed yet. Pick a spot below to see nearby resorts and dive centers from map data.','리조트 입점 안내':'List your resort',
 '가격은 시즌과 인원마다 달라 업체 견적으로 확인해요. 후기는 예약 인증된 이용자만 남길 수 있고, 유료 노출은 ‘광고’로 표시돼요.':'Prices vary by season and group size, so ask for a quote. Paid placements are labelled “Ad”.',
-'이 바다 근처 리조트 · 다이빙 센터 전체':'All resorts & dive centers near this spot','대표 85종과 전체 2만6천여 종 · 어디서 볼 수 있는지와 특징':'85 featured and 26,000+ species · where to see them',
+'이 바다 근처 리조트 · 다이빙 센터 전체':'All resorts & dive centers near this spot','대표 85종과 전체 3만6천여 종 · 어디서 볼 수 있는지와 특징':'85 featured and 26,000+ species · where to see them',
 '포인트 반경 30km 안 다이버·스노클러의 검증된 관찰 기록(iNaturalist) 기준이에요. 생물을 누르면 보호 등급과 비슷한 종이 나와요.':'Based on verified iNaturalist sightings within 30 km. Tap a species for protection status and look-alikes.',
 '지금이 시즌인 포인트에서 자주 만나는 생물이에요.':'Often seen at spots that are in season now.','포인트 화면에서':'On a spot page, tap','를 누르면 이 지도에 표시돼요. 로그에 적은 포인트도 자동으로 다녀온 곳에 들어가요.':'to mark it here. Spots in your log count as visited too.','포인트 찾기 (초성도 돼요)':'Find a spot','예: 모알보알, ㅍㄹㅇ, Palau':'e.g. Moalboal, Palau','대표 생물 찾기 (초성도 돼요: ㄱㄹㅅㅇ)':'Find a species','예: 고래상어, ㅁㅌ, manta':'e.g. whale shark, manta','추천 포인트':'Featured spots',
 '아직 못 가본 바다부터 다녀온 바다의 기억까지 한곳에 · 다이버는 모두 무료':'From seas you have yet to see to the ones you remember, all in one place · Free for divers',
@@ -116,7 +116,7 @@ if(LANG==='en'){
     if((m=t.match(/^([\d,]+)종 · (\d+) \/ ([\d,]+)쪽$/)))return m[1]+' species · page '+m[2]+' / '+m[3];
     if((m=t.match(/^([\d,]+)초$/)))return m[1]+' s';
     return _tok9(s);};
-  /* 2만6천 종 도감 카드: 영어 이름을 앞에, 한국어 설명은 숨김 */
+  /* 3만6천 종 도감 카드: 영어 이름을 앞에, 한국어 설명은 숨김 */
   var _after9b=after;after=function(){_after9b();if(cur()!=='life')return;document.querySelectorAll('.spgrid .sp').forEach(function(c){var en=c.querySelector('.en'),b=c.querySelector('b');if(en&&b&&!c._en){c._en=1;b.textContent=en.textContent;en.remove();}c.querySelectorAll('.ab').forEach(function(a){if(/[가-힣]/.test(a.textContent))a.style.display='none';});});};
 }
 if(LANG==='en'){var EN_MORE={};Object.keys(EN_MORE).forEach(function(k){EN_D[k]=EN_MORE[k];});
