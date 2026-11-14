@@ -1,4 +1,4 @@
-"""국내 다이빙 업체와 포인트 근처 숙소를 OpenStreetMap에서 모아 assets/sites.json에 합친다.
+"""국내·해외 다이빙 업체와 다이빙 리조트만 OpenStreetMap에서 모아 assets/sites.json에 합친다.
 기존 항목은 지우지 않는다. 형식: [lat, lon, name, type, label]  type 0 센터·샵, 2 리조트·숙소"""
 import json, math, sys, time, urllib.request, urllib.parse
 PATH = sys.argv[1] if len(sys.argv) > 1 else 'assets/sites.json'
@@ -35,28 +35,15 @@ for e in els:
     t = e.get('tags', {}); n = (t.get('name:ko') or t.get('name') or '').strip(); la, lo = pos(e)
     if n and la is not None: push(la, lo, n, 2 if t.get('tourism') else 0, '다이빙 리조트' if t.get('tourism') else '다이빙 업체')
 print('dive', len(add)); time.sleep(8)
-# 2) 포인트 8km 안 숙소, 가까운 순 60곳
-for la0, lo0 in SPOTS:
-    els = run('nwr(around:8000,%s,%s)["tourism"~"hotel|resort|guest_house|motel|hostel|chalet|apartment"]["name"];out center tags;' % (la0, lo0))
-    L = []
-    for e in els:
-        t = e.get('tags', {}); n = (t.get('name:ko') or t.get('name') or '').strip(); la, lo = pos(e)
-        if n and la is not None: L.append((km(la0, lo0, la, lo), la, lo, n, LAB.get(t.get('tourism'), '숙소')))
-    L.sort()
-    for d, la, lo, n, lab in L[:60]: push(la, lo, n, 2, lab)
-    print(la0, lo0, len(els), len(add)); time.sleep(8)
 def save():
     if add:
         json.dump(old + add, open(PATH, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
 save()
-# 3) 한국인이 자주 가는 해외 포인트 6km 안 숙소, 가까운 순 40곳
+# 2) 자주 가는 해외 포인트 40km 안: 이름에 다이빙이 들어간 리조트·숙소만 (일반 호텔·모텔은 넣지 않음)
 for la0, lo0 in ABROAD:
-    els = run('nwr(around:6000,%s,%s)["tourism"~"hotel|resort|guest_house|hostel"]["name"];out center tags;' % (la0, lo0))
-    L = []
+    els = run('(nwr(around:40000,%s,%s)["tourism"]["name"~"dive|diving|divers|scuba|다이브|다이빙",i];nwr(around:40000,%s,%s)["amenity"="dive_centre"]["name"];nwr(around:40000,%s,%s)["shop"="scuba_diving"]["name"];);out center tags;' % ((la0, lo0) * 3))
     for e in els:
         t = e.get('tags', {}); n = (t.get('name:ko') or t.get('name:en') or t.get('name') or '').strip(); la, lo = pos(e)
-        if n and la is not None: L.append((km(la0, lo0, la, lo), la, lo, n, LAB.get(t.get('tourism'), '숙소')))
-    L.sort()
-    for d, la, lo, n, lab in L[:40]: push(la, lo, n, 2, lab)
-    print(la0, lo0, len(els), len(add), flush=True); save(); time.sleep(8)
+        if n and la is not None: push(la, lo, n, 2 if t.get('tourism') else 0, '다이빙 리조트' if t.get('tourism') else '다이빙 업체')
+    print(la0, lo0, len(els), len(add), flush=True); save(); time.sleep(6)
 print('added', len(add))
