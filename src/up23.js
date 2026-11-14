@@ -18,3 +18,11 @@ function addFlags(h){if(typeof h!=='string'||LANG==='en')return h;return h.repla
 ['map','spot','resorts','trip','meet','compare','community'].forEach(function(k){var f=V[k];if(f)V[k]=function(a){return addFlags(f(a));};});
 var _hmr23=hmResults;hmResults=function(){return addFlags(_hmr23());};
 var _map23b=V.map;V.map=function(a){return _map23b(a).replace(/(data-lregion="한국"[^>]*>)한국/,'$1'+flag('대한민국')+' 한국').replace(/(data-lregion="일본"[^>]*>)일본/,'$1'+flag('일본')+' 일본').replace(/(data-lregion="필리핀"[^>]*>)필리핀/,'$1'+flag('필리핀')+' 필리핀');};
+/* 지역·지명 앞에 나라 국기 */
+(function(){if(LANG==='en')return;var C={};SPOTS.forEach(function(s){C[s.country]=1;});var names=Object.keys(C).sort(function(a,b){return b.length-a.length;}),esc2=function(x){return x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');};
+  var re=new RegExp('(^|· )('+names.map(esc2).join('|')+')(?= ·|$)','g'),RI=/[\uD83C][\uDDE6-\uDDFF]/,REG={'한국':'대한민국','일본':'일본','필리핀':'필리핀'};
+  function run(root){if(!root)return;var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),n,L=[];while((n=w.nextNode())){var t=n.nodeValue;if(!t||t.length>120||RI.test(t))continue;var p=n.parentNode;if(!p||/^(SCRIPT|STYLE|TEXTAREA|INPUT)$/.test(p.tagName))continue;var prev=n.previousSibling;if(prev&&prev.nodeType===3&&RI.test(prev.nodeValue))continue;if(p.textContent&&RI.test(p.textContent)&&p.childNodes.length<4)continue;re.lastIndex=0;if(re.test(t.trim()))L.push(n);}
+    L.forEach(function(n){var t=n.nodeValue,lead=t.match(/^\s*/)[0],body=t.slice(lead.length);n.nodeValue=lead+body.replace(re,function(m,a,c){var f=flag(c);return a+(f?f+' ':'')+c;});});
+    [].forEach.call(root.querySelectorAll('[data-lregion]'),function(b){var c=REG[b.dataset.lregion];if(c&&!RI.test(b.textContent))b.textContent=flag(c)+' '+b.textContent;});}
+  var m=document.getElementById('main'),tm=null,busy=false;if(!m)return;
+  new MutationObserver(function(){if(busy)return;clearTimeout(tm);tm=setTimeout(function(){busy=true;try{run(m);}catch(e){}setTimeout(function(){busy=false;},0);},60);}).observe(m,{childList:true,subtree:true});run(m);})();
