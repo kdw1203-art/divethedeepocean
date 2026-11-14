@@ -38,7 +38,7 @@ var EN_D={
 '이 바다 근처 리조트 · 다이빙 센터 전체':'All resorts & dive centers near this spot','대표 85종과 전체 3만6천여 종 · 어디서 볼 수 있는지와 특징':'85 featured and 26,000+ species · where to see them',
 '포인트 반경 30km 안 다이버·스노클러의 검증된 관찰 기록(iNaturalist) 기준이에요. 생물을 누르면 보호 등급과 비슷한 종이 나와요.':'Based on verified iNaturalist sightings within 30 km. Tap a species for protection status and look-alikes.',
 '지금이 시즌인 포인트에서 자주 만나는 생물이에요.':'Often seen at spots that are in season now.','포인트 화면에서':'On a spot page, tap','를 누르면 이 지도에 표시돼요. 로그에 적은 포인트도 자동으로 다녀온 곳에 들어가요.':'to mark it here. Spots in your log count as visited too.','포인트 찾기 (초성도 돼요)':'Find a spot','예: 모알보알, ㅍㄹㅇ, Palau':'e.g. Moalboal, Palau','대표 생물 찾기 (초성도 돼요: ㄱㄹㅅㅇ)':'Find a species','예: 고래상어, ㅁㅌ, manta':'e.g. whale shark, manta','추천 포인트':'Featured spots',
-'아직 못 가본 바다부터 다녀온 바다의 기억까지 한곳에 · 다이버는 모두 무료':'From seas you have yet to see to the ones you remember, all in one place · Free for divers',
+'다음에 갈 바다를 찾고, 다녀온 바다는 기록으로 남겨요':'Find your next sea, and keep a record of the ones you have dived','요금 안내':'Pricing',
 '전 세계 스쿠버·프리다이빙 포인트, 리조트, 강사, 로그와 장비 정비까지 한 곳에서':'Scuba & freediving spots, resorts, instructors, logs and gear service worldwide'
 };
 var EN_MON=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
