@@ -1,0 +1,13 @@
+/* ===== 홈 지도: 전체 지도가 기본, 스쿠버 지도 · 프리다이빙 지도로 바꿔 보기 ===== */
+(function(){var st=document.createElement('style');st.textContent='.wd.ts{background:#2C8FC4}.wd.tf{background:#12A5A0}.wd.tb{background:#7C6BD6}.hmtabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}.hmtabs button{height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:600 14px var(--font-body);cursor:pointer}.hmtabs button[aria-pressed=true]{background:var(--sea);border-color:var(--sea);color:#fff}';document.head.appendChild(st);})();
+state.hmode='all';
+var HMT=LANG==='en'?[['all','All'],['scuba','Scuba'],['free','Freediving']]:[['all','전체 지도'],['scuba','스쿠버 지도'],['free','프리다이빙 지도']];
+function hmShow(s){var m=state.hmode||'all';return m==='all'||s.t===m||s.t==='both';}
+var _hmb32=homeMapBox;homeMapBox=function(){var h=_hmb32(),M=myPlaces(),vs={},fs={};M.v.forEach(function(s){vs[s.id]=1;});M.f.forEach(function(s){fs[s.id]=1;});
+  var L=SPOTS.filter(function(s){return s.id!=='home'&&(vs[s.id]||fs[s.id]||hmShow(s));}),n={scuba:0,free:0,both:0};L.forEach(function(s){if(n[s.t]!=null)n[s.t]++;});
+  h=h.replace(/<h2 style="margin-bottom:10px">[^<]*<\/h2>/,'<div class="hmtabs" role="group" aria-label="map type">'+HMT.map(function(t){return '<button type="button" data-hmode="'+t[0]+'" aria-pressed="'+(state.hmode===t[0])+'">'+t[1]+'</button>';}).join('')+'</div>');
+  if(typeof wmXY==='function'&&/class="wd /.test(h)){var dots=L.slice().sort(function(a,b){return (vs[a.id]?2:fs[a.id]?1:0)-(vs[b.id]?2:fs[b.id]?1:0);}).map(function(s){var p=wmXY(s.lat,s.lon);if(p[1]<0||p[1]>100)return '';var c=vs[s.id]?'v':fs[s.id]?'f':s.t==='free'?'r tf':s.t==='both'?'r tb':'r ts';return '<i class="wd '+c+'" style="left:'+p[0].toFixed(2)+'%;top:'+p[1].toFixed(2)+'%"></i>';}).join('');h=h.replace(/<i class="wd [^"]*"[^>]*><\/i>/g,'').replace('<button class="chip wmgo"',dots+'<button class="chip wmgo"');}
+  var lg=LANG==='en'?'':'<div class="mystat" style="margin-top:8px"><span><i class="dot2" style="background:#2C8FC4"></i>스쿠버 '+n.scuba+'곳</span><span><i class="dot2" style="background:#12A5A0"></i>프리다이빙 '+n.free+'곳</span><span><i class="dot2" style="background:#7C6BD6"></i>둘 다 '+n.both+'곳</span></div>';
+  h=h.replace(/<span><i class="dot2" style="background:#9FB3C2"><\/i>[^<]*<\/span>/,'');
+  var k=h.indexOf('<div class="mystat"');return k<0?h:h.slice(0,k)+lg+h.slice(k);};
+document.addEventListener('click',function(e){var t=e.target.closest('button[data-hmode]');if(!t)return;state.hmode=t.dataset.hmode;rerender();});
