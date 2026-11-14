@@ -10,7 +10,10 @@ module.exports = async (req, res) => {
   if (!k || !isFinite(lat) || !isFinite(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) {
     res.status(400).json({ error: 'bad request' }); return;
   }
-  const url = `https://marine-api.open-meteo.com/v1/marine?latitude=${lat.toFixed(2)}&longitude=${lon.toFixed(2)}&${k}&timezone=auto`;
+  // 상업용 요금제 키를 Vercel 환경 변수 OPENMETEO_KEY에 넣으면 전용 서버(customer-)로 바뀜
+  const key = process.env.OPENMETEO_KEY;
+  const host = key ? 'customer-marine-api.open-meteo.com' : 'marine-api.open-meteo.com';
+  const url = `https://${host}/v1/marine?latitude=${lat.toFixed(2)}&longitude=${lon.toFixed(2)}&${k}&timezone=auto` + (key ? `&apikey=${encodeURIComponent(key)}` : '');
   try {
     const r = await fetch(url, { headers: { 'user-agent': 'divedeepocean.com cache' } });
     const body = await r.text();
