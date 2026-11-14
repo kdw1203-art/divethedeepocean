@@ -4,6 +4,7 @@ import json, math, sys, time, urllib.request, urllib.parse
 PATH = sys.argv[1] if len(sys.argv) > 1 else 'assets/sites.json'
 EP = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter']
 SPOTS = [(33.22,126.57),(33.5,126.95),(37.5,130.9),(38.38,128.5),(38.08,128.63),(37.8,128.92),(36.7,129.6),(34.03,127.3),(34.84,128.43),(34.68,125.2)]
+ABROAD = [(13.76, 120.9), (9.95, 123.4), (9.52, 123.68), (11.33, 124.12), (12.0, 120.2), (13.52, 120.97), (9.2, 123.27), (11.2, 119.4), (-8.28, 115.6), (-8.34, 115.66), (-8.73, 115.5), (-8.35, 116.05), (-8.55, 119.5), (26.2, 127.3), (26.44, 127.77), (24.4, 124.2), (24.8, 125.3), (7.3, 134.5), (15.26, 145.8), (13.45, 144.65), (10.1, 99.84), (7.6, 98.36), (7.74, 98.77), (4.115, 118.63), (4.24, 118.63), (12.2, 109.3), (28.5, 34.52), (3.6, 72.85), (20.42, -86.95)]
 KR = '33.0,124.5,38.7,131.0'
 LAB = {'hotel':'호텔','resort':'리조트','guest_house':'게스트하우스·펜션','motel':'모텔','hostel':'호스텔','chalet':'펜션','apartment':'레지던스'}
 def run(q):
@@ -44,6 +45,18 @@ for la0, lo0 in SPOTS:
     L.sort()
     for d, la, lo, n, lab in L[:60]: push(la, lo, n, 2, lab)
     print(la0, lo0, len(els), len(add)); time.sleep(8)
+def save():
+    if add:
+        json.dump(old + add, open(PATH, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+save()
+# 3) 한국인이 자주 가는 해외 포인트 6km 안 숙소, 가까운 순 40곳
+for la0, lo0 in ABROAD:
+    els = run('nwr(around:6000,%s,%s)["tourism"~"hotel|resort|guest_house|hostel"]["name"];out center tags;' % (la0, lo0))
+    L = []
+    for e in els:
+        t = e.get('tags', {}); n = (t.get('name:ko') or t.get('name:en') or t.get('name') or '').strip(); la, lo = pos(e)
+        if n and la is not None: L.append((km(la0, lo0, la, lo), la, lo, n, LAB.get(t.get('tourism'), '숙소')))
+    L.sort()
+    for d, la, lo, n, lab in L[:40]: push(la, lo, n, 2, lab)
+    print(la0, lo0, len(els), len(add), flush=True); save(); time.sleep(8)
 print('added', len(add))
-if add:
-    json.dump(old + add, open(PATH, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
