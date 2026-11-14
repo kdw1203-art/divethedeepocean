@@ -1,0 +1,45 @@
+name: uptime
+# 5분마다 사이트·바다 예보 캐시·데이터베이스를 확인하고, 멈추면 이슈를 열어 메일·GitHub 앱으로 알림
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+permissions:
+  issues: write
+concurrency: { group: uptime, cancel-in-progress: false }
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: check
+        id: c
+        run: |
+          set +e
+          S=https://www.divedeepocean.com
+          fail=""
+          code=$(curl -s -o /tmp/h -w '%{http_code}' -m 20 "$S/"); grep -q 'Dive the deep ocean' /tmp/h || code="$code(내용 없음)"
+          [ "$code" = "200" ] || fail="$fail 사이트($code)"
+          code=$(curl -s -o /dev/null -w '%{http_code}' -m 25 "$S/api/marine?lat=13.69&lon=120.83&kind=now"); [ "$code" = "200" ] || fail="$fail 바다예보캐시($code)"
+          CFG=$(curl -s -m 20 "$S/assets/cfg.js")
+          URL=$(echo "$CFG" | grep -o 'https://[a-z0-9]*\.supabase\.co' | head -1)
+          KEY=$(echo "$CFG" | grep -o 'sb_publishable_[A-Za-z0-9_-]*' | head -1)
+          code=$(curl -s -o /dev/null -w '%{http_code}' -m 20 -H "apikey: $KEY" "$URL/rest/v1/site_config?select=k&limit=1"); [ "$code" = "200" ] || fail="$fail 데이터베이스($code)"
+          code=$(curl -s -o /dev/null -w '%{http_code}' -m 20 -H "apikey: $KEY" "$URL/auth/v1/health"); [ "$code" = "200" ] || fail="$fail 로그인($code)"
+          echo "fail=$fail" >> $GITHUB_OUTPUT
+          echo "결과:${fail:- 모두 정상}"
+      - name: report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FAIL: ${{ steps.c.outputs.fail }}
+        run: |
+          OPEN=$(gh issue list -R "$GITHUB_REPOSITORY" --label outage --state open --json number -q '.[0].number')
+          NOW=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+          if [ -n "$FAIL" ]; then
+            gh label create outage -R "$GITHUB_REPOSITORY" --color B60205 --description '가동 감시' 2>/dev/null || true
+            if [ -z "$OPEN" ]; then gh issue create -R "$GITHUB_REPOSITORY" --label outage --title "사이트 장애:$FAIL" --body "$NOW 확인 실패:$FAIL"$'\n\n'"복구되면 이 이슈는 자동으로 닫혀요."
+            elif [ "$(date +%M)" -lt 5 ]; then gh issue comment "$OPEN" -R "$GITHUB_REPOSITORY" --body "$NOW 아직 실패:$FAIL"; fi
+            exit 1
+          elif [ -n "$OPEN" ]; then
+            gh issue close "$OPEN" -R "$GITHUB_REPOSITORY" --comment "$NOW 복구됨. 모든 확인 통과."
+          fi
