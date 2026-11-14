@@ -46,7 +46,7 @@ var _res17=V.resorts;V.resorts=function(a){var h=_res17(a),m=h.match(/<div class
 /* 76 피드가 비었을 때: 첫 글 주제 고르기 */
 var TOPICS=[['최근 다이빙 사진','어디서, 무엇을 봤는지 한 줄로 적어 주세요. '],['장비 질문','[장비 질문] '],['동행 찾기','[동행 찾기] 날짜 · 포인트 · 자격: '],['이 생물 이름이 뭐예요?','[생물 질문] 본 곳: ']];
 var _feed17=V.feed;V.feed=function(a){var h=_feed17(a);
-  return h.replace('<span class="small">다녀온 바다 사진을 처음으로 올려 주세요.</span>','<span class="small">무엇을 올릴지 고르면 바로 쓸 수 있어요.</span><span class="chips" style="justify-content:center">'+TOPICS.map(function(t,i){return '<button class="chip" type="button" data-compose="" data-topic="'+i+'">'+t[0]+'</button>';}).join('')+'</span>');};
+  return h.replace('<span class="small">다녀온 바다 사진을 처음으로 올려 주세요.</span>','<span class="small">무엇을 올릴지 고르면 바로 쓸 수 있어요.</span><span class="chips" style="justify-content:center">'+TOPICS.map(function(t,i){return /질문|이름이/.test(t[0])?'<a class="chip" href="#boardnew" style="text-decoration:none">'+t[0]+' (게시판)</a>':'<button class="chip" type="button" data-compose="" data-topic="'+i+'">'+t[0]+'</button>';}).join('')+'</span>');};
 document.addEventListener('click',function(e){var t=e.target.closest('[data-topic]');if(!t)return;var v=TOPICS[+t.dataset.topic][1];setTimeout(function(){var x=document.getElementById('postText');if(x&&!x.value){x.value=v;x.focus();}},60);});
 
 if(LANG==='en'){var EN17={'지금 시즌':'In season','근처 업체':'Nearby','응급':'Emergency','다녀온 곳':'Visited','로그':'Logs','찜한 곳':'Saved','이미지로 저장':'Save as image','파일 고르기':'Choose file','다이브 컴퓨터 기록을 한 번에':'Import your dive computer logs','입점 안내':'For business','이곳 업체 관계자신가요?':'Run a dive business here?'};Object.keys(EN17).forEach(function(k){EN_D[k]=EN17[k];});}
