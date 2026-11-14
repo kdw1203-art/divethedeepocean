@@ -12,3 +12,9 @@ function mapFold(){var v=document.querySelector('#main .view');if(!v||v.querySel
 document.addEventListener('click',function(e){if(e.target.id!=='mfReset')return;state.mf={d:'',e:'',c:''};LS.set('mapF',state.mf);state.lvl='전체';state.mon=0;rerender();});
 var _after23=after;after=function(){_after23();if(cur()==='map')mapFold();};
 if(LANG==='en'){EN_D['조건으로 좁히기']='Filters';EN_D['조건 모두 풀기']='Clear filters';}
+/* 나라 이름 앞에 국기 */
+var CRX=(function(){var C={};SPOTS.forEach(function(s){C[s.country]=1;});var a=Object.keys(C).sort(function(x,y){return y.length-x.length;}).map(function(c){return c.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}).join('|');return [new RegExp('(>)('+a+')( · )','g'),new RegExp('( · )('+a+')( · )','g')];})();
+function addFlags(h){if(typeof h!=='string'||LANG==='en')return h;return h.replace(CRX[0],function(m,a,c,b){return a+flag(c)+' '+c+b;}).replace(CRX[1],function(m,a,c,b){return a+flag(c)+' '+c+b;});}
+['map','spot','resorts','trip','meet','compare','community'].forEach(function(k){var f=V[k];if(f)V[k]=function(a){return addFlags(f(a));};});
+var _hmr23=hmResults;hmResults=function(){return addFlags(_hmr23());};
+var _map23b=V.map;V.map=function(a){return _map23b(a).replace(/(data-lregion="한국"[^>]*>)한국/,'$1'+flag('대한민국')+' 한국').replace(/(data-lregion="일본"[^>]*>)일본/,'$1'+flag('일본')+' 일본').replace(/(data-lregion="필리핀"[^>]*>)필리핀/,'$1'+flag('필리핀')+' 필리핀');};
