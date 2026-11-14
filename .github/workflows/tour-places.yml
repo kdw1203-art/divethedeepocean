@@ -1,0 +1,29 @@
+name: tour-places
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '20 19 3 * *'
+permissions:
+  contents: write
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python tools/tour_places.py assets/sites.json
+        env:
+          TOURAPI_KEY: ${{ secrets.TOURAPI_KEY }}
+      - name: Commit if changed
+        run: |
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add assets/sites.json
+            git commit -m "국내 다이빙 업체 갱신 (한국관광공사 TourAPI)"
+            git pull --rebase
+            git push
+          fi
