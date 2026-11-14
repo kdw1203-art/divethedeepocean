@@ -1,0 +1,4 @@
+/* ===== 화면 균형 손보기: 숫자 칸 배경, 겹치는 버튼 정리 ===== */
+(function(){var st=document.createElement('style');st.textContent='#main .view>.stats{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:6px}#main .view>.stats .stat{background:transparent}#main .view>.stats .stat b{font-size:19px}@media (max-width:860px){#main .view{gap:16px}#main .panel{padding:16px}#main .vh p{font-size:14px;line-height:1.5}#main .empty-big{padding:22px 16px}.sbar .btn,.sbar .chip{height:42px}}#main .panel h2 .small{font-weight:500}';document.head.appendChild(st);})();
+var _after35=after;after=function(){_after35();var c=cur(),v=document.querySelector('#main .view');if(!v)return;
+  if(c==='gear'){var b=v.querySelector('.vh > a.btn, .vh > button.btn');if(b&&document.getElementById('tidyTop'))b.style.display='none';var e=v.querySelector('.empty-big');if(e&&document.getElementById('tidyTop')){var bb=e.querySelector('.btn');if(bb)bb.style.display='none';}}};
