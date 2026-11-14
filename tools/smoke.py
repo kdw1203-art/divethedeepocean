@@ -5,7 +5,7 @@ from playwright.async_api import async_playwright
 BASE = sys.argv[1].rstrip('/') if len(sys.argv) > 1 else 'http://localhost:8765'
 ROUTES = ['home','map','feed','log','profile','login','signup','search','spot-anilao','spot-tulamben','life','gear','sell',
           'resorts','pros','meet','board','tools','safety','devices','partner','biz','ads','brand','privacy','terms',
-          'rules','refund','sources','news','help','verify','beta']
+          'rules','refund','sources','news','help','verify','beta','meet','meetnew']
 IGNORE = ('429', 'tiles.openfreemap', 'basemaps', 'supabase.co', 'er-api', 'saferproducts', 'Failed to load resource: net::ERR', 'AbortError')
 async def main():
     bad = []
