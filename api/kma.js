@@ -11,6 +11,7 @@ module.exports = async (req, res) => {
     const r = await fetch(url, { headers: { 'user-agent': 'divedeepocean.com' } });
     const buf = Buffer.from(await r.arrayBuffer());
     let txt; try { txt = new TextDecoder('euc-kr').decode(buf); } catch (e) { txt = buf.toString('utf8'); }
+    if ((req.query || {}).info) { const r2 = await fetch(`https://apihub.kma.go.kr/api/typ01/url/stn_inf.php?inf=BUOY&stn=&tm=${tm}&help=0&authKey=${encodeURIComponent(key)}`); const b2 = Buffer.from(await r2.arrayBuffer()); let t2; try { t2 = new TextDecoder('euc-kr').decode(b2); } catch (e) { t2 = b2.toString('utf8'); } res.setHeader('cache-control', 'no-store'); res.status(200).json({ status: r2.status, head: t2.slice(0, 2600) }); return; }
     if ((req.query || {}).raw) { res.setHeader('cache-control', 'no-store'); res.status(200).json({ status: r.status, head: txt.slice(0, 900) }); return; }
     const lines = txt.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
     let cols = null; const st = [];
