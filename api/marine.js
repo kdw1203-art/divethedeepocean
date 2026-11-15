@@ -5,6 +5,8 @@ const KINDS = {
   wx: 'current=temperature_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m,weather_code&wind_speed_unit=ms',
   tide: 'hourly=sea_level_height_msl&forecast_days=2',
   week: 'daily=wave_height_max,wave_period_max&forecast_days=7',
+  hr: 'hourly=wave_height,wave_period,swell_wave_height,sea_surface_temperature,ocean_current_velocity,ocean_current_direction&forecast_days=2',
+  hrwx: 'hourly=temperature_2m,weather_code,wind_speed_10m,wind_direction_10m,precipitation_probability&wind_speed_unit=ms&forecast_days=2',
 };
 module.exports = async (req, res) => {
   const q = req.query || {};
@@ -14,7 +16,7 @@ module.exports = async (req, res) => {
   }
   // 상업용 요금제 키를 Vercel 환경 변수 OPENMETEO_KEY에 넣으면 전용 서버(customer-)로 바뀜
   const key = process.env.OPENMETEO_KEY;
-  const wx = q.kind === 'wx', live = wx || q.kind === 'now2';
+  const wx = q.kind === 'wx' || q.kind === 'hrwx', live = wx || q.kind === 'now2' || q.kind === 'hr';
   const host = (key ? 'customer-' : '') + (wx ? 'api.open-meteo.com' : 'marine-api.open-meteo.com');
   const url = `https://${host}/v1/${wx ? 'forecast' : 'marine'}?latitude=${lat.toFixed(2)}&longitude=${lon.toFixed(2)}&${k}&timezone=auto` + (key ? `&apikey=${encodeURIComponent(key)}` : '');
   try {
