@@ -19,10 +19,23 @@ jobs:
       - name: Commit if changed
         if: always()
         run: |
-          if git diff --quiet assets/sites.json; then echo "no change"; exit 0; fi
-          git config user.name "kr-places-bot"
-          git config user.email "kr-places-bot@users.noreply.github.com"
-          git add assets/sites.json
-          git commit -m "국내 다이빙 업체·숙소 갱신 (OpenStreetMap)"
-          git pull --rebase
-          git push
+          if ! git diff --quiet; then
+            cp assets/sites.json /tmp/new.json
+            git checkout -- assets/sites.json
+            git pull --rebase
+            python - <<'PY'
+          import json
+          old=json.load(open('assets/sites.json',encoding='utf-8')); new=json.load(open('/tmp/new.json',encoding='utf-8'))
+          seen={(round(s[0],3),round(s[1],3),s[2].lower()) for s in old}
+          add=[s for s in new if (round(s[0],3),round(s[1],3),s[2].lower()) not in seen]
+          print('merge add',len(add))
+          json.dump(old+add,open('assets/sites.json','w',encoding='utf-8'),ensure_ascii=False,separators=(',',':'))
+          PY
+            if ! git diff --quiet; then
+              git config user.name "github-actions[bot]"
+              git config user.email "github-actions[bot]@users.noreply.github.com"
+              git add assets/sites.json
+              git commit -m "국내·해외 다이빙 업체 갱신 (OpenStreetMap)"
+              git push
+            fi
+          fi
