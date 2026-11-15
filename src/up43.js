@@ -1,0 +1,6 @@
+/* ===== 가입을 한 화면으로: 이메일 · 닉네임 · 비밀번호 · 약관. 다이빙 프로필은 가입 뒤에 ===== */
+(function(){var F=FORMS.signup,S=F&&F.steps;if(!S||S.length<3)return;F.steps=[{t:'가입',f:S[1].f.concat(S[0].f)}];F.sub='이메일과 비밀번호만 있으면 돼요. 다이빙 프로필은 가입한 뒤 내 정보에서 채워요';var st=fstate('signup');st.step=0;if(BE.on)F.doneMsg='가입 신청을 받았어요. 메일함의 인증 링크를 눌러 주세요.';})();
+S0all=function(){var st=fstate('signup');return FORMS.signup.steps[0].f.filter(function(f){return f.type==='check';}).every(function(f){return st.v[f.k];});};
+document.addEventListener('change',function(e){if(e.target.id!=='ckAll')return;e.stopPropagation();var st=fstate('signup');FORMS.signup.steps[0].f.forEach(function(f){if(f.type==='check')st.v[f.k]=e.target.checked;});rerender();},true);
+var _after43=after;after=function(){_after43();if((location.hash||'')!=='#signup')return;var f=document.querySelector('form[data-form="signup"]');if(!f)return;var st=fstate('signup');if(st.step!==0){st.step=0;rerender();return;}var all=f.querySelector('label.ckall'),first=f.querySelector('input[type=checkbox][data-f]');if(all&&first){var lab=first.closest('label');if(lab&&all.nextElementSibling!==lab)lab.before(all);}var ol=document.querySelector('#main ol.steps');if(ol)ol.style.display='none';};
+if(LANG==='en'){EN_D['이메일과 비밀번호만 있으면 돼요. 다이빙 프로필은 가입한 뒤 내 정보에서 채워요']='Just an email and password. Add your diving profile later.';}

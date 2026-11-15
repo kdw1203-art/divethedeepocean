@@ -71,6 +71,10 @@
   {
    "source": "/spot/:id",
    "destination": "/spot/:id.html"
+  },
+  {
+   "source": "/en/spot/:id",
+   "destination": "/en/spot/:id.html"
   }
  ]
 }
