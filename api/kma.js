@@ -21,6 +21,7 @@ module.exports = async (req, res) => {
       const info = ST[f[1]]; if (!info) continue;
       st.push({ id: f[1], name: info[0], tm: f[0], lat: info[1], lon: info[2], wd: NUM(f[2]), ws: NUM(f[3]), gst: NUM(f[4]), ta: NUM(f[10]), tw: NUM(f[11]), wh: NUM(f[13]), whmax: NUM(f[12]), wp: NUM(f[15]) });
     }
+    const last = {}; st.forEach(x => { if (x.wh != null || x.tw != null) { if (!last[x.id] || x.tm > last[x.id].tm) last[x.id] = x; } }); st.length = 0; Object.values(last).forEach(x => st.push(x));
     res.setHeader('cache-control', st.length ? 'public, max-age=300, s-maxage=600, stale-while-revalidate=1800' : 'no-store');
     res.status(200).json({ on: true, n: st.length, st });
   } catch (e) { res.setHeader('cache-control', 'no-store'); res.status(200).json({ on: true, n: 0, st: [], err: 'upstream' }); }
