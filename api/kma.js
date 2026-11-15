@@ -14,6 +14,17 @@ module.exports = async (req, res) => {
     if ((req.query || {}).info) { const r2 = await fetch(`https://apihub.kma.go.kr/api/typ01/url/stn_inf.php?inf=BUOY&stn=&tm=${tm}&help=0&authKey=${encodeURIComponent(key)}`); const b2 = Buffer.from(await r2.arrayBuffer()); let t2; try { t2 = new TextDecoder('euc-kr').decode(b2); } catch (e) { t2 = b2.toString('utf8'); } res.setHeader('cache-control', 'no-store'); res.status(200).json({ status: r2.status, head: t2.slice(0, 2600) }); return; }
     if ((req.query || {}).raw) { res.setHeader('cache-control', 'no-store'); res.status(200).json({ status: r.status, head: txt.slice(0, 900) }); return; }
     const ST = {22101:['덕적도',37.236,126.019],22102:['칠발도',34.793,125.777],22103:['거문도',34.001,127.501],22104:['거제도',34.767,128.9],22105:['동해',37.481,129.95],22106:['포항',36.35,129.783],22107:['마라도',33.083,126.033],22108:['외연도',36.25,125.75],21229:['울릉도',37.455,131.114],22183:['신안',34.733,126.242],22184:['추자도',33.794,126.141],22185:['인천',37.092,125.429],22186:['부안',35.659,125.814],22187:['서귀포',33.128,127.023],22188:['통영',34.391,128.225],22189:['울산',35.345,129.841],22190:['울진',36.907,129.874]};
+    // 지점 좌표는 기상청 지점정보에서 받아 하루 동안 기억하고, 실패하면 위 기본값을 씀
+    const G = globalThis.__kmaStn || (globalThis.__kmaStn = { at: 0, m: null });
+    if (!G.m || Date.now() - G.at > 864e5) {
+      try {
+        const r2 = await fetch(`https://apihub.kma.go.kr/api/typ01/url/stn_inf.php?inf=BUOY&stn=&tm=${tm}&help=0&authKey=${encodeURIComponent(key)}`);
+        if (r2.ok) { const b2 = Buffer.from(await r2.arrayBuffer()); let t2; try { t2 = new TextDecoder('euc-kr').decode(b2); } catch (e) { t2 = b2.toString('utf8'); }
+          const m = {}; t2.split(/\r?\n/).forEach(l => { const f = l.trim().split(/\s+/); if (/^\d{5}$/.test(f[0]) && f.length >= 7) { const lon = Number(f[1]), lat = Number(f[2]); if (isFinite(lat) && isFinite(lon) && lat > 30 && lat < 40 && lon > 120 && lon < 135) m[f[0]] = [f[6], Math.round(lat * 1e4) / 1e4, Math.round(lon * 1e4) / 1e4]; } });
+          if (Object.keys(m).length >= 10) { G.m = m; G.at = Date.now(); } }
+      } catch (e) {}
+    }
+    if (G.m) Object.assign(ST, G.m);
     const st = [];
     for (const l of txt.split(/\r?\n/)) {
       const f = l.trim().split(/\s+/);
