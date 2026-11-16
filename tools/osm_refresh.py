@@ -17,6 +17,11 @@ Q = """[out:json][timeout:180];
   nwr["sport"="scuba_diving"]["name"]({b});
   nwr["scuba_diving:divespot"="yes"]["name"]({b});
   nwr["tourism"~"hotel|resort|guest_house"]["sport"="scuba_diving"]({b});
+  nwr["sport"="free_diving"]["name"]({b});
+  nwr["sport"="freediving"]["name"]({b});
+  nwr["shop"="freediving"]({b});
+  nwr["leisure"="swimming_pool"]["sport"~"scuba_diving|free_diving|freediving"]({b});
+  nwr["leisure"="sports_centre"]["sport"~"scuba_diving|free_diving|freediving"]({b});
 );
 out center tags;"""
 # 30x60 degree tiles keep each query small enough for public Overpass servers
@@ -28,6 +33,14 @@ def kind(t):
     if t.get('tourism') in ('hotel', 'resort', 'guest_house'):
         return 2
     return 0
+
+def extra(t):
+    sp = t.get('sport', '')
+    if t.get('leisure') == 'swimming_pool' or ('pool' in (t.get('name:en') or '').lower()) or any(k in (t.get('name') or '') for k in ('다이빙풀', '잠수풀')):
+        return '다이빙풀'
+    if 'free' in sp or t.get('shop') == 'freediving':
+        return '프리다이빙'
+    return None
 
 def fetch(b):
     q = Q.replace('{b}', '%s,%s,%s,%s' % b)
@@ -64,6 +77,9 @@ for b in TILES:
         if not n or lat is None or lon is None:
             continue
         item = [round(lat, 4), round(lon, 4), n[:80], kind(t)]
+        tag = extra(t)
+        if tag:
+            item.append(tag)
         key = (round(item[0], 1), round(item[1], 1))
         if any(near(item, s) and s[2].lower() == item[2].lower() for s in grid.get(key, [])):
             continue
