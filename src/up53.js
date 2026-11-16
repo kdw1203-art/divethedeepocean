@@ -27,7 +27,7 @@ function side53(){var side=document.getElementById('side');if(!side)return;var o
   side.innerHTML=MAIN53.map(function(m){if(m.g)return '<div class="grp">'+m.g+'</div>';return '<a href="#'+m.id+'" data-nav="'+m.id+'">'+ic(m.i||old[m.id]&&old[m.id].i||I.home)+m.l+'</a>';}).join('')+
     '<details class="smore"'+(open?' open':'')+'><summary>'+L53('더보기','More')+'</summary>'+more.map(function(m){return '<a href="#'+m.id+'" data-nav="'+m.id+'">'+ic(m.i)+m.l+'</a>';}).join('')+'</details>';
   var tb=document.getElementById('tabbar');if(tb){var T=[['home',L53('홈','Home'),I.home],['log',L53('로그북','Log'),mIcon('log')],['map',L53('지도','Map'),mIcon('map')],['resorts',L53('리조트','Resorts'),mIcon('resorts')],['profile',L53('내 정보','Me'),mIcon('profile')]];tb.innerHTML=T.map(function(t){return '<a href="#'+t[0]+'" data-nav="'+t[0]+'">'+ic(t[2],22)+t[1]+'</a>';}).join('');}
-  if(typeof dmSide==='function')dmSide();navMark();}
+  if(typeof MENU0!=='undefined')MAIN53.forEach(function(m){if(m.id)MENU0[m.id]=m.l;});if(typeof dmSide==='function')dmSide();navMark();}
 function navMark(){var c=cur(),map={dive:'log',logimport:'logimport',logstats:'logstats',spot:'map',devices:'logimport'},id=map[c]||c;document.querySelectorAll('[data-nav]').forEach(function(a){if(a.dataset.nav===id)a.setAttribute('aria-current','page');else if(map[c])a.removeAttribute('aria-current');});}
 document.addEventListener('toggle',function(e){if(e.target.classList&&e.target.classList.contains('smore'))LS.set('smore',e.target.open?1:0);},true);
 side53();
