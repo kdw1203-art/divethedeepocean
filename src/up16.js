@@ -1,13 +1,14 @@
 /* ===== 다이브 컴퓨터 기록 가져오기 고도화 ===== */
-function dsProf(p,n){n=n||180;if(!p||!p.length)return null;p=p.filter(function(x){return x&&isFinite(x[0])&&isFinite(x[1]);});if(p.length<2)return null;var step=Math.max(1,Math.ceil(p.length/n)),o=[];for(var i=0;i<p.length;i+=step)o.push([Math.round(p[i][0]),Math.round(p[i][1]*10)/10]);var l=p[p.length-1];if(o[o.length-1][0]!==Math.round(l[0]))o.push([Math.round(l[0]),Math.round(l[1]*10)/10]);return o;}
+function dsPt(x){var r=[Math.round(x[0]),Math.round(x[1]*10)/10];var t=x[2]!=null&&isFinite(x[2])?Math.round(x[2]*10)/10:null,b=x[3]!=null&&isFinite(x[3])?Math.round(x[3]):null;if(t!=null||b!=null){r.push(t);if(b!=null)r.push(b);}return r;}
+function dsProf(p,n){n=n||180;if(!p||!p.length)return null;p=p.filter(function(x){return x&&isFinite(x[0])&&isFinite(x[1]);});if(p.length<2)return null;var lt=null,lb=null;p.forEach(function(x){if(x[2]!=null&&isFinite(x[2]))lt=x[2];else if(lt!=null)x[2]=lt;if(x[3]!=null&&isFinite(x[3]))lb=x[3];else if(lb!=null)x[3]=lb;});var step=Math.max(1,Math.ceil(p.length/n)),o=[];for(var i=0;i<p.length;i+=step)o.push(dsPt(p[i]));var l=p[p.length-1];if(o[o.length-1][0]!==Math.round(l[0]))o.push(dsPt(l));return o;}
 function avgOf(p){if(!p||p.length<2)return null;var a=0,t=0;for(var i=1;i<p.length;i++){var dt=p[i][0]-p[i-1][0];if(dt<=0)continue;a+=(p[i][1]+p[i-1][1])/2*dt;t+=dt;}return t?Math.round(a/t*10)/10:null;}
 
 /* Garmin FIT: 수심 곡선 · 수온 · 시작 위치 · 기기 이름까지 */
-parseFIT=function(buf){var dv=new DataView(buf),hs=dv.getUint8(0),size=dv.getUint32(4,true),end=Math.min(hs+size,buf.byteLength),p=hs,defs={},last=0,R=[],start=0,lat=null,lon=null,prod=null,manu=null,temps=[];
+parseFIT=function(buf){var dv=new DataView(buf),hs=dv.getUint8(0),size=dv.getUint32(4,true),end=Math.min(hs+size,buf.byteLength),p=hs,defs={},last=0,R=[],start=0,lat=null,lon=null,prod=null,manu=null,temps=[],TP=[];
   if(buf.byteLength<14||String.fromCharCode(dv.getUint8(8),dv.getUint8(9),dv.getUint8(10),dv.getUint8(11))!=='.FIT')return [];
   function rd(off,sz,le,base){try{if(sz===1)return (base===1)?dv.getInt8(off):dv.getUint8(off);if(sz===2)return (base===3)?dv.getInt16(off,le):dv.getUint16(off,le);if(sz===4)return (base===5)?dv.getInt32(off,le):dv.getUint32(off,le);}catch(e){}return null;}
   function read(d,at){var o={},q=at;d.f.forEach(function(f){if(f[0]>=0)o[f[0]]=rd(q,f[1],d.le,f[2]&0x1F);q+=f[1];});return o;}
-  function rec(d,v,ts){if(d.g===20){var dp=v[92];if(ts&&ts!==0xFFFFFFFF&&dp!=null&&dp!==0xFFFFFFFF)R.push([ts,dp/1000]);if(v[13]!=null&&v[13]!==127&&v[13]!==-128)temps.push(v[13]);if(lat==null&&v[0]!=null&&v[0]!==0x7FFFFFFF&&v[0]!==0&&v[1]!=null&&v[1]!==0x7FFFFFFF){lat=v[0]*180/2147483648;lon=v[1]*180/2147483648;}}
+  function rec(d,v,ts){if(d.g===319&&ts&&v[1]!=null&&v[1]!==0xFFFF&&v[1]>0)TP.push([ts,v[1]/100]);if(d.g===20){var dp=v[92];if(ts&&ts!==0xFFFFFFFF&&dp!=null&&dp!==0xFFFFFFFF)R.push([ts,dp/1000,(v[13]!=null&&v[13]!==127&&v[13]!==-128)?v[13]:null]);if(v[13]!=null&&v[13]!==127&&v[13]!==-128)temps.push(v[13]);if(lat==null&&v[0]!=null&&v[0]!==0x7FFFFFFF&&v[0]!==0&&v[1]!=null&&v[1]!==0x7FFFFFFF){lat=v[0]*180/2147483648;lon=v[1]*180/2147483648;}}
     if(d.g===18){if(v[2]&&v[2]!==0xFFFFFFFF)start=v[2];if(v[3]!=null&&v[3]!==0x7FFFFFFF&&v[3]!==0&&v[4]!=null&&v[4]!==0x7FFFFFFF){lat=v[3]*180/2147483648;lon=v[4]*180/2147483648;}}
     if(d.g===0){manu=v[1];prod=v[2];}}
   while(p<end){var h=dv.getUint8(p++);
@@ -18,7 +19,7 @@ parseFIT=function(buf){var dv=new DataView(buf),hs=dv.getUint8(0),size=dv.getUin
       defs[loc]={g:g,le:le,f:F,len:len};p=q;continue;}
     var dd=defs[h&0x0F];if(!dd)break;var vv=read(dd,p);p+=dd.len;if(vv[253]!=null&&vv[253]!==0xFFFFFFFF)last=vv[253];rec(dd,vv,vv[253]);}
   if(!R.length)return [];var t0=R[0][0],s=start||t0,mx=0;R.forEach(function(r){if(r[1]>mx)mx=r[1];});if(mx<0.5)return [];
-  var dt=new Date((s+631065600)*1000),date=dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2)+'-'+('0'+dt.getDate()).slice(-2),prof=R.map(function(r){return [r[0]-t0,r[1]];});
+  var dt=new Date((s+631065600)*1000),date=dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2)+'-'+('0'+dt.getDate()).slice(-2),ti=0,prof=R.map(function(r){while(ti+1<TP.length&&TP[ti+1][0]<=r[0])ti++;var pb=TP.length&&TP[ti][0]<=r[0]+30?TP[ti][1]:null;return [r[0]-t0,r[1],r[2],pb];});
   var names={1:'Garmin',23:'Suunto',259:'Shearwater'};
   return [{date:date,start:dt.toISOString(),depth:Math.round(mx*10)/10,time:Math.round((R[R.length-1][0]-t0)/60),site:'',device:(names[manu]||'Garmin')+(prod&&manu===1?' (제품 '+prod+')':''),lat:lat,lon:lon,temp:temps.length?Math.min.apply(null,temps):null,profile:prof}];};
 
@@ -27,8 +28,8 @@ var _pdx16=parseDiveXml;parseDiveXml=function(txt,name){var base=_pdx16(txt,name
   var tag=function(el,n){return el.getElementsByTagName(n);},num=function(x){var v=parseFloat(String(x||'').replace(',','.'));return isFinite(v)?v:null;};
   var dives=[].slice.call(tag(doc,'dive'));if(!dives.length)return base;
   return base.map(function(o,i){var d=dives[i];if(!d)return o;var prof=[],temps=[];
-    [].forEach.call(tag(d,'sample'),function(s){var t=String(s.getAttribute('time')||''),m=t.match(/(\d+):(\d+)/),sec=m?(+m[1]*60+ +m[2]):num(t);var dp=num(s.getAttribute('depth'));if(sec!=null&&dp!=null)prof.push([sec,dp]);var tc=num(s.getAttribute('temp'));if(tc!=null)temps.push(tc);});
-    if(!prof.length)[].forEach.call(tag(d,'waypoint'),function(w){var dp=num((tag(w,'depth')[0]||{}).textContent),sec=num((tag(w,'divetime')[0]||{}).textContent),tk=num((tag(w,'temperature')[0]||{}).textContent);if(dp!=null&&sec!=null)prof.push([sec,dp]);if(tk!=null)temps.push(tk>200?tk-273.15:tk);});
+    [].forEach.call(tag(d,'sample'),function(s){var t=String(s.getAttribute('time')||''),m=t.match(/(\d+):(\d+)/),sec=m?(+m[1]*60+ +m[2]):num(t);var dp=num(s.getAttribute('depth'));var tc=num(s.getAttribute('temp')),pr=num(s.getAttribute('pressure'));if(sec!=null&&dp!=null)prof.push([sec,dp,tc,pr]);if(tc!=null)temps.push(tc);});
+    if(!prof.length)[].forEach.call(tag(d,'waypoint'),function(w){var dp=num((tag(w,'depth')[0]||{}).textContent),sec=num((tag(w,'divetime')[0]||{}).textContent),tk=num((tag(w,'temperature')[0]||{}).textContent),tp=num((tag(w,'tankpressure')[0]||{}).textContent);if(dp!=null&&sec!=null)prof.push([sec,dp,tk==null?null:(tk>200?tk-273.15:tk),tp==null?null:(tp>1000?tp/1e5:tp)]);if(tk!=null)temps.push(tk>200?tk-273.15:tk);});
     var wt=d.getAttribute('watertemp')||((tag(d,'temperature')[0]||{}).getAttribute&&tag(d,'temperature')[0].getAttribute('water'));var wv=num(wt);if(wv!=null)temps.push(wv>200?wv-273.15:wv);
     var lw=tag(d,'lowesttemperature')[0];if(lw){var lv=num(lw.textContent);if(lv!=null)temps.push(lv>200?lv-273.15:lv);}
     var dc=tag(d,'divecomputer')[0],dev=dc&&dc.getAttribute('model');if(!dev){var mdl=tag(doc,'model')[0];dev=mdl&&mdl.textContent;}
@@ -63,7 +64,7 @@ document.addEventListener('change',function(e){var t=e.target;
 document.addEventListener('click',function(e){if(e.target.id!=='impGo')return;var I=state.imp;if(!I)return;var L=I.list.filter(function(o){return o.pick;});if(!L.length)return;
   if(!BE.on){state.userLogs=L.map(function(o){return {date:o.date,site:o.spot?spot(o.spot).name:(o.site||'파일에서 가져옴'),depth:o.depth,time:o.time};}).concat(state.userLogs||[]);persist();closeSheet();rerender();return;}
   if(!BE.user){needLogin('로그를 저장하려면 로그인해 주세요');return;}e.target.disabled=true;e.target.textContent='저장하는 중…';
-  var rows=L.map(function(o){var s=o.spot?spot(o.spot):null;return {dive_date:o.date||null,site:s?s.name:(o.site||'파일에서 가져옴'),spot:o.spot||null,max_depth:o.depth||null,minutes:o.time||null,source:'file',start_at:o.start&&!isNaN(Date.parse(o.start))?new Date(o.start).toISOString():null,avg_depth:o.avg||null,water_temp:o.temp!=null?Math.round(o.temp*10)/10:null,device:o.device?String(o.device).slice(0,60):null,lat:o.lat!=null?Math.round(o.lat*1e4)/1e4:null,lon:o.lon!=null?Math.round(o.lon*1e4)/1e4:null,profile:o.profile||null};});
+  var rows=L.map(function(o){var s=o.spot?spot(o.spot):null;return {dive_date:o.date||null,site:s?s.name:(o.site||'파일에서 가져옴'),spot:o.spot||null,max_depth:o.depth||null,minutes:o.time||null,source:'file',start_at:o.start&&!isNaN(Date.parse(o.start))?new Date(o.start).toISOString():null,avg_depth:o.avg||null,water_temp:o.temp!=null?Math.round(o.temp*10)/10:null,device:o.device?String(o.device).slice(0,60):null,lat:o.lat!=null?Math.round(o.lat*1e4)/1e4:null,lon:o.lon!=null?Math.round(o.lon*1e4)/1e4:null,profile:o.profile||null,bar_start:prBE(o.profile,0),bar_end:prBE(o.profile,1)};});
   BE.sb.from('dive_logs').insert(rows).then(function(r){if(r.error){toast('저장하지 못했어요: '+r.error.message);e.target.disabled=false;e.target.textContent=L.length+'개 저장';return;}
     var mins=L.reduce(function(a,o){return a+(+o.time||0);},0),mx=Math.max.apply(null,L.map(function(o){return +o.depth||0;})),sp={};L.forEach(function(o){if(o.spot)sp[o.spot]=1;});
     closeSheet();state.imp=null;state.profIds=null;BE.pull();
@@ -104,3 +105,5 @@ appleHealth=function(file,say){var samples=[],works=[],temps=[],tail='',dec=new 
 /* 사진이 아직 없는 포인트: 빈 색 칸 대신 물결 그림 */
 (function(){var w="url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='40' viewBox='0 0 160 40'%3E%3Cpath d='M0 20 Q20 8 40 20 T80 20 T120 20 T160 20' fill='none' stroke='white' stroke-opacity='.22' stroke-width='2'/%3E%3C/svg%3E\")";
   var st=document.createElement('style');st.textContent='.ph1>div:only-child{position:relative;background-image:'+w+',linear-gradient(160deg,rgba(255,255,255,.08),rgba(0,0,0,.25))!important;background-size:160px 40px,100% 100%;background-repeat:repeat,no-repeat}.ph1>div:only-child::after{content:"대표 사진 준비 중";position:absolute;right:10px;bottom:8px;font-size:11px;color:rgba(255,255,255,.8)}';document.head.appendChild(st);})();
+
+function prBE(p,last){if(!p)return null;var L=p.filter(function(x){return x[3]!=null;});if(L.length<2)return null;var v=last?L[L.length-1][3]:L[0][3];return v>0&&v<400?Math.round(v):null;}
