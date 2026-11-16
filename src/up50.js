@@ -40,7 +40,7 @@ function actPanel(){var a=state.act;if(!a){actLoad();return '';}var tot=0;Object
     '<div class="list">'+Object.keys(PTW).map(function(k){var n=+a[k]||0;return '<div class="item"><span class="tx"><b>'+PTW[k][1]+'</b><span>'+L50('1건에 '+PTW[k][0]+'P',PTW[k][0]+'P each')+'</span></span><span class="rt">'+n+' · '+(n*PTW[k][0])+'P</span></div>';}).join('')+'</div></div>';}
 
 /* ----- 사진으로 생물 찾기 ----- */
-function idOn(cb){if(idOn.v!=null)return cb(idOn.v);fetch('/api/identify').then(function(r){return r.json();}).then(function(j){idOn.v=!!j.on;cb(idOn.v);}).catch(function(){idOn.v=false;cb(false);});}
+function idOn(cb){if(idOn.v!=null)return cb(idOn.v);if(/^(localhost|127\.)/.test(location.hostname)){idOn.v=false;return cb(false);}fetch('/api/identify').then(function(r){return r.json();}).then(function(j){idOn.v=!!j.on;cb(idOn.v);}).catch(function(){idOn.v=false;cb(false);});}
 function idRun(file){if(!BE.user){location.hash='#login';return;}sheet('<h2 style="margin:0 0 10px">'+L50('사진으로 생물 찾기','Identify from photo')+'</h2><p class="empty" style="margin:0">'+L50('사진을 살펴보는 중이에요…','Looking at your photo…')+'</p>');
   shrink(file,function(u){if(!u){closeSheet();return toast(L50('사진을 열지 못했어요','Could not open photo'));}var src=u;BE.sb.auth.getSession().then(function(s){var tk=s.data&&s.data.session&&s.data.session.access_token;
     return fetch('/api/identify',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+tk,apikey:(window.DTDO_BACKEND||{}).key||''},body:JSON.stringify({image:u})});}).then(function(r){return r.json().then(function(j){return [r.status,j];});}).then(function(x){var st=x[0],j=x[1];
