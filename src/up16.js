@@ -4,13 +4,13 @@ function dsProf(p,n){n=n||180;if(!p||!p.length)return null;p=p.filter(function(x
 function avgOf(p){if(!p||p.length<2)return null;var a=0,t=0;for(var i=1;i<p.length;i++){var dt=p[i][0]-p[i-1][0];if(dt<=0)continue;a+=(p[i][1]+p[i-1][1])/2*dt;t+=dt;}return t?Math.round(a/t*10)/10:null;}
 
 /* Garmin FIT: 수심 곡선 · 수온 · 시작 위치 · 기기 이름까지 */
-parseFIT=function(buf){var dv=new DataView(buf),hs=dv.getUint8(0),size=dv.getUint32(4,true),end=Math.min(hs+size,buf.byteLength),p=hs,defs={},last=0,R=[],start=0,lat=null,lon=null,prod=null,manu=null,temps=[],TP=[];
+parseFIT=function(buf){var dv=new DataView(buf),hs=dv.getUint8(0),size=dv.getUint32(4,true),end=Math.min(hs+size,buf.byteLength),p=hs,defs={},last=0,R=[],start=0,lat=null,lon=null,prod=null,manu=null,temps=[],TP=[],tzo=0;
   if(buf.byteLength<14||String.fromCharCode(dv.getUint8(8),dv.getUint8(9),dv.getUint8(10),dv.getUint8(11))!=='.FIT')return [];
   function rd(off,sz,le,base){try{if(sz===1)return (base===1)?dv.getInt8(off):dv.getUint8(off);if(sz===2)return (base===3)?dv.getInt16(off,le):dv.getUint16(off,le);if(sz===4)return (base===5)?dv.getInt32(off,le):dv.getUint32(off,le);}catch(e){}return null;}
   function read(d,at){var o={},q=at;d.f.forEach(function(f){if(f[0]>=0)o[f[0]]=rd(q,f[1],d.le,f[2]&0x1F);q+=f[1];});return o;}
   function rec(d,v,ts){if(d.g===319&&ts&&v[1]!=null&&v[1]!==0xFFFF&&v[1]>0)TP.push([ts,v[1]/100]);if(d.g===20){var dp=v[92];if(ts&&ts!==0xFFFFFFFF&&dp!=null&&dp!==0xFFFFFFFF)R.push([ts,dp/1000,(v[13]!=null&&v[13]!==127&&v[13]!==-128)?v[13]:null]);if(v[13]!=null&&v[13]!==127&&v[13]!==-128)temps.push(v[13]);if(lat==null&&v[0]!=null&&v[0]!==0x7FFFFFFF&&v[0]!==0&&v[1]!=null&&v[1]!==0x7FFFFFFF){lat=v[0]*180/2147483648;lon=v[1]*180/2147483648;}}
     if(d.g===18){if(v[2]&&v[2]!==0xFFFFFFFF)start=v[2];if(v[3]!=null&&v[3]!==0x7FFFFFFF&&v[3]!==0&&v[4]!=null&&v[4]!==0x7FFFFFFF){lat=v[3]*180/2147483648;lon=v[4]*180/2147483648;}}
-    if(d.g===0){manu=v[1];prod=v[2];}}
+    if(d.g===0){manu=v[1];prod=v[2];}if(d.g===34&&v[253]!=null&&v[5]!=null&&v[253]!==0xFFFFFFFF&&v[5]!==0xFFFFFFFF){var df=v[5]-v[253];if(Math.abs(df)<=14*3600)tzo=df;}}
   while(p<end){var h=dv.getUint8(p++);
     if(h&0x80){var lt=(h>>5)&3,off=h&0x1F,d=defs[lt];if(!d)break;var ts=(last&~0x1F)+off;if(off<(last&0x1F))ts+=0x20;last=ts;rec(d,read(d,p),ts);p+=d.len;continue;}
     if(h&0x40){var loc=h&0x0F,dev=h&0x20,le=dv.getUint8(p+1)===0,g=le?dv.getUint16(p+2,true):dv.getUint16(p+2,false),nf=dv.getUint8(p+4),q=p+5,F=[],len=0;
@@ -19,23 +19,23 @@ parseFIT=function(buf){var dv=new DataView(buf),hs=dv.getUint8(0),size=dv.getUin
       defs[loc]={g:g,le:le,f:F,len:len};p=q;continue;}
     var dd=defs[h&0x0F];if(!dd)break;var vv=read(dd,p);p+=dd.len;if(vv[253]!=null&&vv[253]!==0xFFFFFFFF)last=vv[253];rec(dd,vv,vv[253]);}
   if(!R.length)return [];var t0=R[0][0],s=start||t0,mx=0;R.forEach(function(r){if(r[1]>mx)mx=r[1];});if(mx<0.5)return [];
-  var dt=new Date((s+631065600)*1000),date=dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2)+'-'+('0'+dt.getDate()).slice(-2),ti=0,prof=R.map(function(r){while(ti+1<TP.length&&TP[ti+1][0]<=r[0])ti++;var pb=TP.length&&TP[ti][0]<=r[0]+30?TP[ti][1]:null;return [r[0]-t0,r[1],r[2],pb];});
+  var dt=new Date((s+631065600+tzo)*1000),date=dt.toISOString().slice(0,10),ti=0,prof=R.map(function(r){while(ti+1<TP.length&&TP[ti+1][0]<=r[0])ti++;var pb=TP.length&&TP[ti][0]<=r[0]+30?TP[ti][1]:null;return [r[0]-t0,r[1],r[2],pb];});
   var names={1:'Garmin',23:'Suunto',259:'Shearwater'};
-  return [{date:date,start:dt.toISOString(),depth:Math.round(mx*10)/10,time:Math.round((R[R.length-1][0]-t0)/60),site:'',device:(names[manu]||'Garmin')+(prod&&manu===1?' (제품 '+prod+')':''),lat:lat,lon:lon,temp:temps.length?Math.min.apply(null,temps):null,profile:prof}];};
+  return [{date:date,start:dt.toISOString().slice(0,19),depth:Math.round(mx*10)/10,time:Math.round((R[R.length-1][0]-t0)/60),site:'',device:manu===1?'Garmin Descent':(names[manu]||'Garmin'),lat:lat,lon:lon,temp:temps.length?Math.min.apply(null,temps):null,profile:prof}];};
 
 /* UDDF · Subsurface XML (Shearwater Cloud·Subsurface·MacDive 내보내기): 수심 곡선 · 수온 · GPS · 기기 */
 var _pdx16=parseDiveXml;parseDiveXml=function(txt,name){var base=_pdx16(txt,name);var doc=new DOMParser().parseFromString(txt,'application/xml');if(doc.querySelector('parsererror'))return base;
   var tag=function(el,n){return el.getElementsByTagName(n);},num=function(x){var v=parseFloat(String(x||'').replace(',','.'));return isFinite(v)?v:null;};
   var dives=[].slice.call(tag(doc,'dive'));if(!dives.length)return base;
   return base.map(function(o,i){var d=dives[i];if(!d)return o;var prof=[],temps=[];
-    [].forEach.call(tag(d,'sample'),function(s){var t=String(s.getAttribute('time')||''),m=t.match(/(\d+):(\d+)/),sec=m?(+m[1]*60+ +m[2]):num(t);var dp=num(s.getAttribute('depth'));var tc=num(s.getAttribute('temp')),pr=num(s.getAttribute('pressure'));if(sec!=null&&dp!=null)prof.push([sec,dp,tc,pr]);if(tc!=null)temps.push(tc);});
+    [].forEach.call(tag(d,'sample'),function(s){var t=String(s.getAttribute('time')||''),m=t.match(/(\d+):(\d+)/),sec=m?(+m[1]*60+ +m[2]):num(t);var dp=num(s.getAttribute('depth'));var tc=num(s.getAttribute('temp')),pr=num(s.getAttribute('pressure')||s.getAttribute('pressure0'));if(sec!=null&&dp!=null)prof.push([sec,dp,tc,pr]);if(tc!=null)temps.push(tc);});
     if(!prof.length)[].forEach.call(tag(d,'waypoint'),function(w){var dp=num((tag(w,'depth')[0]||{}).textContent),sec=num((tag(w,'divetime')[0]||{}).textContent),tk=num((tag(w,'temperature')[0]||{}).textContent),tp=num((tag(w,'tankpressure')[0]||{}).textContent);if(dp!=null&&sec!=null)prof.push([sec,dp,tk==null?null:(tk>200?tk-273.15:tk),tp==null?null:(tp>1000?tp/1e5:tp)]);if(tk!=null)temps.push(tk>200?tk-273.15:tk);});
     var wt=d.getAttribute('watertemp')||((tag(d,'temperature')[0]||{}).getAttribute&&tag(d,'temperature')[0].getAttribute('water'));var wv=num(wt);if(wv!=null)temps.push(wv>200?wv-273.15:wv);
     var lw=tag(d,'lowesttemperature')[0];if(lw){var lv=num(lw.textContent);if(lv!=null)temps.push(lv>200?lv-273.15:lv);}
     var dc=tag(d,'divecomputer')[0],dev=dc&&dc.getAttribute('model');if(!dev){var mdl=tag(doc,'model')[0];dev=mdl&&mdl.textContent;}
     var lat=null,lon=null,sid=d.getAttribute('divesiteid'),site=sid&&doc.querySelector('site[uuid="'+sid+'"]');if(site&&site.getAttribute('gps')){var g=site.getAttribute('gps').split(/\s+/);lat=num(g[0]);lon=num(g[1]);}
     if(lat==null){var gl=tag(d,'latitude')[0]||tag(doc,'latitude')[0],go=tag(d,'longitude')[0]||tag(doc,'longitude')[0];if(gl&&go){lat=num(gl.textContent);lon=num(go.textContent);}}
-    var tm=d.getAttribute('time');o.start=o.date&&tm?o.date+'T'+tm:o.start;
+    var tm=d.getAttribute('time');o.start=o.date&&tm?o.date+'T'+tm:o.start;if(!o.start){var dtx=(tag(d,'datetime')[0]||{}).textContent;if(dtx&&/T\d/.test(dtx))o.start=String(dtx).trim();}var cy=tag(d,'cylinder')[0];if(cy){var sz=num(cy.getAttribute('size'));if(sz&&sz>3&&sz<30)o.tank=sz;var oo=num(cy.getAttribute('o2'));if(oo&&oo>=21&&oo<=100&&!num(cy.getAttribute('he')))o.o2=Math.round(oo);var cs=num(cy.getAttribute('start')),ce=num(cy.getAttribute('end'));if(cs)o.cbs=cs;if(ce)o.cbe=ce;}
     o.profile=prof.length>1?prof:null;o.temp=temps.length?Math.round(Math.min.apply(null,temps)*10)/10:null;o.device=dev||null;o.lat=lat;o.lon=lon;return o;});};
 
 /* 가져온 다이브를 포인트에 자동 연결: GPS가 있으면 가장 가까운 포인트(30km 안), 없으면 이름으로 */
@@ -64,7 +64,7 @@ document.addEventListener('change',function(e){var t=e.target;
 document.addEventListener('click',function(e){if(e.target.id!=='impGo')return;var I=state.imp;if(!I)return;var L=I.list.filter(function(o){return o.pick;});if(!L.length)return;
   if(!BE.on){state.userLogs=L.map(function(o){return {date:o.date,site:o.spot?spot(o.spot).name:(o.site||'파일에서 가져옴'),depth:o.depth,time:o.time};}).concat(state.userLogs||[]);persist();closeSheet();rerender();return;}
   if(!BE.user){needLogin('로그를 저장하려면 로그인해 주세요');return;}e.target.disabled=true;e.target.textContent='저장하는 중…';
-  var rows=L.map(function(o){var s=o.spot?spot(o.spot):null;return {dive_date:o.date||null,site:s?s.name:(o.site||'파일에서 가져옴'),spot:o.spot||null,max_depth:o.depth||null,minutes:o.time||null,source:'file',start_at:o.start&&!isNaN(Date.parse(o.start))?new Date(o.start).toISOString():null,avg_depth:o.avg||null,water_temp:o.temp!=null?Math.round(o.temp*10)/10:null,device:o.device?String(o.device).slice(0,60):null,lat:o.lat!=null?Math.round(o.lat*1e4)/1e4:null,lon:o.lon!=null?Math.round(o.lon*1e4)/1e4:null,profile:o.profile||null,bar_start:prBE(o.profile,0),bar_end:prBE(o.profile,1)};});
+  var rows=L.map(function(o){var s=o.spot?spot(o.spot):null;return {dive_date:o.date||null,site:s?s.name:(o.site||'파일에서 가져옴'),spot:o.spot||null,max_depth:o.depth||null,minutes:o.time||null,source:'file',start_at:wallIso(o.start),tank_l:o.tank||null,gas_o2:o.o2||null,avg_depth:o.avg||null,water_temp:o.temp!=null?Math.round(o.temp*10)/10:null,device:o.device?String(o.device).slice(0,60):null,lat:o.lat!=null?Math.round(o.lat*1e4)/1e4:null,lon:o.lon!=null?Math.round(o.lon*1e4)/1e4:null,profile:o.profile||null,bar_start:prBE(o.profile,0)||(o.cbs?Math.round(o.cbs):null),bar_end:prBE(o.profile,1)||(o.cbe?Math.round(o.cbe):null)};});
   BE.sb.from('dive_logs').insert(rows).then(function(r){if(r.error){toast('저장하지 못했어요: '+r.error.message);e.target.disabled=false;e.target.textContent=L.length+'개 저장';return;}
     var mins=L.reduce(function(a,o){return a+(+o.time||0);},0),mx=Math.max.apply(null,L.map(function(o){return +o.depth||0;})),sp={};L.forEach(function(o){if(o.spot)sp[o.spot]=1;});
     closeSheet();state.imp=null;state.profIds=null;BE.pull();
@@ -107,3 +107,5 @@ appleHealth=function(file,say){var samples=[],works=[],temps=[],tail='',dec=new 
   var st=document.createElement('style');st.textContent='.ph1>div:only-child{position:relative;background-image:'+w+',linear-gradient(160deg,rgba(255,255,255,.08),rgba(0,0,0,.25))!important;background-size:160px 40px,100% 100%;background-repeat:repeat,no-repeat}.ph1>div:only-child::after{content:"대표 사진 준비 중";position:absolute;right:10px;bottom:8px;font-size:11px;color:rgba(255,255,255,.8)}';document.head.appendChild(st);})();
 
 function prBE(p,last){if(!p)return null;var L=p.filter(function(x){return x[3]!=null;});if(L.length<2)return null;var v=last?L[L.length-1][3]:L[0][3];return v>0&&v<400?Math.round(v):null;}
+
+function wallIso(st){if(!st)return null;var m=String(st).match(/^(\d{4}-\d{2}-\d{2})[T ](\d{2}):(\d{2})(?::(\d{2}))?/);if(!m)return null;return m[1]+'T'+m[2]+':'+m[3]+':'+(m[4]||'00')+'Z';}
