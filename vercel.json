@@ -75,18 +75,6 @@
   {
    "source": "/en/spot/:id",
    "destination": "/en/spot/:id.html"
-  },
-  {
-   "source": "/logbook",
-   "destination": "/logbook.html"
-  },
-  {
-   "source": "/pools",
-   "destination": "/pools.html"
-  },
-  {
-   "source": "/guide/:id",
-   "destination": "/guide/:id.html"
   }
  ]
 }
