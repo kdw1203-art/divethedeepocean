@@ -49,7 +49,7 @@ def fetch(b):
         for _ in range(2):
             try:
                 req = urllib.request.Request(ep, data=data, headers={'User-Agent': 'divedeepocean-osm-refresh/1.0'})
-                with urllib.request.urlopen(req, timeout=200) as r:
+                with urllib.request.urlopen(req, timeout=190) as r:
                     return json.load(r).get('elements', [])
             except Exception as e:
                 print('retry', ep, b, e, file=sys.stderr)
@@ -85,6 +85,9 @@ for b in TILES:
             continue
         grid.setdefault(key, []).append(item)
         added.append(item)
+    if added:  # save after every tile so a timeout keeps what was found
+        json.dump(old + added, open(PATH, 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+    print('tile', b, 'added so far', len(added), flush=True)
     time.sleep(5)
 print('tiles failed', failed, 'added', len(added))
 if added:

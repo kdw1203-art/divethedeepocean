@@ -8,19 +8,31 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 300
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: python tools/osm_refresh.py assets/sites.json
+        timeout-minutes: 270
+        continue-on-error: true
       - name: Commit if changed
+        if: always()
         run: |
+          if git diff --quiet assets/sites.json; then echo "no change"; exit 0; fi
+          cp assets/sites.json /tmp/new.json; git checkout -- assets/sites.json; git pull --rebase
+          python - <<'PY'
+          import json
+          old=json.load(open('assets/sites.json',encoding='utf-8')); new=json.load(open('/tmp/new.json',encoding='utf-8'))
+          seen={(round(s[0],3),round(s[1],3),s[2].lower()) for s in old}
+          add=[s for s in new if (round(s[0],3),round(s[1],3),s[2].lower()) not in seen]
+          print('merge add',len(add))
+          json.dump(old+add,open('assets/sites.json','w',encoding='utf-8'),ensure_ascii=False,separators=(',',':'))
+          PY
           if git diff --quiet assets/sites.json; then echo "no change"; exit 0; fi
           git config user.name "osm-refresh-bot"
           git config user.email "osm-refresh-bot@users.noreply.github.com"
           git add assets/sites.json
           git commit -m "Monthly OSM refresh of dive centres"
-          git pull --rebase
           git push
