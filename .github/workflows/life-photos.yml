@@ -1,0 +1,24 @@
+name: Life photos (iNaturalist)
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  photos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install pillow
+      - run: python tools/life_photos.py
+      - name: Commit
+        run: |
+          git add assets/media
+          if git diff --cached --quiet; then echo none; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "생물 사진을 학명 기준으로 다시 받기 (iNaturalist, CC BY · BY-SA · CC0)"
+          git pull --rebase
+          git push
