@@ -24,7 +24,7 @@ function pfCamDetect(f){if(f.camChk)return;f.camChk=1;fetch(f.url).then(function
 function pfCamId(img,o){if(!o||o.cam==='none')return null;return o.cam==='auto'?(img&&img._cam)||null:o.cam;}
 /* 보정 적용: 카메라 특성은 숨은 기본값으로 더해지고, 내가 움직인 슬라이더는 그대로예요 */
 var _pfA73=pfApply;pfApply=function(img,k,maxW,opt){if(!opt)return _pfA73(img,k,maxW,opt);var cid=pfCamId(img,opt),o2=opt;
-  if(cid||opt.flat){var C=CAMP[cid]||['',1,1,{con:0,sat:0,dehaze:0,sharp:0}],pr=PFP[opt.preset]||PFP.auto,key='_c_'+(cid||'x')+'_'+opt.preset;if(!PFP[key])PFP[key]=[pr[0]+'/'+(cid||'x'),pr[1]*C[1],Math.min(1.6,pr[2]*C[2]),pr[3],pr[4]];
+  if(cid||opt.flat){var C=CAMP[cid]||['',1,1,{con:0,sat:0,dehaze:0,sharp:0}],pr=PFP[opt.preset]||PFP.auto,key='_c_'+(cid||'x')+'_'+opt.preset;if(!PFP[key])Object.defineProperty(PFP,key,{value:[pr[0]+'/'+(cid||'x'),pr[1]*C[1],Math.min(1.6,pr[2]*C[2]),pr[3],pr[4]],enumerable:false});
     var off=C[3],fl=opt.flat?{con:22,sat:25}:{con:0,sat:0},cl=function(v,a,b){return Math.max(a,Math.min(b,v));};
     o2=Object.assign({},opt,{preset:key,con:cl(opt.con+off.con+fl.con,-100,100),sat:cl(opt.sat+off.sat+fl.sat,-100,100),dehaze:cl(opt.dehaze+off.dehaze,0,100),sharp:cl(opt.sharp+off.sharp,0,100)});}
   return _pfA73(img,k,maxW,o2);};
