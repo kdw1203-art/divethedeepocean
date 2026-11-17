@@ -19,7 +19,7 @@ V.brand=function(){setTitle('브랜드 자료','Dive the deep ocean 로고와 �
     card('메인 로고 (세로)','정사각형 자리, 티셔츠 가슴·등판','logo-main-stacked.svg','#FFFFFF',[['logo-main-stacked.svg','SVG'],['png/logo-main-stacked.png','PNG'],['logo-main-stacked-dark.svg','어두운 배경 SVG'],['png/logo-main-stacked-dark.png','어두운 배경 PNG']])+
     card('물결 심볼','앱 아이콘, 파비콘, 작은 자리','symbol-waves.svg','#FFFFFF',[['symbol-waves.svg','SVG'],['png/symbol-waves.png','PNG'],['symbol-waves-dark.svg','어두운 배경 SVG'],['png/symbol-waves-dark.png','어두운 배경 PNG']])+'</div></div>'+
   '<div class="panel"><h2>2. 보조 로고 · 소나</h2><div class="bk-grid">'+
-    card('소나 로고 (어두운 배경)','홈페이지 어두운 화면 머리말, 남색 배경 굿즈','logo-sonar-dark.svg','#0B1F2E',[['logo-sonar-dark.svg','SVG'],['png/logo-sonar-dark.png','PNG']])+
+    card('소나 로고 (어두운 배경)','남색 배경 굿즈 · 보조로 쓸 때','logo-sonar-dark.svg','#0B1F2E',[['logo-sonar-dark.svg','SVG'],['png/logo-sonar-dark.png','PNG']])+
     card('소나 로고 (밝은 배경)','밝은 배경에 보조로 쓸 때','logo-sonar-light.svg','#FFFFFF',[['logo-sonar-light.svg','SVG'],['png/logo-sonar-light.png','PNG']])+
     card('소나 심볼','스티커, 작은 아이콘','symbol-sonar.svg','#FFFFFF',[['symbol-sonar.svg','SVG'],['png/symbol-sonar.png','PNG']])+'</div></div>'+
   '<div class="panel"><h2>3. 뱃지</h2><div class="bk-grid">'+card('뱃지','스티커, 패치, 인증 표시, 굿즈','badge.svg','#F3F6F8',[['badge.svg','SVG'],['png/badge.png','PNG']])+'</div></div>'+
