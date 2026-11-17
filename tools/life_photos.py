@@ -17,18 +17,29 @@ def get(u):
 def taxon(sci):
     b = get('https://api.inaturalist.org/v1/taxa?' + urllib.parse.urlencode({'q': sci, 'per_page': 10, 'is_active': 'true'}))
     if not b: return None
-    for t in json.loads(b).get('results', []):
+    R = json.loads(b).get('results', [])
+    for t in R:
+        if t.get('name', '').lower() == sci.lower(): return t
+    b = get('https://api.inaturalist.org/v1/taxa/autocomplete?' + urllib.parse.urlencode({'q': sci, 'per_page': 10}))
+    for t in (json.loads(b).get('results', []) if b else []):
         if t.get('name', '').lower() == sci.lower(): return t
     return None
 def photo(t):
     p = t.get('default_photo') or {}
     if p.get('license_code') in OK: return p
+    # 관찰 기록 중 상업 이용 가능한 사진 (연구 등급, 추천 많은 순)
+    b = get('https://api.inaturalist.org/v1/observations?' + urllib.parse.urlencode({'taxon_id': t['id'], 'photo_license': 'cc-by,cc-by-sa,cc0', 'quality_grade': 'research', 'order_by': 'votes', 'per_page': 5, 'photos': 'true'}))
+    if b:
+        for o in json.loads(b).get('results', []):
+            for ph in o.get('photos', []):
+                if ph.get('license_code') in OK: return ph
     b = get(f"https://api.inaturalist.org/v1/taxa/{t['id']}")
     if not b: return None
     for tp in (json.loads(b).get('results') or [{}])[0].get('taxon_photos', []):
         ph = tp.get('photo') or {}
         if ph.get('license_code') in OK: return ph
     return None
+old = json.load(open(f'{D}/life.json', encoding='utf-8')) if os.path.exists(f'{D}/life.json') else {}
 out, cache = {}, {}
 for name, sci in M.items():
     if sci in cache:
@@ -47,5 +58,7 @@ for name, sci in M.items():
          'license': LIC.get(p.get('license_code'), p.get('license_code')), 'page': f"https://www.inaturalist.org/photos/{p.get('id')}", 'sci': sci}
     cache[sci] = e; out[name] = dict(e); print('ok', name, sci)
 print('done', len(out), '/', len(M))
+for n, e in old.items():
+    if n not in out and (n not in M or e.get('sci') == M[n]): out[n] = e  # 실패한 건 맞는 옛 사진만 남겨요
 if len(out) > len(M) * 0.6:
     json.dump(out, open(f'{D}/life.json', 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
