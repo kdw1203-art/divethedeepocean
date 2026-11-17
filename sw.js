@@ -1,4 +1,4 @@
-const C='dtdo-a620b4d1';const SHELL=['/','/manifest.json','/assets/app.a620b4d1.css','/assets/app.a620b4d1.js','/assets/icon-192.png'];
+const C='dtdo-bcf3d184';const SHELL=['/','/manifest.json','/assets/app.bcf3d184.css','/assets/app.bcf3d184.js','/assets/icon-192.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()));});
 self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||u.origin!==location.origin)return;
