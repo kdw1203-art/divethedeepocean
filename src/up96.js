@@ -1,0 +1,6 @@
+/* ===== 모바일 가로 넘침 방지 + 원인 기록 ===== */
+(function(){var st=document.createElement('style');st.textContent='@media (max-width:860px){#main{overflow-x:hidden!important;overscroll-behavior-x:none}#main .view{max-width:100%;overflow-x:clip}#main .view>*,#main .cols>*,#main .stats>*{min-width:0;max-width:100%}#main img,#main canvas,#main video{max-width:100%}}';document.head.appendChild(st);})();
+function ovxCheck(){if(innerWidth>860)return;var m=document.getElementById('main');if(!m)return;var w=document.documentElement.clientWidth,bad=[];
+  document.querySelectorAll('#main .view *').forEach(function(e){if(bad.length>=4)return;var r=e.getBoundingClientRect();if(r.width>w+2&&!e.closest('.chips,.know,table,.hrt,.mslide,.mtrack,.cats,.sttabs,.ttabs,.atabs,.pfpre,[style*="overflow"]')){var s=getComputedStyle(e);if(s.overflowX==='auto'||s.overflowX==='scroll')return;bad.push(e.tagName.toLowerCase()+'.'+String(e.className).slice(0,30)+'#'+e.id+' w'+Math.round(r.width)+' mw:'+s.minWidth+' gtc:'+String(s.gridTemplateColumns).slice(0,40));}});
+  if(bad.length&&typeof ceLog==='function')ceLog('가로 넘침 '+cur()+' vw'+w+' :: '+bad.join(' | '),'ovx');}
+var _after96=after;after=function(){_after96();setTimeout(ovxCheck,2500);};
