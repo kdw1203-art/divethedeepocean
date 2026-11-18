@@ -43,3 +43,8 @@ function copyBank94(){document.querySelectorAll('#main .bank').forEach(function(
 document.addEventListener('keydown',function(e){if(e.key!=='Enter'||e.isComposing)return;var t=e.target,f=t.closest&&t.closest('form[data-form="signup"],form[data-form="meminfo"]');if(!f||t.tagName!=='INPUT'||t.type==='checkbox')return;var L=[].slice.call(f.querySelectorAll('input:not([type=checkbox]):not([type=hidden]):not([data-hp]),select'));var i=L.indexOf(t);if(i>=0&&i<L.length-1){e.preventDefault();L[i+1].focus();}},true);
 if(LANG==='en'){Object.assign(EN_D,{'환영해요 🌊':'Welcome 🌊','이것부터 해 보세요.':'Start here.','나중에':'Later','최근':'Recent','지우기':'Clear','이런 곳은 어때요':'Try these','계좌 복사':'Copy account','계좌번호를 복사했어요':'Copied'});}
 window.closeSheet=function(){return closeSheet();};
+/* 로그북: 배지·돌아보기가 위에 잠깐 떴다가 '더 보기'로 옮겨지며 깜빡이던 문제 */
+(function(){var st=document.createElement('style');st.textContent='#main .view > #bdgBox,#main .view > #lpBox{display:none!important}';document.head.appendChild(st);})();
+if(typeof logExtra==='function'){var _le94=logExtra;logExtra=function(){_le94.apply(this,arguments);if(typeof logTidy==='function')logTidy();};}
+if(typeof logPick==='function'){var _lp94=logPick;logPick=function(){_lp94.apply(this,arguments);if(typeof logTidy==='function')logTidy();};}
+(function(){var st=document.createElement('style');st.textContent='a.chip{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;line-height:1.2}';document.head.appendChild(st);})();
