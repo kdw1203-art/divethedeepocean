@@ -48,3 +48,5 @@ window.closeSheet=function(){return closeSheet();};
 if(typeof logExtra==='function'){var _le94=logExtra;logExtra=function(){_le94.apply(this,arguments);if(typeof logTidy==='function')logTidy();};}
 if(typeof logPick==='function'){var _lp94=logPick;logPick=function(){_lp94.apply(this,arguments);if(typeof logTidy==='function')logTidy();};}
 (function(){var st=document.createElement('style');st.textContent='a.chip{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;line-height:1.2}';document.head.appendChild(st);})();
+/* 내 정보 등 버튼이 많은 화면: 스크롤하려고 손가락을 대면 버튼이 눌린 것처럼 작아져 화면이 떨려 보이던 문제 */
+(function(){var st=document.createElement('style');st.textContent='@media (hover:none){.btn:active,.chip:active,.ttabs button:active,.dmsw button:active{transform:none!important;opacity:.7;transition:opacity .08s .06s}}a,button,.panel,.item{-webkit-tap-highlight-color:transparent}';document.head.appendChild(st);})();

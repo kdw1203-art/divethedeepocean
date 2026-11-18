@@ -14,7 +14,7 @@ draftLoad();
 if(BE.on){var _sub93=BE.submit;BE.submit=function(id,v){var p=_sub93(id,v);if(p&&p.then)p.then(function(r){draftClear(id);return r;},function(){});return p;};}
 /* 4) 토스트가 하단 저장 버튼을 가리지 않게 */
 /* 5) 맨 위로 버튼: 작게 · 내릴 땐 숨기고 올릴 때 보이기 */
-(function(){var m=document.getElementById('main')||window,last=0;var sc=function(){var y=m===window?scrollY:m.scrollTop,b=document.getElementById('toTop');if(!b)return;b.classList.toggle('hid',y>last+4);if(y<last-4)b.classList.remove('hid');last=y;};(m===window?window:m).addEventListener('scroll',sc,{passive:true});window.addEventListener('scroll',sc,{passive:true});})();
+(function(){var m=document.getElementById('main')||window,last=0;var sc=function(){var y=m===window?scrollY:m.scrollTop,b=document.getElementById('toTop');if(!b)return;if(Math.abs(y-last)<24)return;b.classList.toggle('hid',y>last);last=y;};(m===window?window:m).addEventListener('scroll',sc,{passive:true});window.addEventListener('scroll',sc,{passive:true});})();
 /* 6) 인스타 · 카톡 · 네이버 앱 안에서 열었을 때 안내 */
 (function(){var ua=navigator.userAgent,app=/Instagram/.test(ua)?'인스타그램':/KAKAOTALK/i.test(ua)?'카카오톡':/NAVER\(/.test(ua)?'네이버':/FBAN|FBAV/.test(ua)?'페이스북':/ Line\//.test(ua)?'라인':'';if(!app)return;try{if(+localStorage.getItem('dtdo.iabHide')>Date.now())return;}catch(e){}
   var url=location.href,android=/Android/.test(ua),open='';if(/KAKAOTALK/i.test(ua))open='kakaotalk://web/openExternal?url='+encodeURIComponent(url);else if(android)open='intent://'+url.replace(/^https?:\/\//,'')+'#Intent;scheme=https;package=com.android.chrome;end';
