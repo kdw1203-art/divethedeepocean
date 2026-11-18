@@ -1,7 +1,7 @@
 /* ===== 회원 기본정보: 가입 때 필수 입력 + 기존 회원 채우기 ===== */
 var MI_PUR=['로그 기록','포인트·날씨','자격증 취득','여행 준비','동행·모임','장비','업체·강사 운영'];
 var MI_F=[{k:'m_name',type:'text',l:'이름',req:1,min:2,max:40,ph:'실명',auto:'name'},
- {k:'m_birth',type:'date',l:'생년월일',req:1,birth:1},
+ {k:'m_birth',type:'date',l:'생년월일',req:1,birth:1,auto:'bday'},
  {k:'m_gender',type:'select',l:'성별',req:1,opts:function(){return [['m','남성'],['f','여성']];}},
  {k:'m_phone',type:'tel',l:'연락처',req:1,phone:1,ph:'010-0000-0000',auto:'tel',pat:/^(0\d{1,2}-?\d{3,4}-?\d{4}|\+\d[\d\- ]{7,18})$/,err:'연락처를 다시 확인해 주세요'},
  {k:'m_addr',type:'text',l:'주소',req:1,min:4,max:200,ph:'시·구·동까지',auto:'street-address'},
