@@ -1,7 +1,7 @@
 /* ===== 2차 점검 반영: 오류 방지 · 오류 기록 · 주소 검색 · 연락처 자동 형식 · 이미지 지연 로드 ===== */
 /* 1) 화면 하나가 오류 나도 빈 화면 대신 안내 */
 var CE={n:0,seen:{}};
-function ceLog(msg,src){try{msg=String(msg||'').slice(0,600);if(!msg||/AbortError|ResizeObserver|Script error|maplibre|Load failed|NetworkError|Failed to fetch|cancelled|취소/i.test(msg))return;if(CE.seen[msg]||CE.n>=5)return;CE.seen[msg]=1;CE.n++;
+function ceLog(msg,src){try{if(/^(localhost|127\.)/.test(location.hostname)||/HeadlessChrome/.test(navigator.userAgent))return;msg=String(msg||'').slice(0,600);if(!msg||/AbortError|ResizeObserver|Script error|maplibre|Load failed|NetworkError|Failed to fetch|cancelled|취소/i.test(msg))return;if(CE.seen[msg]||CE.n>=5)return;CE.seen[msg]=1;CE.n++;
   if(BE.on&&BE.sb)BE.sb.from('client_errors').insert({route:String(location.hash||'#home').slice(0,80),msg:msg,src:String(src||'').slice(0,200),ua:navigator.userAgent.slice(0,200),ver:(document.querySelector('script[src*="app."]')||{src:''}).src.replace(/.*app\.|\.js.*/g,'').slice(0,20)}).then(function(){},function(){});}catch(e){}}
 window.addEventListener('error',function(e){ceLog(e.message,(e.filename||'')+':'+(e.lineno||''));});
 window.addEventListener('unhandledrejection',function(e){var r=e.reason||{};if(r&&(r.name==='AbortError'||/AbortError/.test(String(r))))return e.preventDefault();ceLog(r.message||r,'promise');});
