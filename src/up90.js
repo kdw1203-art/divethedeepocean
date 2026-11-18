@@ -1,0 +1,22 @@
+/* ===== 접기: 홈 · 내 정보 · 로그 통계 카드 제목을 눌러 접고 펴기 (기기에 기억) ===== */
+var FOLD_R=/^(home|profile|logstats|admin)$/;
+function foldGet(){try{return JSON.parse(localStorage.getItem('dtdo.fold')||'{}');}catch(e){return {};}}
+function foldSet(o){try{localStorage.setItem('dtdo.fold',JSON.stringify(o));}catch(e){}}
+function foldApply(){var r=cur();if(!FOLD_R.test(r))return;var F=foldGet();
+  document.querySelectorAll('#main .view .panel').forEach(function(p){if(p.dataset.fk)return;var h=p.querySelector(':scope > h2, :scope > h3, :scope > div > h2, :scope > summary h2');if(!h||p.tagName==='DETAILS'||p.closest('form'))return;
+    var hd=h.parentElement===p?h:h.parentElement;if(hd.parentElement!==p)return;var title=h.textContent.replace(/\s+/g,' ').trim().slice(0,30);if(!title)return;
+    var k=r+':'+title;p.dataset.fk=k;hd.classList.add('fhd');
+    var b=document.createElement('button');b.type='button';b.className='foldbtn';b.setAttribute('aria-label','접기');b.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+    h.appendChild(b);if(F[k])p.classList.add('fold');b.setAttribute('aria-expanded',!F[k]);});}
+document.addEventListener('click',function(e){var b=e.target.closest('.foldbtn'),h=!b&&e.target.closest('.panel > .fhd h2, .panel > h2.fhd, .panel > h3.fhd, .panel > .fhd h3');if(h&&e.target.closest('a,button,input,select'))return;if(!b&&!h)return;
+  var p=(b||h).closest('.panel');if(!p||!p.dataset.fk)return;e.preventDefault();var on=!p.classList.contains('fold');p.classList.toggle('fold',on);var F=foldGet();if(on)F[p.dataset.fk]=1;else delete F[p.dataset.fk];foldSet(F);var bt=p.querySelector('.foldbtn');if(bt){bt.setAttribute('aria-expanded',!on);bt.setAttribute('aria-label',on?'펴기':'접기');}});
+var _after90=after;after=function(){_after90();foldApply();setTimeout(foldApply,400);setTimeout(foldApply,1500);};
+(function(){var st=document.createElement('style');st.textContent='.panel .fhd,.panel h2.fhd{cursor:pointer}.foldbtn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-left:6px;border:0;border-radius:50%;background:var(--soft);color:var(--muted);vertical-align:middle;cursor:pointer;flex:none;transition:transform .2s}.panel.fold .foldbtn{transform:rotate(-90deg)}.panel.fold>*:not(.fhd){display:none!important}.panel.fold{padding-bottom:14px}.panel.fold .fhd,.panel.fold h2.fhd{margin-bottom:0}.panel h2:has(.foldbtn){display:flex;align-items:center;gap:4px;flex-wrap:wrap}';document.head.appendChild(st);})();
+if(LANG==='en'){EN_D['접기']='Collapse';EN_D['펴기']='Expand';}
+/* 국내 바다 지금: 두 칸씩 보이고 옆으로 밀어 다른 지역 보기 */
+(function(){var st=document.createElement('style');st.textContent='#knowBox .know{display:grid!important;grid-template-columns:none!important;grid-auto-flow:column;grid-template-rows:auto;grid-auto-columns:calc(50% - 5px);overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px;overscroll-behavior-x:contain}#knowBox .know::-webkit-scrollbar{display:none}#knowBox .know a{scroll-snap-align:start}@media (min-width:861px){#knowBox .know{grid-auto-columns:calc(25% - 8px)}}.knav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}.knav span{font-size:12.5px;color:var(--muted)}.knav button{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:inherit;font-size:16px;cursor:pointer}';document.head.appendChild(st);})();
+function knowNav(){var k=document.querySelector('#knowBox .know');if(!k||k.dataset.nav)return;k.dataset.nav=1;var nb=document.createElement('div');nb.className='knav';nb.innerHTML='<button type="button" data-kn="-1" aria-label="이전">‹</button><span id="knPos"></span><button type="button" data-kn="1" aria-label="다음">›</button>';k.after(nb);
+  var pos=function(){var n=k.querySelectorAll('a').length,per=innerWidth>860?4:2,w=k.clientWidth/per,i=Math.round(k.scrollLeft/w);document.getElementById('knPos').textContent=Math.min(n,i+per)+' / '+n+' 지역 · 옆으로 밀기';};
+  k.addEventListener('scroll',function(){clearTimeout(k._t);k._t=setTimeout(pos,80);},{passive:true});pos();
+  nb.addEventListener('click',function(e){var b=e.target.closest('[data-kn]');if(!b)return;k.scrollBy({left:+b.dataset.kn*k.clientWidth,behavior:'smooth'});});}
+var _after90b=after;after=function(){_after90b();[300,1200,3000,6000].forEach(function(t){setTimeout(knowNav,t);});};
