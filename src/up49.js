@@ -16,10 +16,10 @@ function hrFill(){var el=document.getElementById('seaToday');if(!el||el.querySel
     var cols=[];for(var i=i0;i<Math.min(T.length,i0+24);i+=(i<i0+12?1:3))cols.push(i);
     var row=function(lab,f){return '<tr><th>'+lab+'</th>'+cols.map(function(i,n){return '<td'+(n===0?' class="now"':'')+'>'+f(i,wi(i))+'</td>';}).join('')+'</tr>';};
     var f1=function(v,u,dg){return v==null?'—':(+v).toFixed(dg==null?1:dg)+u;};
-    box.innerHTML='<h3>'+L49('다이빙 컨디션','Dive condition')+' <span class="small">'+L49('예보로 계산한 참고 지수','Forecast-based guide')+'</span></h3>'+
-      '<div class="dci"><div class="sc gt'+g[0]+'">'+sNow+'<small>/ 100</small></div><div class="tx"><b class="gt'+g[0]+'">'+L49('지금 ','Now: ')+g[1]+'</b>'+L49('파고·바람·해류로 매긴 점수예요. 출항 여부는 센터와 현장 판단을 따르세요.','Scored from waves, wind and current. Follow the dive center on the day.')+'</div></div>'+
+    var pin='<span class="hrpin">📍 '+esc(s.name)+(s.country?' · '+esc(s.country):'')+'</span>';box.innerHTML='<h3>'+L49('다이빙 컨디션','Dive condition')+' '+pin+'</h3>'+
+      '<div class="dci"><div class="sc gt'+g[0]+'">'+sNow+'<small>/ 100</small></div><div class="tx"><b class="gt'+g[0]+'">'+L49('지금 ','Now: ')+g[1]+'</b>'+L49('파고·바람·해류 기준 · 출항은 센터 판단','Waves · wind · current · center decides')+'</div></div>'+
       '<div class="small" style="margin:0 0 4px">'+L49('오늘 06~20시','Today 06–20h')+'</div><div class="cbar">'+bars.join('')+'</div><div class="cbl">'+labs.join('')+'</div>'+
-      '<h3>'+L49('시간별 바다 예보','Hourly forecast')+' <span class="small">Open-Meteo</span></h3><div class="hrt"><table>'+
+      '<h3>'+L49('시간별 바다 예보','Hourly forecast')+' <span class="small">'+L49('현지 시각','Local time')+' · Open-Meteo</span></h3><div class="hrt"><table>'+
       row(L49('시간','Time'),function(i){return (i===i0?L49('지금','Now'):T[i].slice(11,13)+L49('시','h'))+(T[i].slice(0,10)!==day?'<small>'+L49('내일','Tmrw')+'</small>':'');})+
       row(L49('날씨','Sky'),function(i,j){return wxIc(val(w&&w.weather_code,j))+(val(w&&w.precipitation_probability,j)>=30?'<small>'+val(w.precipitation_probability,j)+'%</small>':'');})+
       row(L49('기온','Air'),function(i,j){return f1(val(w&&w.temperature_2m,j),'°',0);})+
