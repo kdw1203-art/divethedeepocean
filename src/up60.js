@@ -1,11 +1,11 @@
 /* ===== 다이브 공개 링크 · 클럽 일정과 로그 연결 · 함께한 버디 통계 ===== */
 /* 1. 공개 링크 */
 function dvShareBox(){var d=state.dv[state.dvId];if(!d||typeof d!=='object'||!BE.user||d.owner!==BE.user.id||document.getElementById('dvPub'))return;var anchor=document.getElementById('sgBox')||document.getElementById('dvGearBox');if(!anchor)return;
-  var p=document.createElement('div');p.className='panel';p.id='dvPub';var url=d.share_token?location.origin+'/#pub-'+d.share_token:'';
+  var p=document.createElement('div');p.className='panel';p.id='dvPub';var url=d.share_token?location.origin+'/d/'+d.share_token:'';
   p.innerHTML='<h2>공개 링크 <span class="small">'+(url?'켜짐':'꺼짐')+'</span></h2>'+(url?'<div class="sglink"><input readonly value="'+esc(url)+'" aria-label="공개 링크"><button class="chip" type="button" data-pubshare="1">보내기</button><button class="chip" type="button" data-puboff="1">끄기</button></div><p class="small" style="margin:6px 0 0">링크를 아는 사람은 로그인 없이 이 다이브의 수심 그래프·기록·사진을 볼 수 있어요. 메모와 버디 이름, GPS 위치는 보이지 않아요.</p>':'<p class="small" style="margin:0 0 8px">친구에게 이 다이브를 보여 주고 싶을 때 켜요. 메모·버디·GPS는 빠져요.</p><button class="btn btn-line" type="button" data-pubon="1">공개 링크 만들기</button>');anchor.after(p);}
 function uuid4(){if(crypto.randomUUID)return crypto.randomUUID();var b=crypto.getRandomValues(new Uint8Array(16));b[6]=b[6]&15|64;b[8]=b[8]&63|128;var h=[].map.call(b,function(x){return ('0'+x.toString(16)).slice(-2);}).join('');return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);}
 document.addEventListener('click',function(e){var t=e.target.closest('[data-pubon],[data-puboff],[data-pubshare]');if(!t)return;var id=state.dvId,d=state.dv[id];if(!d)return;
-  if(t.dataset.pubshare){var u=location.origin+'/#pub-'+d.share_token;if(navigator.share)navigator.share({title:d.site||'다이브',url:u}).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(u).then(function(){toast('링크를 복사했어요');});return;}
+  if(t.dataset.pubshare){var u=location.origin+'/d/'+d.share_token;if(navigator.share)navigator.share({title:d.site||'다이브',url:u}).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(u).then(function(){toast('링크를 복사했어요');});return;}
   var tok=t.dataset.pubon?uuid4():null;BE.sb.from('dive_logs').update({share_token:tok}).eq('id',id).then(function(r){if(r.error)return toast('바꾸지 못했어요: '+r.error.message);d.share_token=tok;var o=document.getElementById('dvPub');if(o)o.remove();dvShareBox();toast(tok?'공개 링크를 만들었어요':'공개 링크를 껐어요');});});
 state.pub={};
 V.pub=function(tok){setTitle('다이브 기록');var t=String(tok||'');if(!/^[0-9a-f-]{36}$/i.test(t))return '<div class="vh"><div><h1>잘못된 링크예요</h1></div></div>';var d=state.pub[t];

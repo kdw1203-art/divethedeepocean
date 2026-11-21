@@ -69,6 +69,10 @@
  ],
  "rewrites": [
   {
+   "source": "/d/:t",
+   "destination": "/api/d?t=:t"
+  },
+  {
    "source": "/spot/:id",
    "destination": "/spot/:id.html"
   },
