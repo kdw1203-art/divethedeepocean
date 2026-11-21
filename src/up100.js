@@ -176,7 +176,7 @@ var _after100h=after;after=function(){_after100h();profHead();setTimeout(profHea
 /* 클럽 화면 다듬기: 머리 줄 정리 · 로고 아래 군더더기 숨김 · 글쓰기 칸 작게 */
 function clubTidy(){if(cur()!=='club')return;var v=document.querySelector('#main .view');if(!v)return;var vh=v.querySelector('.vh');if(vh&&!vh.dataset.ct){vh.dataset.ct=1;vh.classList.add('clubvh');}
   v.querySelectorAll('label[title="로고 바꾸기"] small.fuh, label[title="로고 바꾸기"] > span.small').forEach(function(e){e.remove();});
-  var ta=v.querySelector('[data-club] form textarea, [data-club] textarea');if(ta&&!ta.dataset.ct){ta.dataset.ct=1;ta.rows=2;ta.classList.add('ctxt');var f=ta.closest('form');if(f)f.classList.add('cform');}}
+  var ta=[].filter.call(v.querySelectorAll('[data-club] form textarea'),function(x){return !x.closest('.lesf,.lesnew,.lesff');})[0];if(ta&&!ta.dataset.ct){ta.dataset.ct=1;ta.rows=2;ta.classList.add('ctxt');var f=ta.closest('form');if(f)f.classList.add('cform');}}
 var _after100i=after;after=function(){_after100i();clubTidy();setTimeout(clubTidy,300);};
 (function(){var st=document.createElement('style');st.textContent='.clubvh{display:grid!important;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center}.clubvh label[title="로고 바꾸기"],.clubvh > .clogo{grid-row:1/span 3}.clubvh .clogo{width:64px;height:64px;border-radius:16px;font-size:26px}.clubvh h1{font-size:22px;margin:0}.clubvh p{margin:0;font-size:13px}.clubvh .btn{min-height:34px;height:34px;padding:0 14px;font-size:13.5px;justify-self:start}.clubvh a.small{font-size:13px}'+
 '.cform{display:flex!important;gap:8px;align-items:flex-end;flex-wrap:nowrap}.cform .ctxt{flex:1;min-height:44px!important;height:auto;resize:none;font-size:15px}.cform .btn{flex:none;min-height:40px;height:40px;padding:0 16px}'+
