@@ -1,6 +1,6 @@
 /* ===== 파일 올리기 공통: 끌어다 놓기 · 눌러서 고르기 · 휴대폰 카메라 · 붙여넣기 (강사 자격증 · 서류 · 사진 칸 전부) ===== */
 (function(){var st=document.createElement('style');st.textContent='.fu{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;margin-top:6px;padding:16px;border:2px dashed var(--line);border-radius:14px;text-align:center;cursor:pointer;font-weight:600;font-size:14px;color:var(--ink);background:var(--panel)}.fu small{font-weight:400;color:var(--sub);font-size:12.5px}.fu.on,.fudrop.on{border-color:var(--sea)!important;background:var(--soft)!important}.fucam{margin-top:6px}.fuin{position:absolute!important;left:-9999px!important;width:1px;height:1px;opacity:0}';document.head.appendChild(st);})();
-var FU_TOUCH=matchMedia('(pointer:coarse)').matches,FU_SKIP=/^(pfIn|pfCam|uddfIn|fuCamIn)$/;
+var FU_TOUCH=matchMedia('(pointer:coarse)').matches,FU_SKIP=/^(pfIn|pfCam|uddfIn|fuCamIn|heImgIn)$/;
 function fuLabel(inp){return inp.closest('label')||(inp.id&&document.querySelector('label[for="'+inp.id+'"]'))||null;}
 function fuAccept(inp,f){var a=(inp.getAttribute('accept')||'').split(',').map(function(x){return x.trim().toLowerCase();}).filter(Boolean);if(!a.length)return true;var t=(f.type||'').toLowerCase(),n=(f.name||'').toLowerCase();return a.some(function(x){return x[0]==='.'?n.endsWith(x):x.slice(-2)==='/*'?t.indexOf(x.slice(0,-1))===0:t===x;});}
 function fuFeed(inp,list){var F=[].slice.call(list||[]).filter(function(f){return fuAccept(inp,f);});if(!F.length)return toast('이 칸에 올릴 수 없는 파일이에요');if(!inp.multiple)F=F.slice(0,1);
