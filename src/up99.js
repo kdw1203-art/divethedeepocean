@@ -105,3 +105,13 @@ var _after99d=after;after=function(){_after99d();var c=cur();if(c==='stamp'){set
   if(c==='biz'&&BE.user&&!document.getElementById('bizStamp'))stMine(function(m){if(!m||!m.biz||document.getElementById('bizStamp'))return;var v=document.querySelector('#main .view');if(!v)return;var p=document.createElement('div');p.className='panel';p.id='bizStamp';p.innerHTML='<h2>리조트 도장</h2><p class="small" style="margin:0 0 10px">'+(m.has?'등록돼 있어요 · 도장 번호 <b>'+esc(m.code)+'</b>':'도장을 찍은 종이를 사진으로 찍거나 올리면 등록돼요.')+'</p><a class="btn '+(m.has?'btn-line':'btn-pri')+'" href="#stamp">'+(m.has?'도장 보기 · 바꾸기':'도장 등록')+'</a>';var ps=v.querySelectorAll('.panel');(ps[0]||v).after(p);});};
 (function(){var st=document.createElement('style');st.textContent='.stpick{display:flex;gap:8px;flex-wrap:wrap}';document.head.appendChild(st);})();
 var _stkSheet99=stkSheet;stkSheet=function(f){_stkSheet99(f);var h=document.querySelector('#sheetbg .sheet h2');if(h&&!h.querySelector('.stkhint'))h.insertAdjacentHTML('beforeend',' <span class="small stkhint">· 눌러서 넣거나 끌어다 놓아요</span>');};
+/* 전체 · 스쿠버 · 프리: 상단 바(로고 옆)로 */
+(function(){var tb=document.querySelector('.topbar');if(!tb||tb.querySelector('.dmtop'))return;var b=tb.querySelector('.brand');if(!b)return;b.insertAdjacentHTML('afterend','<div class="dmsw dmtop" role="group" aria-label="다이빙 종류">'+['all','scuba','free'].map(function(k){return '<button type="button" data-dm="'+k+'" aria-pressed="'+(DM===k)+'">'+(LANG==='en'?{all:'All',scuba:'Scuba',free:'Free'}[k]:{all:'전체',scuba:'스쿠버',free:'프리'}[k])+'</button>';}).join('')+'</div>');})();
+function dmTopSync(){document.querySelectorAll('.dmtop button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.dm===DM);});}
+var _dmSet99=dmSet;dmSet=function(k){_dmSet99(k);dmTopSync();};
+var _after99e=after;after=function(){_after99e();dmTopSync();var h=document.querySelector('#main .view > .dmsw.dmhome');if(h)h.remove();};
+(function(){var st=document.createElement('style');st.textContent=
+'.topbar .dmtop{display:none}'+
+'@media (max-width:860px){.topbar .dmtop{display:flex;flex:0 1 auto;margin:0 auto 0 8px!important;max-width:none!important;padding:3px!important;gap:2px;border-radius:999px}.topbar .dmtop button{height:30px!important;padding:0 11px;font-size:12.5px!important;font-weight:600;flex:0 0 auto;border-radius:999px;white-space:nowrap}#main .dmsw.dmhome{display:none!important}}'+
+'@media (max-width:400px){.topbar .dmtop{margin-left:4px!important}.topbar .dmtop button{padding:0 8px;font-size:12px!important;height:28px!important}.topbar .brand img{width:96px;height:auto}}'+
+'@media (max-width:350px){.topbar .dmtop button{padding:0 6px;font-size:11px!important}}';document.head.appendChild(st);})();
