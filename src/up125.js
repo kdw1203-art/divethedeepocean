@@ -68,8 +68,9 @@ var _after125=after;after=function(){_after125();var c=cur();if(c==='home'){setT
 var NEWS_IC='M4 10v4h3l6 4V6L7 10H4z M16.5 9a4 4 0 0 1 0 6 M19 6.5a7.5 7.5 0 0 1 0 11';
 (function(){if(typeof MAIN53==='undefined'||MAIN53.some(function(m){return m.id==='news';}))return;var i=MAIN53.findIndex(function(m){return m.id==='home';});MAIN53.splice(i+1,0,{id:'news',l:(typeof L53==='function'?L53('공지사항','Notices'):'공지사항'),i:NEWS_IC});if(typeof MENU0!=='undefined')MENU0.news='공지사항';if(typeof side53==='function')side53();})();
 (function(){var st=document.createElement('style');st.textContent='.nwi .tx b{font-size:15px}.nwnew{display:inline-flex;align-items:center;font:700 10.5px Sora,sans-serif;color:#fff;background:#E5484D;border-radius:999px;padding:1px 6px;margin-left:6px;vertical-align:2px}.nwbody{white-space:pre-line;font-size:15px;line-height:1.75;word-break:break-word}.nwbody a{color:var(--sea);word-break:break-all}.nwadm{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}#nwForm textarea{min-height:220px}';document.head.appendChild(st);})();
+var NW_READY=false;
 function nwAdmin(){return !!(state.me&&state.me.admin);}
-function nwLoad(force){if(!BE.on)return;if(state.news&&!force)return;if(nwLoad.b&&!force)return;nwLoad.b=1;BE.sb.from('site_notices').select('*').order('pinned',{ascending:false}).order('created_at',{ascending:false}).limit(100).then(function(r){nwLoad.b=0;state.news=r.error?[]:(r.data||[]);state.newsErr=!!r.error;var c=cur();if(c==='news'||c==='home')rerender();});}
+function nwLoad(force){if(!BE.on)return;if(!NW_READY){state.news=[];state.newsErr=true;return;}if(state.news&&!force)return;if(nwLoad.b&&!force)return;nwLoad.b=1;BE.sb.from('site_notices').select('*').order('pinned',{ascending:false}).order('created_at',{ascending:false}).limit(100).then(function(r){nwLoad.b=0;state.news=r.error?[]:(r.data||[]);state.newsErr=!!r.error;var c=cur();if(c==='news'||c==='home')rerender();});}
 function nwNew(n){return Date.now()-Date.parse(n.created_at)<3*864e5;}
 function nwDate(s){return String(s||'').slice(0,10).replace(/-/g,'.');}
 function nwLink(t){return esc(t).replace(/https:\/\/[^\s<]+/g,function(u){return '<a href="'+u+'" target="_blank" rel="noopener">'+u+'</a>';});}
@@ -99,7 +100,6 @@ document.addEventListener('click',function(e){var t=e.target.closest('[data-nwne
   t=e.target.closest('[data-nwhide]');if(t){var m=(state.news||[]).filter(function(x){return x.id===+t.dataset.nwhide;})[0];if(m)f(m.id,{hidden:!m.hidden},m.hidden?'다시 보이게 했어요':'숨겼어요. 운영자에게만 보여요');return;}
   t=e.target.closest('[data-nwdel]');if(t){if(!confirm('이 공지를 지울까요? 되돌릴 수 없어요.'))return;BE.sb.from('site_notices').delete().eq('id',+t.dataset.nwdel).then(function(r){if(r.error)return toast('지우지 못했어요');toast('지웠어요');nwLoad(true);location.hash='#news';});}});
 /* 홈 아래쪽: 최신 공지 3개 */
-var NW_READY=false;
 function nwHome(){if(!NW_READY)return;if(cur()!=='home'||document.getElementById('nwHome'))return;if(!state.news){nwLoad();return;}var L=state.news.filter(function(n){return !n.hidden;}).slice(0,3);if(!L.length)return;var v=document.querySelector('#main .view');if(!v)return;
   var p=document.createElement('div');p.className='panel';p.id='nwHome';p.innerHTML='<h2 style="display:flex;align-items:center;justify-content:space-between">공지사항 <a class="small" href="#news">전체 보기</a></h2><div class="list">'+L.map(nwRow).join('')+'</div>';
   var ft=v.querySelector(':scope > .foot');if(ft)ft.before(p);else v.appendChild(p);}
