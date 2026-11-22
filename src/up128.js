@@ -105,3 +105,15 @@ function hsumMove128(){if(cur()!=='home')return;var h=document.getElementById('h
 var _after128c=after;after=function(){_after128c();if(cur()==='home'){[200,900,2000].forEach(function(ms){setTimeout(hsumMove128,ms);});}};
 /* 푸터: 줄 간격 · 위아래 여백 줄이기 */
 (function(){var st=document.createElement('style');st.textContent='.foot{line-height:1.45!important;gap:4px!important;padding-top:12px!important;margin-top:20px!important}.foot *{line-height:inherit}.foot .footbrand{margin-bottom:4px!important;gap:10px!important}.foot .footbrand img{width:46px!important;height:46px!important}.foot button.lnk,.foot a{min-height:0!important;height:auto!important;padding-top:0!important;padding-bottom:0!important;vertical-align:baseline}.foot .i6fb{margin-top:4px!important}.foot p{margin:0!important}';document.head.appendChild(st);})();
+
+/* ---------- 깜박임: 데이터가 올 때마다 화면 전체를 연달아 다시 그리던 것을 한 번으로 모아요 ---------- */
+(function(){var _r=rerender,last=0,pend=0;rerender=function(){var now=Date.now(),ev=window.event;
+  if(ev&&ev.isTrusted&&/^(click|submit|change|input|keydown|keyup|pointerup|touchend|hashchange|popstate)$/.test(ev.type)){if(pend){clearTimeout(pend);pend=0;}last=now;return _r.apply(this,arguments);}
+  if(!pend&&now-last>300){last=now;return _r.apply(this,arguments);}
+  if(pend)return;pend=setTimeout(function(){pend=0;last=Date.now();_r();},Math.max(30,300-(now-last)));};})();
+
+/* ---------- 모임 만들기 예시 팝업: 깔끔한 내용으로, 기기마다 한 번만 ---------- */
+var MEETEX128='<h2 style="margin:0 0 4px">모임은 이렇게 공개돼요</h2><p class="small" style="margin:0 0 10px">예시예요. 만들면 바로 이런 모습으로 올라가요.</p><div class="mex"><div class="mext">'+'<span class="tag">펀다이빙</span><span class="tag ok">모집 중 · 3/6명</span></div><b>12월 첫 주 아닐라오 마크로 2박 3일</b><span class="small">아닐라오 · 2026-12-04 · 어드밴스드 이상 · 로그 30회 이상</span><p>금요일 밤 출발, 토·일 보트 다이빙 5회. 숙소·다이빙 비용은 인원수로 나눠 리조트에 직접 내요. 카메라 있으신 분 환영해요.</p><span class="small">참가자 · 모임장 · 바다거북 · 누디사랑</span></div>';
+try{Object.defineProperty(state,'meetExHtml',{configurable:true,get:function(){return MEETEX128;},set:function(){}});}catch(e){}
+window.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href="#meetnew"]');if(!a||e.target.closest('.sheet'))return;try{if(localStorage.getItem('dtdo.meetEx1'))sessionStorage.setItem('dtdo.meetEx','1');else localStorage.setItem('dtdo.meetEx1','1');}catch(x){}},true);
+(function(){var st=document.createElement('style');st.textContent='.meetex h2 .fold,.meetex .fold,.meetex h2 button{display:none!important}.mex{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}.mext{display:flex;gap:6px}.mext .tag{margin:0}.mex b{font-size:16px}.mex p{margin:2px 0;font-size:14px;line-height:1.55}';document.head.appendChild(st);})();
