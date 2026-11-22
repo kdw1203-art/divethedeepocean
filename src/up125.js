@@ -68,7 +68,7 @@ var _after125=after;after=function(){_after125();var c=cur();if(c==='home'){setT
 var NEWS_IC='M4 10v4h3l6 4V6L7 10H4z M16.5 9a4 4 0 0 1 0 6 M19 6.5a7.5 7.5 0 0 1 0 11';
 (function(){if(typeof MAIN53==='undefined'||MAIN53.some(function(m){return m.id==='news';}))return;var i=MAIN53.findIndex(function(m){return m.id==='home';});MAIN53.splice(i+1,0,{id:'news',l:(typeof L53==='function'?L53('공지사항','Notices'):'공지사항'),i:NEWS_IC});if(typeof MENU0!=='undefined')MENU0.news='공지사항';if(typeof side53==='function')side53();})();
 (function(){var st=document.createElement('style');st.textContent='.nwi .tx b{font-size:15px}.nwnew{display:inline-flex;align-items:center;font:700 10.5px Sora,sans-serif;color:#fff;background:#E5484D;border-radius:999px;padding:1px 6px;margin-left:6px;vertical-align:2px}.nwbody{white-space:pre-line;font-size:15px;line-height:1.75;word-break:break-word}.nwbody a{color:var(--sea);word-break:break-all}.nwadm{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}#nwForm textarea{min-height:220px}';document.head.appendChild(st);})();
-var NW_READY=false;
+var NW_READY=true;
 function nwAdmin(){return !!(state.me&&state.me.admin);}
 function nwLoad(force){if(!BE.on)return;if(!NW_READY){state.news=[];state.newsErr=true;return;}if(state.news&&!force)return;if(nwLoad.b&&!force)return;nwLoad.b=1;BE.sb.from('site_notices').select('*').order('pinned',{ascending:false}).order('created_at',{ascending:false}).limit(100).then(function(r){nwLoad.b=0;state.news=r.error?[]:(r.data||[]);state.newsErr=!!r.error;var c=cur();if(c==='news'||c==='home')rerender();});}
 function nwNew(n){return Date.now()-Date.parse(n.created_at)<3*864e5;}
