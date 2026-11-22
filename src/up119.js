@@ -18,3 +18,9 @@ function pfLook(cv,L,C,t){if(!cv||(!L&&!C)||t<=0)return cv;var x=cv.getContext('
   x.putImageData(id,0,0);return cv;}
 var _pfA119=pfApply;pfApply=function(img,k,maxW,opt){var cv=_pfA119(img,k,maxW,opt);if(!opt)return cv;var t=Math.max(0,Math.min(1,(k==null?70:k)/100));if(opt.bw)return cv;
   var cam=opt.cam&&opt.cam!=='auto'&&opt.cam!=='none'?opt.cam:(typeof pfCamId==='function'&&opt.cam==='auto'?pfCamId(img,opt):null);return pfLook(cv,PFLOOK[opt.preset||'auto'],cam?CAMLOOK[cam]:null,t);};
+/* 테마 미리보기 4칸 깜박임 없애기: 버튼은 그대로 두고, 새 그림이 다 그려진 뒤에 바꿔 끼워요. 설정이 그대로면 다시 그리지 않아요. */
+thmPaint=function(){var t=document.getElementById('pfThm');if(!t)return;var f=PF.files&&PF.files[PF.i||0],cu=(PF.opt&&PF.opt.preset)||'auto';
+  if(t.children.length!==THM95.length||!t.querySelector('[data-thm]')){t.innerHTML=THM95.map(function(k){var nm=(PFP[k]||[k])[0].replace(/\s*\(.*\)/,'');return '<button type="button" class="thm" data-thm="'+k+'" aria-pressed="false"><span class="thi thi-'+k+'"></span><b>'+esc(nm)+'</b></button>';}).join('');t.dataset.sig='';}
+  [].forEach.call(t.querySelectorAll('[data-thm]'),function(b){var on=b.dataset.thm===cu;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
+  if(!f||!f.img)return;var o=Object.assign({},PF.opt||{});delete o.preset;delete o.txt;var sig=(f.name||'')+'|'+(f.img.width)+'|'+(PF.k==null?70:PF.k)+'|'+JSON.stringify(o);if(t.dataset.sig===sig)return;t.dataset.sig=sig;var my=(thmPaint.n=(thmPaint.n||0)+1);
+  THM95.forEach(function(k,i){setTimeout(function(){if(my!==thmPaint.n)return;try{var cv=pfApply(f.img,PF.k==null?70:PF.k,260,Object.assign({},PF.opt||{},{preset:k}));var sp=t.querySelector('[data-thm="'+k+'"] .thi');if(!sp||!cv)return;cv.removeAttribute('class');var old=sp.querySelector('canvas');if(old)sp.replaceChild(cv,old);else{sp.className='thi';sp.appendChild(cv);}}catch(e){}},40*i);});};
