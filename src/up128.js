@@ -69,6 +69,7 @@ var _after128=after;after=function(){_after128();var c=cur();if(c==='log'||c==='
 var PROMO128=[
  {id:'sgbd',n:'슬기로운 바다생활',area:'강원 양양 · 인구항',kind:'다이빙',addr:'강원 양양군 인구항길 4-4',line:'양양 바다를 가볍게 시작해요',map:'https://naver.me/Frif4RSI',bg:'linear-gradient(135deg,#0a5a8a 0%,#1b8fb8 60%,#5cc8d6 100%)'},
  {id:'tmax',n:'팀맥스 다이브 리조트',area:'필리핀 세부 · 막탄',kind:'다이빙 리조트',addr:'Suba-Basbas – Marbeach Rd, Lapu-Lapu, Cebu',line:'세부 막탄 바다로 함께 들어가요',map:'https://maps.app.goo.gl/sj6Nj9wVNTUHoJ4y6',bg:'linear-gradient(135deg,#0d4f5c 0%,#13867e 55%,#7fd3a8 120%)'},
+ {id:'beyul',n:'BEYUL 다이브 리조트',area:'필리핀 바탕가스 · 베르데 섬',kind:'다이빙 리조트',addr:'San Agapito, Verde Island, Batangas',line:'베르데 섬 바다로 함께 들어가요',map:'https://www.google.com/maps?q=BEYUL+Dive+Resort+Verde+Island+Batangas',bg:'linear-gradient(135deg,#123a5c 0%,#1f6f9a 55%,#9ad7c9 125%)'},
  {id:'hdive',n:'에이치다이브컴퍼니',area:'제주 서귀포',kind:'SSI 다이빙 센터',addr:'제주 서귀포시 월드컵로 108',line:'서귀포 바다로 함께 들어가요',map:'https://naver.me/5ulJPZ6B',bg:'linear-gradient(135deg,#0b2742 0%,#14507a 55%,#f08a5d 140%)'}];
 var PROMO128_FROM='2026-11-22',PROMO128_TO='2027-02-19';
 function promoOn128(){if(typeof LANG!=='undefined'&&LANG==='en')return false;var d=new Date(Date.now()+9*36e5).toISOString().slice(0,10);return d>=PROMO128_FROM&&d<=PROMO128_TO;}
