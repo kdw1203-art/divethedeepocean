@@ -453,31 +453,35 @@ window.addEventListener('hashchange',ghostEnd128);
 var _after128E=after,navE8='';after=function(){_after128E();var h=location.hash;if(h!==navE8){navE8=h;var v=document.querySelector('#main > .view');if(v&&!GH8){v.classList.remove('enter8');void v.offsetWidth;v.classList.add('enter8');setTimeout(function(){v.classList.remove('enter8');},400);}}};
 
 /* ---------- 오늘의 컨디션: 로그 · 장비 · 바다로 더 다양하게 ---------- */
+function E8(k,e){return typeof LANG!=='undefined'&&LANG==='en'?e:k;}
 condCard=function(){var L=(state.userLogs||[]).filter(function(l){return l.date;}),S=L.slice().sort(function(a,b){return a.date<b.date?1:-1;}),last=S[0],now=new Date(),y=String(now.getFullYear()),ym=now.toISOString().slice(0,7);
   var since=last?Math.round((Date.now()-new Date(last.date+'T12:00:00'))/36e5):null;
-  var tip=since==null?'첫 기록을 남겨 보세요':since<12?'몸에 질소가 남아 있어요. 쉬어요':since<24?'오늘은 얕게, 짧게':since<24*60?'컨디션 좋으면 OK':since<24*180?'얕은 곳에서 감부터 잡아요':'리프레시 다이브를 추천해요';
+  var tip=since==null?E8('첫 기록을 남겨 보세요','Log your first dive'):since<12?E8('몸에 질소가 남아 있어요. 쉬어요','Residual nitrogen — rest'):since<24?E8('오늘은 얕게, 짧게','Keep it shallow and short'):since<24*60?E8('컨디션 좋으면 OK','Good to go if you feel well'):since<24*180?E8('얕은 곳에서 감부터 잡아요','Start shallow to warm up'):E8('리프레시 다이브를 추천해요','A refresher dive is a good idea');
   var yr=L.filter(function(l){return l.date.slice(0,4)===y;}).length,mo=L.filter(function(l){return l.date.slice(0,7)===ym;}).length;
   var d30=L.filter(function(l){return Date.now()-new Date(l.date+'T12:00:00')<30*864e5;}),mx30=d30.reduce(function(m,l){return Math.max(m,+l.depth||0);},0),mins=L.reduce(function(m,l){return m+(+l.time||0);},0);
   var cnt={};L.forEach(function(l){var k=String(l.site||'').split(' · ')[0].trim();if(k&&!/가져옴/.test(k))cnt[k]=(cnt[k]||0)+1;});var top=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a];})[0];
   var G=(state.gearL||[]).map(function(g){var b=g.served||g.bought;if(!b)return null;var due=new Date(b+'T12:00:00');due.setFullYear(due.getFullYear()+1);return {g:g,d:Math.round((due-now)/864e5)};}).filter(Boolean).sort(function(a,b){return a.d-b.d;})[0];
   var cell=function(t,v,e,c){return '<div><small>'+t+'</small><b'+(String(v).length>6?' style="font-size:15px"':'')+'>'+v+'</b><em class="'+(c||'c')+'">'+e+'</em></div>';};
-  var h='<div class="cond cond8"><div class="row"><b>오늘의 컨디션</b><span>'+(L.length?'내 로그 '+L.length+'개 기준':'기기 연결 전')+'</span></div><div class="mgrid">'+
-   cell('마지막 다이브 후',since!=null?(since<72?since+'시간':Math.round(since/24)+'일'):'—',tip)+
-   cell('비행 전 대기',since!=null&&since<18?(18-since)+'시간 더':'지남','여러 번 다이빙 기준 18시간')+
-   cell('올해 다이브',yr+'회','이번 달 '+mo+'회')+
-   cell('최근 30일 최대 수심',d30.length?mx30+'m':'—',d30.length?d30.length+'번 들어갔어요':'30일 동안 기록 없음')+
-   cell('물속에 있던 시간',Math.floor(mins/60)+'시간 '+(mins%60)+'분','지금까지 전체')+
-   cell('자주 간 바다',top?esc(top):'—',top?cnt[top]+'번':'로그가 쌓이면 보여요')+
-   (G?cell('다음 장비 정비',G.d<0?'지남':G.d+'일 남음',esc([G.g.brand,G.g.model].filter(Boolean).join(' ')||G.g.cat||'장비')+' · 1년 기준',G.d<30?'m':'c'):cell('장비 정비','—','장비를 등록하면 알려 드려요','m'))+
-   '<div id="condSea"><small>지난 바다 지금</small><b style="font-size:15px">불러오는 중</b><em class="c">'+esc(last&&last.site||'')+'</em></div>'+
-   '</div><a class="btn btn-line" href="#devices" style="margin-top:10px;width:100%;background:transparent;color:inherit;border-color:currentColor">수면 · 심박도 보려면 기기 연결하기</a></div>';
+  var h='<div class="cond cond8"><div class="row"><b>'+E8('오늘의 컨디션','Today\'s condition')+'</b><span>'+(L.length?E8('내 로그 '+L.length+'개 기준','Based on '+L.length+' logs'):E8('기기 연결 전','No device'))+'</span></div><div class="mgrid">'+
+   cell(E8('마지막 다이브 후','Since last dive'),since!=null?(since<72?since+E8('시간','h'):Math.round(since/24)+E8('일',' days')):'—',tip)+
+   cell(E8('비행 전 대기','No-fly time'),since!=null&&since<18?(18-since)+E8('시간 더','h left'):E8('지남','Clear'),E8('여러 번 다이빙 기준 18시간','18 h after repetitive dives'))+
+   cell(E8('올해 다이브','Dives this year'),yr+E8('회',''),E8('이번 달 '+mo+'회','This month '+mo))+
+   cell(E8('최근 30일 최대 수심','Max depth (30 days)'),d30.length?mx30+'m':'—',d30.length?E8(d30.length+'번 들어갔어요',d30.length+' dives'):E8('30일 동안 기록 없음','No dives in 30 days'))+
+   cell(E8('물속에 있던 시간','Bottom time'),Math.floor(mins/60)+E8('시간 ','h ')+(mins%60)+E8('분','m'),E8('지금까지 전체','All time'))+
+   cell(E8('자주 간 바다','Favorite sea'),top?esc(top):'—',top?cnt[top]+E8('번',' dives'):E8('로그가 쌓이면 보여요','Shows as you log'))+
+   (G?cell(E8('다음 장비 정비','Next gear service'),G.d<0?E8('지남','Overdue'):G.d+E8('일 남음',' days'),esc([G.g.brand,G.g.model].filter(Boolean).join(' ')||G.g.cat||E8('장비','Gear'))+E8(' · 1년 기준',' · yearly'),G.d<30?'m':'c'):cell(E8('장비 정비','Gear service'),'—',E8('장비를 등록하면 알려 드려요','Add gear to get reminders'),'m'))+
+   '<div id="condSea"><small>'+E8('지난 바다 지금','Last sea now')+'</small><b style="font-size:15px">'+E8('불러오는 중','Loading')+'</b><em class="c">'+esc(last&&last.site||'')+'</em></div>'+
+   '</div><a class="btn btn-line" href="#devices" style="margin-top:10px;width:100%;background:transparent;color:inherit;border-color:currentColor">'+E8('수면 · 심박도 보려면 기기 연결하기','Connect a device for sleep · heart rate')+'</a></div>';
   setTimeout(condSea128,50);return h;};
 function condSea128(){var el=document.getElementById('condSea');if(!el||el.dataset.on)return;el.dataset.on=1;var L=(state.userLogs||[]).filter(function(l){return l.date;}).sort(function(a,b){return a.date<b.date?1:-1;});
-  var s=null;for(var i=0;i<L.length&&!s;i++){var nm=String(L[i].site||'');s=SPOTS.filter(function(x){return x.id!=='home'&&nm&&(nm.indexOf(x.name)>=0||x.name.indexOf(nm.split(' · ')[0])>=0);})[0]||null;}
-  var lbl=el.querySelector('small');if(!s){s=spot(state.sel)||SPOTS.filter(function(x){return x.id!=='home';})[0];if(lbl)lbl.textContent='고른 바다 지금';}if(!s){el.remove();return;}
-  var fill=function(d){var c=d&&d.current,b=el.querySelector('b'),em=el.querySelector('em');if(!c||c.sea_surface_temperature==null){b.textContent='예보 범위 밖';em.textContent=s.name;return;}
-    var t=c.sea_surface_temperature,suit=t>=27?'3mm':t>=23?'5mm':t>=18?'5~7mm':t>=13?'7mm · 세미드라이':'드라이슈트';b.textContent=t.toFixed(1)+'℃ · 파고 '+(c.wave_height!=null?c.wave_height.toFixed(1)+'m':'—');em.textContent=s.name+' · 슈트 '+suit;};
+  var s=null;for(var i=0;i<L.length&&!s;i++){var nm=String(L[i].site||'');s=SPOTS.filter(function(x){return x.id!=='home'&&!(typeof isPool==='function'&&isPool(x))&&nm&&(nm.indexOf(x.name)>=0||x.name.indexOf(nm.split(' · ')[0])>=0);})[0]||null;}
+  var lbl=el.querySelector('small');if(!s){var s0=spot(state.sel);s=s0&&!(typeof isPool==='function'&&isPool(s0))?s0:SPOTS.filter(function(x){return x.id!=='home'&&!(typeof isPool==='function'&&isPool(x));})[0];if(lbl)lbl.textContent=E8('고른 바다 지금','Selected sea now');}if(!s){el.remove();return;}
+  var fill=function(d){var c=d&&d.current,b=el.querySelector('b'),em=el.querySelector('em');if(!c||c.sea_surface_temperature==null){b.textContent=E8('예보 범위 밖','Out of range');em.textContent=s.name;return;}
+    var t=c.sea_surface_temperature,suit=t>=27?'3mm':t>=23?'5mm':t>=18?'5~7mm':t>=13?E8('7mm · 세미드라이','7mm · semi-dry'):E8('드라이슈트','drysuit');b.textContent=t.toFixed(1)+E8('℃ · 파고 ','℃ · waves ')+(c.wave_height!=null?c.wave_height.toFixed(1)+'m':'—');em.textContent=E8(s.name,(typeof EN==='object'&&EN[s.id])||s.name)+E8(' · 슈트 ',' · suit ')+suit;};
   if(seaToday.c[s.id])return fill(seaToday.c[s.id]);
-  fetch('https://marine-api.open-meteo.com/v1/marine?latitude='+s.lat+'&longitude='+s.lon+'&current=wave_height,sea_surface_temperature,wave_period&timezone=auto').then(function(r){return r.json();}).then(function(d){seaToday.c[s.id]=d;fill(d);}).catch(function(){var b=el.querySelector('b');if(b)b.textContent='불러오지 못했어요';});}
+  fetch('https://marine-api.open-meteo.com/v1/marine?latitude='+s.lat+'&longitude='+s.lon+'&current=wave_height,sea_surface_temperature,wave_period&timezone=auto').then(function(r){return r.json();}).then(function(d){seaToday.c[s.id]=d;fill(d);}).catch(function(){var b=el.querySelector('b');if(b)b.textContent=E8('불러오지 못했어요','Unavailable');});}
 var _after128C=after;after=function(){_after128C();setTimeout(condSea128,300);};
 (function(){var st=document.createElement('style');st.textContent='.cond8 .mgrid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))!important}.cond8 .mgrid b{word-break:keep-all}';document.head.appendChild(st);})();
+/* 실내 수영장 좌표로는 바다 예보를 부르지 않아요 (응답 오류만 남아요) */
+(function(){var F=window.fetch;if(!F)return;window.fetch=function(u){try{var s=String(u&&u.url||u);if(s.indexOf('marine-api.open-meteo.com')>=0){var la=+(s.match(/latitude=(-?[\d.]+)/)||[])[1],lo=+(s.match(/longitude=(-?[\d.]+)/)||[])[1];
+  if(!isNaN(la)&&typeof isPool==='function'&&SPOTS.some(function(x){return isPool(x)&&Math.abs(x.lat-la)<0.02&&Math.abs(x.lon-lo)<0.02;}))return Promise.resolve(new Response('{"error":true,"reason":"inland"}',{status:200,headers:{'Content-Type':'application/json'}}));}}catch(e){}return F.apply(this,arguments);};})();

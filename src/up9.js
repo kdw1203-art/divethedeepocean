@@ -75,7 +75,7 @@ function enWalk(root){if(LANG!=='en'||!root)return;var w=document.createTreeWalk
 function enApply(){if(LANG!=='en')return;document.documentElement.lang='en';enWalk(document.body);}
 var _after9=after;after=function(){_after9();enApply();};
 var _rer9=rerender;rerender=function(){_rer9();enApply();};
-if(LANG==='en'){var _mo9=new MutationObserver(function(ms){if(_mo9.busy)return;_mo9.busy=1;setTimeout(function(){_mo9.busy=0;ms.forEach(function(m){m.addedNodes.forEach(function(nd){if(nd.nodeType===1)enWalk(nd);else if(nd.nodeType===3&&nd.parentElement)enWalk(nd.parentElement);});});},30);});
+if(LANG==='en'){var _mo9q=[],_mo9=new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(function(nd){_mo9q.push(nd);});if(m.type==='characterData'&&m.target)_mo9q.push(m.target);});if(_mo9.busy)return;_mo9.busy=1;setTimeout(function(){_mo9.busy=0;var Q=_mo9q;_mo9q=[];Q.forEach(function(nd){if(!nd.isConnected)return;if(nd.nodeType===1)enWalk(nd);else if(nd.nodeType===3&&nd.parentElement)enWalk(nd.parentElement);});},30);});
   document.addEventListener('DOMContentLoaded',function(){_mo9.observe(document.body,{childList:true,subtree:true});});if(document.body)_mo9.observe(document.body,{childList:true,subtree:true});
   (function(){var st=document.createElement('style');st.textContent='.enbar{background:var(--soft);border-radius:12px;padding:8px 12px;font-size:13px;margin-bottom:12px}';document.head.appendChild(st);})();}
 /* 언어 바꾸기: 바닥글과 계정 화면 */
