@@ -60,3 +60,6 @@ function frSignup125(){if(cur()!=='signup'||document.getElementById('evSign'))re
 document.addEventListener('click',function(e){if(e.target.closest('[data-evopen]'))evShow125(true);});
 
 var _after125=after;after=function(){_after125();var c=cur();if(c==='home'){setTimeout(function(){evShow125(false);},900);}if(c==='profile'){setTimeout(frProfile125,600);setTimeout(frProfile125,1700);}if(c==='signup'){setTimeout(frSignup125,300);setTimeout(frSignup125,1200);}};
+
+/* 자격증 카드: 넓은 화면에서 지금의 약 70% 크기 (한 줄 3장) */
+(function(){var st=document.createElement('style');st.textContent='@media (min-width:700px){.cc2g{grid-template-columns:repeat(3,minmax(0,1fr))!important}}';document.head.appendChild(st);})();
