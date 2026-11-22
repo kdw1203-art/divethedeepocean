@@ -35,6 +35,17 @@ module.exports = async (req, res) => {
       title = (d.diver || '다이버') + ' 님이 다이브 로그 서명을 부탁했어요';
       desc = [d.date, d.site, d.max_depth ? d.max_depth + 'm' : '', d.minutes ? d.minutes + '분' : ''].filter(Boolean).join(' · ') + (d.signed ? ' — 이미 서명된 로그예요' : ' — 눌러서 서명해 주세요');
     }
+  } else if (k === 'sb' && UUID.test(v)) {
+    go = SITE + '/#signs-' + v.toLowerCase();
+    title = '다이브 로그 서명 부탁드려요';
+    desc = '여러 로그를 한 번에 서명 · 도장할 수 있어요. 로그인 없이도 돼요.';
+    label = '한 번에 서명하기';
+    const d = await rpc('sign_batch_get', { p_id: v });
+    if (d && Array.isArray(d.list)) {
+      const n = d.list.length, left = d.list.filter((x) => !x.signed).length;
+      title = (d.diver || '다이버') + ' 님이 다이브 로그 ' + n + '개에 서명을 부탁했어요';
+      desc = (left ? '남은 서명 ' + left + '개 · ' : '모두 서명됐어요 · ') + d.list.slice(0, 3).map((x) => [x.date, x.site].filter(Boolean).join(' ')).join(', ') + (n > 3 ? ' 외' : '');
+    }
   } else if (k === 'r' && CODE.test(v)) {
     go = SITE + '/?ref=' + encodeURIComponent(v.toUpperCase()) + (fq ? '&' + fq : '') + '#signup';
     title = (from ? from + ' 님이 ' : '친구가 ') + 'Dive the Deep Ocean에 초대했어요';
@@ -68,7 +79,7 @@ module.exports = async (req, res) => {
   }
 
   res.setHeader('content-type', 'text/html; charset=utf-8');
-  res.setHeader('cache-control', k === 's' ? 'private, no-store' : 'public, max-age=60, s-maxage=600');
+  res.setHeader('cache-control', (k === 's' || k === 'sb') ? 'private, no-store' : 'public, max-age=60, s-maxage=600');
   res.status(200).send('<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(title) + ' | Dive the deep ocean</title>' +
     '<meta name="description" content="' + esc(desc) + '"><meta property="og:type" content="website"><meta property="og:site_name" content="Dive the deep ocean">' +
     '<meta property="og:title" content="' + esc(title) + '"><meta property="og:description" content="' + esc(desc) + '"><meta property="og:image" content="' + SITE + '/assets/og.jpg">' +

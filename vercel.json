@@ -77,6 +77,10 @@
    "destination": "/api/l?k=s&v=:v"
   },
   {
+   "source": "/sb/:v",
+   "destination": "/api/l?k=sb&v=:v"
+  },
+  {
    "source": "/r/:v",
    "destination": "/api/l?k=r&v=:v"
   },
