@@ -1,5 +1,5 @@
 /* ===== up125: 첫 다이버 모집 이벤트 팝업 (26.11.22~12.18) · 친구 초대 ===== */
-var EVT125={from:'2026-11-22',to:'2026-12-18',img:'/assets/media/event-2026-11.jpg'};
+var EVT125={from:'2026-11-22',to:'2026-12-18',img:'/assets/media/event-2026-11.jpg',form:'https://form.naver.com/response/FCTtIiKwWta'};
 var EVT125_TXT='🤿 Dive the Deep Ocean 첫 번째 다이버를 모집합니다! 🌊\n\n다이버를 위한 새로운 공간\nDive the Deep Ocean이 탄생하였어요!\n\n로그북 작성부터 다양한 기능까지,\n직접 경험해 보고 첫 사용자가 되어주실 다이버를 찾습니다.\n\n사용한 후에 솔직한 후기와 의견을 들려주세요. 여러분의 피드백이 더 좋은 서비스를 만드는 첫걸음이 됩니다! 💙\n\n🎁 가입 및 리서치를 완료해 주신 분 중 추첨을 통해 10분께 스타벅스 커피 쿠폰 쏠게요!\n💧기간: 26.11.22~12.18\n\n우리의 첫걸음, 함께해 주실거죠?';
 (function(){var st=document.createElement('style');st.textContent=
 '.evbg{position:fixed;inset:0;z-index:9000;background:rgba(4,16,26,.62);display:flex;align-items:center;justify-content:center;padding:18px;animation:evf .2s ease}@keyframes evf{from{opacity:0}to{opacity:1}}'+
@@ -16,13 +16,13 @@ function evClose125(hideToday){var b=document.getElementById('evbg');if(b)b.remo
 function evShow125(force){if(!evOn125()||document.getElementById('evbg'))return;if(!force){if(LS.get('evHide','')===kst125())return;try{if(sessionStorage.getItem('evSeen'))return;}catch(e){}if(document.getElementById('sheetbg'))return;}
   var u=!!BE.user,bg=document.createElement('div');bg.className='evbg';bg.id='evbg';
   bg.innerHTML='<div class="evbox" role="dialog" aria-modal="true" aria-label="첫 다이버 모집 이벤트"><img src="'+EVT125.img+'" alt="'+esc(EVT125_TXT)+'" width="1080" height="1350"><div class="evbody">'+
-   (u?'<button class="btn btn-pri" type="button" data-frinv>친구 초대하기</button><button class="btn btn-line" type="button" data-evlog>로그북 써 보기</button>':'<a class="btn btn-pri" href="#signup" data-evgo>가입하고 참여하기</a><button class="btn btn-line" type="button" data-evshare>친구에게 알려주기</button>')+
+   (u?'<a class="btn btn-pri" href="'+EVT125.form+'" target="_blank" rel="noopener" data-evform>리서치 참여하기</a><button class="btn btn-line" type="button" data-frinv>친구 초대하기</button>':'<a class="btn btn-pri" href="#signup" data-evgo>가입하고 참여하기</a><a class="btn btn-line" href="'+EVT125.form+'" target="_blank" rel="noopener" data-evform>리서치 참여하기</a><button class="btn btn-line" type="button" data-evshare>친구에게 알려주기</button>')+'<p class="small" style="margin:0;text-align:center">가입과 리서치를 둘 다 마치면 추첨 대상이 돼요.</p>'+
    '<details><summary class="small" style="cursor:pointer;padding:4px 2px">이벤트 내용 자세히</summary><p class="evmore">'+esc(EVT125_TXT)+'</p></details></div>'+
    '<div class="evfoot"><button type="button" data-evhide>오늘 그만 보기</button><button type="button" data-evx>닫기</button></div></div>';
   bg.addEventListener('click',function(e){if(e.target===bg)evClose125(false);});document.body.appendChild(bg);}
 document.addEventListener('click',function(e){var t=e.target;
   if(t.closest('[data-evx]'))return evClose125(false);if(t.closest('[data-evhide]'))return evClose125(true);
-  if(t.closest('[data-evgo]'))return evClose125(false);if(t.closest('[data-evlog]')){evClose125(false);location.hash='#log';return;}
+  if(t.closest('[data-evgo]'))return evClose125(false);if(t.closest('[data-evform]')){try{sessionStorage.setItem('evSeen','1');}catch(x){}return;}if(t.closest('[data-evlog]')){evClose125(false);location.hash='#log';return;}
   if(t.closest('[data-evshare]')){evShare125(location.origin+'/');return;}
   if(t.closest('[data-frinv]')){e.preventDefault();evClose125(false);frSheet125();return;}
   var c=t.closest('[data-frcopy]');if(c&&navigator.clipboard){navigator.clipboard.writeText(c.dataset.frcopy).then(function(){toast('복사했어요');});return;}
@@ -49,11 +49,11 @@ function frSheet125(){if(!BE.user){if(typeof needLogin==='function')needLogin('�
 function frProfile125(){if(cur()!=='profile'||!BE.user||document.getElementById('frPanel'))return;var v=document.querySelector('#main .view'),kv=v&&v.querySelector(':scope > .panel.kvp');if(!kv)return;var p=document.createElement('div');p.id='frPanel';p.style.cssText='margin-top:14px;padding-top:14px;border-top:1px solid var(--line)';
   p.innerHTML='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><b style="font-size:15px;flex:1">친구 초대</b><button class="btn btn-pri" type="button" data-frinv style="min-height:40px">친구 초대하기</button></div><p class="small" id="frLine" style="margin:6px 0 0">내 링크를 보내면 친구가 그 링크로 가입했는지 셀 수 있어요.</p>';
   var ic=document.getElementById('icPanel');if(ic&&ic.parentElement===kv)kv.insertBefore(p,ic);else kv.appendChild(p);
-  frLoad125(function(x){var l=document.getElementById('frLine');if(l&&x)l.innerHTML='내 초대 코드 <b>'+esc(x.code)+'</b> · 내 링크로 가입한 친구 <b>'+(+x.n||0)+'명</b>'+(evOn125()?' · 첫 다이버 이벤트 중 (~12.18)':'');});}
+  frLoad125(function(x){var l=document.getElementById('frLine');if(l&&x)l.innerHTML='내 초대 코드 <b>'+esc(x.code)+'</b> · 내 링크로 가입한 친구 <b>'+(+x.n||0)+'명</b>'+(evOn125()?' · 첫 다이버 이벤트 중 (~12.18) · <a href="'+EVT125.form+'" target="_blank" rel="noopener">리서치 참여하기</a>':'');});}
 
 /* 회원가입 화면: 이벤트 안내 · 추천 코드 · 친구에게 알려주기 */
 function frSignup125(){if(cur()!=='signup'||document.getElementById('evSign'))return;var v=document.querySelector('#main .view');if(!v)return;var ref=LS.get('ref','');var d=document.createElement('div');d.id='evSign';
-  d.innerHTML=(evOn125()?'<div class="evsign"><img src="'+EVT125.img+'" alt=""><div style="flex:1;min-width:0"><b>첫 다이버 모집 이벤트</b><span>가입 + 리서치 완료하면 추첨으로 10분께 커피 쿠폰 · ~12.18</span></div><button class="chip" type="button" data-evopen>자세히</button></div>':'')+
+  d.innerHTML=(evOn125()?'<div class="evsign"><img src="'+EVT125.img+'" alt=""><div style="flex:1;min-width:0"><b>첫 다이버 모집 이벤트</b><span>가입 + 리서치 완료하면 추첨으로 10분께 커피 쿠폰 · ~12.18</span></div><div style="display:flex;flex-direction:column;gap:6px;flex:none"><button class="chip" type="button" data-evopen>자세히</button><a class="chip" href="'+EVT125.form+'" target="_blank" rel="noopener">리서치</a></div></div>':'')+
    (ref?'<p class="small" style="margin:0 0 8px">추천 코드 <b>'+esc(ref)+'</b>가 함께 적용돼요.</p>':'')+
    '<div class="frbox" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="flex:1;min-width:180px;font-size:14px"><b>친구랑 같이 시작해요</b><br><span class="small">가입하면 내 정보에서 내 초대 링크를 받을 수 있어요.</span></span><button class="chip" type="button" data-evshare>친구에게 알려주기</button></div>';
   var vh=v.querySelector(':scope > .vh');if(vh)vh.after(d);else v.insertBefore(d,v.firstChild);}
