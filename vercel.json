@@ -73,6 +73,34 @@
    "destination": "/api/d?t=:t"
   },
   {
+   "source": "/s/:v",
+   "destination": "/api/l?k=s&v=:v"
+  },
+  {
+   "source": "/r/:v",
+   "destination": "/api/l?k=r&v=:v"
+  },
+  {
+   "source": "/c/:v",
+   "destination": "/api/l?k=c&v=:v"
+  },
+  {
+   "source": "/g/:v",
+   "destination": "/api/l?k=g&v=:v"
+  },
+  {
+   "source": "/m/:v",
+   "destination": "/api/l?k=m&v=:v"
+  },
+  {
+   "source": "/b/:v",
+   "destination": "/api/l?k=b&v=:v"
+  },
+  {
+   "source": "/t/:v",
+   "destination": "/api/l?k=t&v=:v"
+  },
+  {
    "source": "/spot/:id",
    "destination": "/spot/:id.html"
   },
