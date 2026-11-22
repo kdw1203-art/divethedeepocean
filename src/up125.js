@@ -63,3 +63,43 @@ var _after125=after;after=function(){_after125();var c=cur();if(c==='home'){setT
 
 /* 자격증 카드: 넓은 화면에서 지금의 약 70% 크기 (한 줄 3장) */
 (function(){var st=document.createElement('style');st.textContent='@media (min-width:700px){.cc2g{grid-template-columns:repeat(3,minmax(0,1fr))!important}}';document.head.appendChild(st);})();
+
+/* ===== 공지사항: 홈 아래 메뉴 · 홈 하단 최신 공지 · 운영자만 글쓰기 ===== */
+var NEWS_IC='M4 10v4h3l6 4V6L7 10H4z M16.5 9a4 4 0 0 1 0 6 M19 6.5a7.5 7.5 0 0 1 0 11';
+(function(){if(typeof MAIN53==='undefined'||MAIN53.some(function(m){return m.id==='news';}))return;var i=MAIN53.findIndex(function(m){return m.id==='home';});MAIN53.splice(i+1,0,{id:'news',l:(typeof L53==='function'?L53('공지사항','Notices'):'공지사항'),i:NEWS_IC});if(typeof MENU0!=='undefined')MENU0.news='공지사항';if(typeof side53==='function')side53();})();
+(function(){var st=document.createElement('style');st.textContent='.nwi .tx b{font-size:15px}.nwnew{display:inline-flex;align-items:center;font:700 10.5px Sora,sans-serif;color:#fff;background:#E5484D;border-radius:999px;padding:1px 6px;margin-left:6px;vertical-align:2px}.nwbody{white-space:pre-line;font-size:15px;line-height:1.75;word-break:break-word}.nwbody a{color:var(--sea);word-break:break-all}.nwadm{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}#nwForm textarea{min-height:220px}';document.head.appendChild(st);})();
+function nwAdmin(){return !!(state.me&&state.me.admin);}
+function nwLoad(force){if(!BE.on)return;if(state.news&&!force)return;if(nwLoad.b&&!force)return;nwLoad.b=1;BE.sb.from('site_notices').select('*').order('pinned',{ascending:false}).order('created_at',{ascending:false}).limit(100).then(function(r){nwLoad.b=0;state.news=r.error?[]:(r.data||[]);state.newsErr=!!r.error;var c=cur();if(c==='news'||c==='home')rerender();});}
+function nwNew(n){return Date.now()-Date.parse(n.created_at)<3*864e5;}
+function nwDate(s){return String(s||'').slice(0,10).replace(/-/g,'.');}
+function nwLink(t){return esc(t).replace(/https:\/\/[^\s<]+/g,function(u){return '<a href="'+u+'" target="_blank" rel="noopener">'+u+'</a>';});}
+function nwRow(n){return '<a class="item nwi" href="#news-'+n.id+'"><span class="tx"><span>'+(n.pinned?tags([['고정','ok']]):'')+(n.hidden?' '+tags([['숨김','gray']]):'')+' '+nwDate(n.created_at)+'</span><b>'+esc(n.title)+(nwNew(n)?'<span class="nwnew">N</span>':'')+'</b></span><span class="rt">보기</span></a>';}
+V.news=function(arg){setTitle('공지사항');if(BE.on&&!state.news)nwLoad();var L=state.news,adm=nwAdmin();
+  if(arg){var id=+arg,n=(L||[]).filter(function(x){return x.id===id;})[0];if(!n)return '<div class="vh"><div><a class="small" href="#news">← 공지사항</a><h1>공지사항</h1><p>'+(L?'지워졌거나 없는 글이에요.':'불러오는 중이에요.')+'</p></div></div>';
+    return '<div class="vh"><div><a class="small" href="#news">← 공지사항</a><h1>'+esc(n.title)+'</h1><p>'+nwDate(n.created_at)+(n.updated_at&&nwDate(n.updated_at)!==nwDate(n.created_at)?' · 고침 '+nwDate(n.updated_at):'')+(n.pinned?' · 고정':'')+'</p></div></div>'+
+     '<div class="panel"><div class="nwbody">'+nwLink(n.body)+'</div>'+(n.link_url?'<a class="btn btn-pri" href="'+esc(n.link_url)+'" target="_blank" rel="noopener" style="margin-top:16px">'+esc(n.link_label||'바로 가기')+'</a>':'')+
+     (adm?'<div class="nwadm"><button class="chip" type="button" data-nwedit="'+id+'">고치기</button><button class="chip" type="button" data-nwpin="'+id+'">'+(n.pinned?'고정 풀기':'맨 위 고정')+'</button><button class="chip" type="button" data-nwhide="'+id+'">'+(n.hidden?'다시 보이기':'숨기기')+'</button><button class="chip" type="button" data-nwdel="'+id+'">지우기</button></div>':'')+'</div>'+
+     '<a class="btn btn-line" href="#news">목록으로</a>'+(typeof foot==='function'?foot():'');}
+  return '<div class="vh"><div><h1>공지사항</h1><p>서비스 소식, 이벤트, 바뀐 점을 알려 드려요.</p></div>'+(adm?'<button class="btn btn-pri" type="button" data-nwnew>글쓰기</button>':'')+'</div>'+
+   '<div class="panel">'+(L?(L.length?'<div class="list">'+L.map(nwRow).join('')+'</div>':'<p class="empty" style="margin:0">'+(state.newsErr?'공지사항을 준비하고 있어요.':'아직 공지가 없어요.')+'</p>'):'<p class="empty" style="margin:0">불러오는 중이에요.</p>')+'</div>'+(typeof foot==='function'?foot():'');};
+function nwForm(n){n=n||{};sheet('<button class="chip x" type="button" data-xsheet>닫기</button><h2 style="margin:0 0 10px">'+(n.id?'공지 고치기':'공지 쓰기')+'</h2><form id="nwForm" class="form" data-id="'+(n.id||'')+'" style="grid-template-columns:1fr">'+
+  '<label for="nw_t">제목<input id="nw_t" maxlength="120" value="'+esc(n.title||'')+'" required></label>'+
+  '<label for="nw_b">내용 <span class="small">https:// 주소는 눌러서 열 수 있게 바뀌어요</span><textarea id="nw_b" maxlength="8000" required>'+esc(n.body||'')+'</textarea></label>'+
+  '<label for="nw_lu">버튼 링크 (선택, https://로 시작)<input id="nw_lu" maxlength="400" value="'+esc(n.link_url||'')+'" placeholder="https://"></label>'+
+  '<label for="nw_ll">버튼 이름 (선택)<input id="nw_ll" maxlength="40" value="'+esc(n.link_label||'')+'" placeholder="예: 리서치 참여하기"></label>'+
+  '<label class="ck" for="nw_p" style="display:flex;gap:8px;align-items:center"><input id="nw_p" type="checkbox" style="width:auto"'+(n.pinned?' checked':'')+'> 맨 위에 고정</label>'+
+  '<button class="btn btn-pri" type="submit" style="justify-content:center">'+(n.id?'저장':'올리기')+'</button></form>');}
+document.addEventListener('submit',function(e){if(e.target.id!=='nwForm')return;e.preventDefault();var id=+e.target.dataset.id||0,lu=val('nw_lu').trim(),row={title:val('nw_t').trim(),body:val('nw_b').trim(),link_url:lu||null,link_label:val('nw_ll').trim()||null,pinned:document.getElementById('nw_p').checked};
+  if(!row.title||!row.body)return toast('제목과 내용을 적어 주세요');if(lu&&!/^https:\/\//.test(lu))return toast('링크는 https://로 시작해야 해요');
+  (id?BE.sb.from('site_notices').update(row).eq('id',id).select('*'):BE.sb.from('site_notices').insert(row).select('*')).then(function(r){if(r.error)return toast('저장하지 못했어요. 운영자 계정인지 확인해 주세요');closeSheet();toast(id?'고쳤어요':'올렸어요');var n=r.data&&r.data[0];nwLoad(true);if(n&&!id)location.hash='#news-'+n.id;});});
+document.addEventListener('click',function(e){var t=e.target.closest('[data-nwnew]');if(t){nwForm();return;}
+  t=e.target.closest('[data-nwedit]');if(t){nwForm((state.news||[]).filter(function(x){return x.id===+t.dataset.nwedit;})[0]);return;}
+  var f=function(id,up,msg){BE.sb.from('site_notices').update(up).eq('id',id).then(function(r){if(r.error)return toast('바꾸지 못했어요');toast(msg);nwLoad(true);});};
+  t=e.target.closest('[data-nwpin]');if(t){var n=(state.news||[]).filter(function(x){return x.id===+t.dataset.nwpin;})[0];if(n)f(n.id,{pinned:!n.pinned},n.pinned?'고정을 풀었어요':'맨 위에 고정했어요');return;}
+  t=e.target.closest('[data-nwhide]');if(t){var m=(state.news||[]).filter(function(x){return x.id===+t.dataset.nwhide;})[0];if(m)f(m.id,{hidden:!m.hidden},m.hidden?'다시 보이게 했어요':'숨겼어요. 운영자에게만 보여요');return;}
+  t=e.target.closest('[data-nwdel]');if(t){if(!confirm('이 공지를 지울까요? 되돌릴 수 없어요.'))return;BE.sb.from('site_notices').delete().eq('id',+t.dataset.nwdel).then(function(r){if(r.error)return toast('지우지 못했어요');toast('지웠어요');nwLoad(true);location.hash='#news';});}});
+/* 홈 아래쪽: 최신 공지 3개 */
+function nwHome(){if(cur()!=='home'||document.getElementById('nwHome'))return;if(!state.news){nwLoad();return;}var L=state.news.filter(function(n){return !n.hidden;}).slice(0,3);if(!L.length)return;var v=document.querySelector('#main .view');if(!v)return;
+  var p=document.createElement('div');p.className='panel';p.id='nwHome';p.innerHTML='<h2 style="display:flex;align-items:center;justify-content:space-between">공지사항 <a class="small" href="#news">전체 보기</a></h2><div class="list">'+L.map(nwRow).join('')+'</div>';
+  var ft=v.querySelector(':scope > .foot');if(ft)ft.before(p);else v.appendChild(p);}
+var _after125n=after;after=function(){_after125n();var c=cur();if(c==='home'){setTimeout(nwHome,700);setTimeout(nwHome,2000);}};
