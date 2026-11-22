@@ -108,8 +108,10 @@ var _after128c=after;after=function(){_after128c();if(cur()==='home'){[200,900,2
 (function(){var st=document.createElement('style');st.textContent='.foot{line-height:1.45!important;gap:4px!important;padding-top:12px!important;margin-top:20px!important}.foot *{line-height:inherit}.foot .footbrand{margin-bottom:4px!important;gap:10px!important}.foot .footbrand img{width:46px!important;height:46px!important}.foot button.lnk,.foot a{min-height:0!important;height:auto!important;padding-top:0!important;padding-bottom:0!important;vertical-align:baseline}.foot .i6fb{margin-top:4px!important}.foot p{margin:0!important}';document.head.appendChild(st);})();
 
 /* ---------- 깜박임: 데이터가 올 때마다 화면 전체를 연달아 다시 그리던 것을 한 번으로 모아요 ---------- */
-(function(){var _r=rerender,last=0,pend=0;rerender=function(){var now=Date.now(),ev=window.event;
+(function(){var _r=rerender,last=0,pend=0,first=0,navAt=Date.now();window.addEventListener('hashchange',function(){navAt=Date.now();});
+  rerender=function(){var now=Date.now(),ev=window.event;
   if(ev&&ev.isTrusted&&/^(click|submit|change|input|keydown|keyup|pointerup|touchend|hashchange|popstate)$/.test(ev.type)){if(pend){clearTimeout(pend);pend=0;}last=now;return _r.apply(this,arguments);}
+  if(now-navAt<2500){/* 막 열린 화면: 데이터가 다 올 때까지 잠깐 모았다가 한 번에 */if(!pend)first=now;else clearTimeout(pend);var wait=Math.min(450,Math.max(30,1300-(now-first)));pend=setTimeout(function(){pend=0;last=Date.now();_r();},wait);return;}
   if(!pend&&now-last>300){last=now;return _r.apply(this,arguments);}
   if(pend)return;pend=setTimeout(function(){pend=0;last=Date.now();_r();},Math.max(30,300-(now-last)));};})();
 
@@ -255,15 +257,15 @@ document.addEventListener('click',function(e){if(e.target.closest('[data-lkdel]'
  '.p8d summary{list-style:none;cursor:pointer}.p8d summary::-webkit-details-marker{display:none}.p8n{flex:none;font-size:12.5px;font-weight:700;color:var(--sea)}.p8l{margin-top:8px;border-top:1px solid var(--line)}.p8l div{display:grid;grid-template-columns:auto 1fr auto;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13px;align-items:baseline}.p8l span{color:var(--sub);font-size:12px}.p8l b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.p8l i{font-style:normal;font-size:12px;color:var(--sub)}.p8del{margin-top:8px;font-size:12px!important}';document.head.appendChild(st);})();
 
 /* ---------- 포인트 정렬: 나라 → 지역 → 포인트 (한글 가나다 · 영어 abc, 대한민국 먼저) ---------- */
-var AREA128_SRC='제주,Jeju:jeju udo beomseom chagwido hyeopjae marado|강원,Gangwon:goseong yangyang gangneung samcheok|경북,Gyeongbuk:ulleung wangdol gyeongju pohang dokdo|경남,Gyeongnam:geoje tongyeong|부산,Busan:busan sajikpool|전남,Jeonnam:geomun hongdo wando|서울,Seoul:jamsilpool olympicpool|경기,Gyeonggi:k26 deepstation paradive seongnampool suwonpool|인천,Incheon:munhakpool|대구,Daegu:duryupool|광주,Gwangju:nambupool'+
+var AREA128_SRC='제주,Jeju:jeju udo beomseom chagwido hyeopjae marado hyeongje gimnyeong jigwido|강원,Gangwon:goseong yangyang gangneung samcheok jumunjin eodal|경북,Gyeongbuk:ulleung wangdol gyeongju pohang dokdo chuksan|경남,Gyeongnam:geoje tongyeong|부산,Busan:busan sajikpool|전남,Jeonnam:geomun hongdo wando|서울,Seoul:jamsilpool olympicpool|경기,Gyeonggi:k26 deepstation paradive seongnampool suwonpool|인천,Incheon:munhakpool|대구,Daegu:duryupool|광주,Gwangju:nambupool'+
  '|오키나와,Okinawa:okinawa maeda ishigaki miyako yonaguni|도쿄도 섬,Tokyo Islands:mikura ogasawara|시즈오카,Shizuoka:izu|가고시마,Kagoshima:amami|고치,Kochi:kashiwajima'+
  '|세부,Cebu:mactan oslob moalboal malapascua|보홀,Bohol:balicasag cabilao|바탕가스,Batangas:anilao|민도로,Mindoro:galera aporeef|팔라완,Palawan:coron elnido tubbataha|네그로스,Negros:dauin|시키호르,Siquijor:siquijor|보라카이,Boracay:boracay|잠발레스,Zambales:subic|소르소곤,Sorsogon:donsol|카미긴,Camiguin:camiguin'+
  '|코타오,Koh Tao:kohtao|팡아,Phang Nga:similan richelieu|푸껫,Phuket:racha|끄라비,Krabi:phiphi kohlanta|사뚠,Satun:lipe'+
  '|사바,Sabah:sipadan mabul|파항,Pahang:tioman|트렝가누,Terengganu:perhentian redang'+
  '|발리,Bali:tulamben amed nusapenida menjangan padangbai|롬복,Lombok:gili|누사틍가라,Nusa Tenggara:komodo alor|파푸아,Papua:rajaampat|술라웨시,Sulawesi:lembeh bunaken wakatobi|말루쿠,Maluku:banda'+
  '|냐짱,Nha Trang:nhatrang|푸꾸옥,Phu Quoc:phuquoc|코로르,Koror:palau|북마리아나,Northern Marianas:saipan rota|괌,Guam:guam|추크,Chuuk:chuuk|얍,Yap:yap'+
- '|아리 환초,Ari Atoll:maldives|바 환초,Baa Atoll:hanifaru|푸바물라,Fuvahmulah:fuvahmulah|남시나이,South Sinai:dahab sharm thistlegorm|홍해 연안,Red Sea Coast:hurghada brothers marsaalam'+
- '|퀸즐랜드,Queensland:gbr codhole yongala|서호주,Western Australia:ningaloo|하와이,Hawaii:kona molokini|캘리포니아,California:monterey|플로리다,Florida:keys|킨타나로오,Quintana Roo:cenote cozumel|바하칼리포르니아,Baja California:lapaz socorro|투아모투,Tuamotu:rangiroa fakarava';
+ '|아리 환초,Ari Atoll:maldives|바 환초,Baa Atoll:hanifaru|푸바물라,Fuvahmulah:fuvahmulah|남시나이,South Sinai:dahab sharm thistlegorm|홍해 연안,Red Sea Coast:hurghada brothers marsaalam quseir'+
+ '|퀸즐랜드,Queensland:gbr codhole yongala|서호주,Western Australia:ningaloo|하와이,Hawaii:kona molokini|캘리포니아,California:monterey|플로리다,Florida:keys|킨타나로오,Quintana Roo:cenote cozumel playa|바하칼리포르니아,Baja California:lapaz socorro guadalupe|투아모투,Tuamotu:rangiroa fakarava';
 var AREA128={};AREA128_SRC.split('|').forEach(function(g){var a=g.split(':'),n=a[0].split(',');a[1].split(' ').forEach(function(id){AREA128[id]=n;});});
 function spotArea128(s,en){if(!s)return '';var a=AREA128[s.id];if(a)return en?a[1]:a[0];
   if(en){var e=(typeof EN==='object'&&EN[s.id])||s.name;return String(e).split(',').slice(-1)[0].replace(/\(.*\)/,'').trim();}
@@ -271,6 +273,7 @@ function spotArea128(s,en){if(!s)return '';var a=AREA128[s.id];if(a)return en?a[
 function ctyName128(c,en){return en&&typeof EN_D==='object'&&EN_D[c]&&EN_D[c].length>3?EN_D[c]:c;}
 function spotKey128(s){var en=typeof LANG!=='undefined'&&LANG==='en',nm=en&&typeof EN==='object'&&EN[s.id]?EN[s.id]:s.name;return [s.country==='대한민국'?'':ctyName128(s.country,en)||'~',spotArea128(s,en),nm||''];}
 function spotCmp128(a,b){if(!a||!b)return a?-1:b?1:0;if(a.id==='home')return -1;if(b.id==='home')return 1;var A=spotKey128(a),B=spotKey128(b),loc=(typeof LANG!=='undefined'&&LANG==='en')?'en':'ko';for(var i=0;i<3;i++){var c=String(A[i]).localeCompare(String(B[i]),loc,{sensitivity:'base',numeric:true});if(c)return c;}return 0;}
+if(typeof EN_D==='object'){var EC128={"온두라스": "Honduras", "쿠바": "Cuba", "도미니카 연방": "Dominica", "세인트루시아": "Saint Lucia", "그레나다": "Grenada", "콜롬비아": "Colombia", "파나마": "Panama", "아르헨티나": "Argentina", "동티모르": "Timor-Leste", "인도": "India", "바누아투": "Vanuatu", "솔로몬 제도": "Solomon Islands", "쿡 제도": "Cook Islands", "크로아티아": "Croatia", "키프로스": "Cyprus", "이탈리아": "Italy", "포르투갈": "Portugal", "노르웨이": "Norway", "요르단": "Jordan", "지부티": "Djibouti", "카보베르데": "Cape Verde", "케냐": "Kenya", "마다가스카르": "Madagascar", "남극": "Antarctica"};for(var k8 in EC128)if(!EN_D[k8])EN_D[k8]=EC128[k8];}
 try{SPOTS.sort(spotCmp128);}catch(e){}
 if(typeof EN_D==='object')EN_D['추천 포인트 '+SPOTS.length+'곳과 다이빙 센터 7,700여 곳']=SPOTS.length+' featured spots and about 7,700 dive centers';
 function spTree128(){var en=typeof LANG!=='undefined'&&LANG==='en',T=[],C={};SPOTS.forEach(function(s){if(s.id==='home')return;var c=C[s.country];if(!c){c=C[s.country]={c:s.country,n:ctyName128(s.country,en),A:[],M:{}};T.push(c);}var ar=spotArea128(s,en),x=c.M[ar];if(!x){x=c.M[ar]={a:ar,S:[]};c.A.push(x);}x.S.push(s);});return T;}
@@ -351,3 +354,61 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
 var _after128L=after;after=function(){_after128L();if(cur()==='signs'||cur()==='sign'){setTimeout(stLogin128,200);setTimeout(stLogin128,900);}
   if(BE.user&&!state.after){try{var a=JSON.parse(sessionStorage.getItem('dtdo.after')||'null');if(a&&cur()==='profile'){sessionStorage.removeItem('dtdo.after');if(Date.now()-a.t<1800000)location.hash='#'+a.h;}}catch(_){}}};
 (function(){var st=document.createElement('style');st.textContent='.stlg{display:flex;flex-direction:column;gap:6px;border:1px dashed var(--sea);border-radius:12px;padding:12px 14px;margin:2px 0}.stlg span{font-size:13px;color:var(--sub)}.stlg>div{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}.stlg .btn{min-height:40px}';document.head.appendChild(st);})();
+
+/* ---------- 홈 화면 추가 안내: 이미 했으면 다시 안 띄우기 ---------- */
+function a2Done128(){try{if((window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone){localStorage.setItem('dtdo.installed','1');return true;}return localStorage.getItem('dtdo.installed')==='1';}catch(e){return false;}}
+a2Done128();
+function a2hsOn127(){return !a2Done128();}
+function installBar(){if(a2Done128())return;try{if(sessionStorage.getItem('dtdo.viaLink'))return;}catch(e){}var h=location.hash||'';if(/^#signs?-|^#sb/.test(h)||/^\/(s|sb)\//.test(location.pathname))return;
+  try{var n=+localStorage.getItem('dtdo.visits')||0;if(n<2||+localStorage.getItem('dtdo.instHide')>Date.now())return;}catch(e){return;}if(document.getElementById('instBar'))return;
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!/crios|fxios/i.test(navigator.userAgent);if(!DEFER&&!ios)return;
+  var b=document.createElement('div');b.id='instBar';b.innerHTML='<img src="/icon-192.png" alt="" width="36" height="36"><span><b>앱처럼 쓰기</b><br><small>홈 화면에 놓고 바로 열어요</small></span><button type="button" class="btn btn-pri" id="instGo">설치</button><button type="button" class="instx" id="instX" aria-label="닫기">✕</button>';document.body.appendChild(b);
+  var hide=function(d){try{localStorage.setItem('dtdo.instHide',Date.now()+d*864e5);}catch(e){}b.remove();};
+  document.getElementById('instX').onclick=function(){hide(60);};
+  document.getElementById('instGo').onclick=function(){if(DEFER){DEFER.prompt();DEFER.userChoice.then(function(c){if(c&&c.outcome==='accepted')try{localStorage.setItem('dtdo.installed','1');}catch(e){}}).finally(function(){DEFER=null;b.remove();});return;}
+    hide(365);sheet('<h2 style="margin:0 0 10px">홈 화면에 추가하기</h2><ol style="margin:0;padding-left:20px;line-height:1.9"><li>사파리 아래쪽 <b>공유</b> 버튼(네모에 위 화살표)을 눌러요</li><li><b>홈 화면에 추가</b>를 골라요</li><li>오른쪽 위 <b>추가</b>를 누르면 끝</li></ol><div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn btn-pri" type="button" data-a2ok>이미 추가했어요</button><button class="btn btn-line" type="button" onclick="closeSheet()">닫기</button></div>');};}
+window.addEventListener('appinstalled',function(){try{localStorage.setItem('dtdo.installed','1');}catch(e){}var b=document.getElementById('instBar');if(b)b.remove();});
+document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('[data-a2ok]')){try{localStorage.setItem('dtdo.installed','1');}catch(_){}closeSheet();toast('다시 안 띄울게요');}});
+var _after128I=after;after=function(){_after128I();if(/^(sign|signs)$/.test(cur())){var b=document.getElementById('instBar');if(b)b.remove();}};
+var _a2s128=a2hsSheet127;a2hsSheet127=function(){_a2s128.apply(this,arguments);var s=document.querySelectorAll('.a2s'),l=s[s.length-1];if(l&&!document.querySelector('[data-a2ok]'))l.insertAdjacentHTML('afterend','<div style="text-align:right;margin-top:10px"><button class="btn btn-line" type="button" data-a2ok>이미 추가했어요</button></div>');};
+/* 카톡 · 공유 링크로 들어온 방문에선 설치 안내 안 띄우기 (사파리는 홈 화면 앱과 저장소가 달라서 이미 추가했는지 알 수 없어요) */
+(function(){try{var h=location.hash||'',q=location.search||'';if(/[?&]from=/.test(q)||/^#(signs?|meet-d|club|inv|buddy|inst)/.test(h)||/[?&](buddy|inst|ref)=/.test(q)||/KAKAOTALK|Instagram|FBAN|Line\//i.test(navigator.userAgent)||/kakao|instagram|facebook|naver/i.test(document.referrer||''))sessionStorage.setItem('dtdo.viaLink','1');}catch(e){}})();
+
+/* ---------- 서명 · 도장: 강사가 서명만 / 도장만 / 둘 다 골라서 ---------- */
+function usePick128(px,m){var hs=!!(m&&m.has&&m.image),hg=!!(m&&m.sign&&m.sign_image);
+  return '<div class="use8" data-px="'+px+'"><b>넣을 것</b><div class="use8r">'+
+   '<label class="use8c"><input type="checkbox" id="'+px+'_usg" checked><span>서명</span>'+(hg?'<img src="'+esc(m.sign_image)+'" alt="">':'')+'</label>'+
+   (hs?'<label class="use8c"><input type="checkbox" id="'+px+'_ust" checked><span>'+(m.ok?'강사 ':'')+'도장</span><img src="'+esc(m.image)+'" alt=""></label>':'')+'</div>'+
+   '<p class="small" style="margin:6px 0 0">'+(hg?'아래 칸을 비워 두면 저장한 서명이 들어가요.':'서명은 아래 칸에 해 주세요.')+(hs?'':' 도장은 <a href="#stamp">내 도장</a>에서 만들어요.')+'</p></div>';}
+function usePad128(px){var g=document.getElementById(px+'_usg'),on=!g||g.checked,c=document.getElementById(px==='sb'?'sbPad':'sgPad');if(!c)return;c.style.display=on?'':'none';var w=c.previousElementSibling;if(w&&(w.classList.contains('sbpw')||w.querySelector&&w.querySelector('[data-sbclr],[data-sgclr]')))w.style.display=on?'':'none';}
+document.addEventListener('change',function(e){var w=e.target.closest&&e.target.closest('.use8');if(w)usePad128(w.dataset.px);});
+/* 한 번에 서명 페이지 */
+sbInit128=(function(old){return function(){var mb=document.getElementById('sbMine');if(mb)mb.dataset.on=1;old();if(mb&&BE.user&&!mb.dataset.u8){mb.dataset.u8=1;stMine(function(s){mb.dataset.on=1;mb.dataset.has=s&&(s.has||s.sign)?1:'';if(!s||!(s.has||s.sign)){mb.innerHTML='';return;}var r=document.getElementById('sb_r');if(r&&!s.ok)r.value='buddy';mb.innerHTML=usePick128('sb',s);usePad128('sb');});}};})(sbInit128);
+document.addEventListener('submit',function(e){if(e.target.id!=='sbForm')return;e.preventDefault();e.stopImmediatePropagation();var f=e.target,t=f.dataset.t,n=(val('sb_n')||'').trim(),c=document.getElementById('sbPad'),g=document.getElementById('sb_usg'),s=document.getElementById('sb_ust'),
+   ug=g?g.checked:true,us=!!(s&&s.checked),ink=ug&&c&&c.dataset.ink,mb=document.getElementById('sbMine'),row=!!(BE.user&&mb&&mb.dataset.has),hasSg=!!(g&&g.parentNode.querySelector('img'));
+  if(!n)return toast('이름을 적어 주세요');if(!ug&&!us)return toast('서명이나 도장 중 하나는 골라 주세요');if(ug&&!ink&&!hasSg)return toast('아래 칸에 서명해 주세요');
+  var b=f.querySelector('button[type=submit]');b.disabled=true;
+  BE.sb.rpc('sign_batch_submit2',{p_id:t,p_name:n,p_role:val('sb_r'),p_cert:(val('sb_c')||'').trim()||null,p_sig:ink?c.toDataURL('image/png'):null,p_mine:row&&(us||!ink),p_use_stamp:us,p_use_sign:ug}).then(function(r){var x=r.data;if(Array.isArray(x))x=x[0];b.disabled=false;if(r.error||!x)return toast('서명하지 못했어요. 다시 해 주세요');
+    if(!x.ok){var E=(typeof STERR!=='undefined'&&STERR[x.err])||'서명하지 못했어요';return toast(E);}delete state.sbD[t];toast(x.ok+'개에 '+(ug&&us?'서명 · 도장':us?'도장':'서명')+'을 넣었어요'+(x.ok<x.total?' ('+(x.total-x.ok)+'개는 못 했어요)':''));rerender();});},true);
+/* 한 개 서명 페이지 */
+sgMine127=function(){if(cur()!=='sign'||!BE.user)return;stMine(function(m){var r=document.getElementById('stMineRow');if(!r||r.querySelector('.use8'))return;if(!m||!(m.has||m.sign))return;r.dataset.s127=1;r.innerHTML=usePick128('sg',m);var d=r.closest('details');if(d){d.open=true;var sm=d.querySelector('summary');if(sm)sm.textContent='서명 · 도장 고르기';}usePad128('sg');});};
+var _after128U=after;after=function(){_after128U();if(cur()==='sign'){[300,1000,2200].forEach(function(ms){setTimeout(sgMine127,ms);});}};
+if(typeof STERR==='object'){STERR.none='서명이나 도장 중 하나는 골라 주세요';STERR.login='도장을 찍으려면 로그인해 주세요';}
+(function(){var st=document.createElement('style');st.textContent='.use8{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:2px 0}.use8>b{font-size:13px}.use8r{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.use8c{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer;min-height:44px}.use8c:has(input:checked){border-color:var(--sea);background:color-mix(in srgb,var(--sea) 12%,transparent)}.use8c img{height:30px;max-width:80px;object-fit:contain;background:#fff;border-radius:4px}.use8c input{width:18px;height:18px}';document.head.appendChild(st);})();
+
+function sgSubmit128(e,f,id){e.preventDefault();e.stopImmediatePropagation();var t=f.dataset.t,c=document.getElementById('sgPad'),n=(val('sg_n')||'').trim(),g=document.getElementById('sg_usg'),s=document.getElementById('sg_ust'),ug=g?g.checked:true,us=!!(s&&s.checked),ink=ug&&c&&c.dataset.ink,hasSg=!!(g&&g.parentNode.querySelector('img'));
+  if(!n)return toast('이름을 적어 주세요');if(!ug&&!us)return toast('서명이나 도장 중 하나는 골라 주세요');if(ug&&!ink&&!hasSg)return toast('아래 칸에 서명해 주세요');
+  var b=f.querySelector('button[type=submit]');if(b)b.disabled=true;
+  BE.sb.rpc('sign_submit3',{p_token:t,p_name:n,p_role:val('sg_r'),p_cert:val('sg_c'),p_sig:ink?c.toDataURL('image/png'):null,p_mine:us||!ink,p_use_stamp:us,p_use_sign:ug}).then(function(r){var v=r.data;if(r.error||v!=='ok'){if(b)b.disabled=false;return toast((typeof STERR==='object'&&STERR[v])||'서명하지 못했어요. 다시 해 주세요');}
+    var w=ug&&us?'서명 · 도장':us?'도장':'서명';if(id==='sgFormH'){var x=state.sgNow;if(x){x.done=true;delete state.sg[x.id];}closeSheet();toast(n+' 님 '+w+'을 받았어요');if(x)sgLoad(x.id);}else{if(state.sgT)delete state.sgT[t];toast(w+'을 넣었어요. 고마워요!');rerender();}});}
+/* 폼 실패 이유 기록 (개인정보 없이 짧은 코드만) */
+function ferr128(e){var m=String((e&&(e.message||e.error_description||e.msg))||e||'').toLowerCase();
+  if(/already|registered|exists|duplicate/.test(m))return 'dup';if(/password/.test(m))return 'pw';if(/rate|too many|429/.test(m))return 'rate';if(/fetch|network|timeout|load failed/.test(m))return 'net';if(/confirm/.test(m))return 'confirm';if(/email/.test(m))return 'email';if(/required|invalid|입력|확인/.test(m))return 'val';return 'etc';}
+if(BE.submit){var _sub128=BE.submit;BE.submit=function(id){var r=_sub128.apply(this,arguments);if(r&&r.then)return r.then(null,function(e){try{if(typeof fev==='function')fev(id,'e:'+ferr128(e));}catch(_){}throw e;});return r;};}
+/* 관리자 · 표: 화면보다 넓은 표는 그 칸 안에서만 옆으로 밀리게 */
+(function(){var st=document.createElement('style');st.textContent='#main .view .panel,#main .view>div,#main .view section{min-width:0}.tblw8{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}#main .view table th,#main .view table td{vertical-align:top}'+
+ '.aig2{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))!important}.aig2>*{min-width:0}#ceBox td:nth-child(1),#ceBox td:nth-child(2),#ceBox th{white-space:nowrap}#ceBox td:nth-child(3){min-width:220px;word-break:break-all}';document.head.appendChild(st);})();
+
+function tblWrap128(){[].forEach.call(document.querySelectorAll('#main .view table'),function(tb){var p=tb.parentElement;if(!p||p.classList.contains('tblw8'))return;var ox=getComputedStyle(p).overflowX;if(ox==='auto'||ox==='scroll')return;var w=document.createElement('div');w.className='tblw8';p.insertBefore(w,tb);w.appendChild(tb);});}
+var _after128T=after;after=function(){_after128T();tblWrap128();setTimeout(tblWrap128,600);setTimeout(tblWrap128,2000);};
+if(window.MutationObserver)new MutationObserver(function(){if(document.querySelector('#main .view table:not(.tblw8 > table)'))tblWrap128();}).observe(document.getElementById('main')||document.body,{childList:true,subtree:true});
