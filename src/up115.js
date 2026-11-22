@@ -1,6 +1,6 @@
 /* ===== 지도 고도화 =====
    지도를 위로 · 내 주변 · 전체 화면 · 센터 켜고 끄기 · 갈 달 고르기 · 지도에 보이는 곳만 · 카드에서 지도로 · 거리순 · 목록 나눠 보기 */
-state.mx=state.mx||{mo:0,inView:false,page:12,centers:true};
+state.mx=state.mx||{mo:0,inView:false,page:12,centers:true,sort:'name'};
 function mxMap(){var e=document.getElementById('lmap');return e&&e._m;}
 function mxSpot(a){var m=(a.getAttribute('href')||'').match(/#spot-(.+)$/);return m?spot(m[1]):null;}
 function mxKm(s){return state.myPos&&s?km(state.myPos.lat,state.myPos.lon,s.lat,s.lon):null;}
@@ -27,7 +27,7 @@ function mxFly(id){var s=spot(id),m=mxMap(),lm=document.getElementById('lmap');i
 /* 4) 목록: 갈 달 · 지도에 보이는 곳만 · 정렬 · 나눠 보기 */
 function mxBar(){var rec=document.querySelector('#main .view .rcl');if(!rec||rec.querySelector('.mxbar'))return;var h2=rec.querySelector('h2');var bar=document.createElement('div');bar.className='mxbar';var now=new Date().getMonth()+1;
   bar.innerHTML='<label class="mxsel"><span>갈 달</span><select id="mxMo"><option value="0">아무 때나</option>'+[1,2,3,4,5,6,7,8,9,10,11,12].map(function(i){return '<option value="'+i+'"'+(state.mx.mo===i?' selected':'')+'>'+i+'월'+(i===now?' (이번 달)':'')+'</option>';}).join('')+'</select></label>'+
-   '<label class="mxsel"><span>정렬</span><select id="mxSort"><option value="rec">추천순</option><option value="near"'+(state.mx.sort==='near'?' selected':'')+'>가까운 순</option><option value="name"'+(state.mx.sort==='name'?' selected':'')+'>이름순</option></select></label>'+
+   '<label class="mxsel"><span>정렬</span><select id="mxSort"><option value="rec">추천순</option><option value="near"'+(state.mx.sort==='near'?' selected':'')+'>가까운 순</option><option value="name"'+(state.mx.sort==='name'?' selected':'')+'>나라 · 도시 · 이름순</option></select></label>'+
    '<label class="chip mxck"><input type="checkbox" id="mxIn"'+(state.mx.inView?' checked':'')+'> 지도에 보이는 곳만</label><span class="small mxcnt" id="mxCnt"></span>';
   (h2||rec.firstChild).after(bar);}
 document.addEventListener('change',function(e){var t=e.target;if(t.id==='mxMo'){state.mx.mo=+t.value;state.mx.page=12;mxList();mxDim();}else if(t.id==='mxSort'){state.mx.sort=t.value;if(t.value==='near'&&!state.myPos){mxLocate();return;}mxList();}else if(t.id==='mxIn'){state.mx.inView=t.checked;state.mx.page=12;mxList();}});
@@ -36,7 +36,7 @@ function mxList(){var rec=document.querySelector('#main .view .rcl');if(!rec)ret
     if(s&&!a.querySelector('.mxfly')){var b=document.createElement('button');b.type='button';b.className='mxfly';b.dataset.mxfly=s.id;b.textContent='지도';b.setAttribute('aria-label',s.name+' 지도에서 보기');a.appendChild(b);}
     var d=a.querySelector('.mxd'),k=mxKm(s);if(k!=null){if(!d){d=document.createElement('span');d.className='mxd';var meta=null;[].forEach.call(a.querySelectorAll('*'),function(el){if(el.closest('button')||!/시즌 /.test(el.textContent)||!/·.*·/.test(el.textContent))return;if(!meta||el.textContent.length<meta.textContent.length)meta=el;});(meta||a).appendChild(d);}d.textContent=' · 약 '+(k<10?k.toFixed(1):Math.round(k).toLocaleString())+'km';}});
   var par=A[0].parentNode,srt=state.mx.sort||'rec';if(!par._mxo)par._mxo=A.slice();var O=par._mxo.slice();
-  if(srt==='near'&&state.myPos)O.sort(function(x,y){return (mxKm(mxSpot(x))||1e9)-(mxKm(mxSpot(y))||1e9);});else if(srt==='name')O.sort(function(x,y){var a=mxSpot(x),b=mxSpot(y);return String(a&&a.name).localeCompare(String(b&&b.name),'ko');});
+  if(srt==='near'&&state.myPos)O.sort(function(x,y){return (mxKm(mxSpot(x))||1e9)-(mxKm(mxSpot(y))||1e9);});else if(srt==='name')O.sort(function(x,y){return spotCmp128(mxSpot(x),mxSpot(y));});
   var anchor=par.querySelector('.mxmore');O.forEach(function(a){par.insertBefore(a,anchor);});
   var vis=O.filter(function(a){return a.offsetParent!==null;}),N=state.mx.page;vis.forEach(function(a,i){if(i>=N)a.classList.add('mxp');});
   var more=par.querySelector('.mxmore');if(vis.length>N){if(!more){more=document.createElement('button');more.type='button';more.className='btn btn-line mxmore';par.appendChild(more);more.addEventListener('click',function(){state.mx.page+=12;mxList();});}more.textContent='더 보기 ('+(vis.length-N)+'곳 남음)';more.style.display='';}else if(more)more.style.display='none';

@@ -166,12 +166,6 @@ var _after128f=after;after=function(){_after128f();if(cur()==='resorts'){rsBox12
 function mapTidy128(){if(cur()!=='map')return;var i=document.getElementById('mapq');if(i&&!i.dataset.t128){i.dataset.t128=1;i.placeholder='포인트 찾기 · 초성도 돼요 (예: 모알보알, ㅁㅇㅂㅇ)';}}
 var _after128g=after;after=function(){_after128g();if(cur()==='map'){setTimeout(mapTidy128,100);setTimeout(mapTidy128,900);}};
 
-/* ---------- 로그북 목록: 받은 도장(없으면 서명)을 그 로그 줄에 날인처럼 ---------- */
-state.lbSt=null;
-function lbStLoad128(){if(!BE.on||!BE.user||state.lbSt)return;state.lbSt={};BE.sb.from('dive_signs').select('log_id,stamp,signature').not('signed_at','is',null).order('signed_at',{ascending:false}).limit(80).then(function(r){var M={};(r.data||[]).forEach(function(x){var o=M[x.log_id]||(M[x.log_id]={});if(x.stamp&&!o.st)o.st=x.stamp;if(x.signature&&!o.sg)o.sg=x.signature;});state.lbSt=M;lbStMark128();});}
-function lbStMark128(){var M=state.lbSt;if(!M)return;[].forEach.call(document.querySelectorAll('#lbBox a.dv'),function(a){if(a.querySelector('.lbst'))return;var m=(a.getAttribute('href')||'').match(/#dive-(\d+)/),o=m&&M[m[1]];if(!o||!(o.st||o.sg))return;a.classList.add('dvst');var im=document.createElement('img');im.className='lbst'+(o.st?'':' sg');im.alt='';im.src=o.st||o.sg;a.appendChild(im);var t=a.querySelector('.lbsg');if(t&&o.st)t.remove();});}
-if(window.MutationObserver)new MutationObserver(function(){if(state.lbSt&&document.querySelector('#lbBox a.dv:not(.dvst):not([data-st128])')){[].forEach.call(document.querySelectorAll('#lbBox a.dv'),function(a){a.dataset.st128=1;});lbStMark128();}}).observe(document.getElementById('main')||document.body,{childList:true,subtree:true});
-(function(){var st=document.createElement('style');st.textContent='#lbBox a.dv.dvst{position:relative;overflow:hidden}#lbBox a.dv.dvst .lbsg{display:none!important}#lbBox a.dv .lbst{position:absolute;right:86px;top:50%;width:62px;height:62px;object-fit:contain;transform:translateY(-50%) rotate(-14deg);opacity:.85;pointer-events:none;z-index:0}#lbBox a.dv .lbst.sg{width:96px;height:40px;opacity:.6;transform:translateY(-50%) rotate(-6deg)}#lbBox a.dv.dvst>*:not(.lbst){position:relative;z-index:1}html.dark #lbBox a.dv .lbst{mix-blend-mode:normal}';document.head.appendChild(st);})();
 var _after128h=after;after=function(){_after128h();if(cur()==='log'){setTimeout(function(){lbStLoad128();lbStMark128();},500);}};
 /* 서명 · 도장을 새로 받으면 목록도 새로 */
 var _sgLoad128=typeof sgLoad==='function'?sgLoad:null;if(_sgLoad128)sgLoad=function(id){state.lbSt=null;return _sgLoad128.apply(this,arguments);};
@@ -180,9 +174,9 @@ var _sgLoad128=typeof sgLoad==='function'?sgLoad:null;if(_sgLoad128)sgLoad=funct
 (function(){var _lk=lk127;lk127=function(u){var s=String(u||'');try{var x=new URL(s),m=/^#signs-([0-9a-f-]{36})$/i.exec(x.hash||'');if(m&&(x.origin===location.origin||/divedeepocean\.com$/.test(x.hostname)))return x.origin+'/sb/'+m[1].toLowerCase();}catch(e){}return _lk(u);};})();
 state.lbSel=null;
 function lbSelOn128(on){state.lbSel=on?{}:null;document.body.classList.toggle('lbselm',!!on);var bar=document.getElementById('lbSelBar');if(bar)bar.remove();if(on){bar=document.createElement('div');bar.id='lbSelBar';bar.className='lbselbar';document.body.appendChild(bar);}lbSelPaint128();}
-function lbSelPaint128(){var S=state.lbSel;[].forEach.call(document.querySelectorAll('#lbBox a.dv'),function(a){var m=(a.getAttribute('href')||'').match(/#dive-(\d+)/);if(!m)return;var on=!!(S&&S[m[1]]);a.classList.toggle('sel',on);var c=a.querySelector('.lbck');if(S&&!c){c=document.createElement('span');c.className='lbck';c.setAttribute('aria-hidden','true');a.prepend(c);}else if(!S&&c)c.remove();});
+function lbSelPaint128(){var S=state.lbSel;[].forEach.call(document.querySelectorAll('#lbBox a.dv'),function(a){var m=(a.getAttribute('href')||'').match(/#dive-(\d+)/);if(!m)return;var dn=!!S&&lbSigned128(m[1]);if(dn&&S[m[1]])delete S[m[1]];a.classList.toggle('signed128',dn);var on=!!(S&&S[m[1]]);a.classList.toggle('sel',on);var c=a.querySelector('.lbck');if(S&&!c){c=document.createElement('span');c.className='lbck';c.setAttribute('aria-hidden','true');a.prepend(c);}else if(!S&&c)c.remove();if(!S)a.classList.remove('signed128');});
   var bar=document.getElementById('lbSelBar');if(!bar)return;var n=S?Object.keys(S).length:0;bar.innerHTML='<button type="button" class="btn btn-line" data-lbsel="off">취소</button><span><b>'+n+'개</b> 골랐어요</span><button type="button" class="btn btn-pri" data-lbsel="go"'+(n?'':' disabled')+'>서명 · 도장 요청</button>';}
-document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('#lbBox a.dv');if(a&&state.lbSel){e.preventDefault();e.stopPropagation();var m=(a.getAttribute('href')||'').match(/#dive-(\d+)/);if(!m)return;if(state.lbSel[m[1]])delete state.lbSel[m[1]];else{if(Object.keys(state.lbSel).length>=50)return toast('한 번에 50개까지 고를 수 있어요');state.lbSel[m[1]]=1;}lbSelPaint128();return;}
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('#lbBox a.dv');if(a&&state.lbSel){e.preventDefault();e.stopPropagation();var m=(a.getAttribute('href')||'').match(/#dive-(\d+)/);if(!m)return;if(lbSigned128(m[1]))return toast('이미 서명 받은 기록이에요');if(state.lbSel[m[1]])delete state.lbSel[m[1]];else{if(Object.keys(state.lbSel).length>=50)return toast('한 번에 50개까지 고를 수 있어요');state.lbSel[m[1]]=1;}lbSelPaint128();return;}
   var b=e.target.closest&&e.target.closest('[data-lbsel]');if(!b)return;e.preventDefault();var k=b.dataset.lbsel;
   if(k==='on')return lbSelOn128(true);if(k==='off')return lbSelOn128(false);
   if(k==='go'){var ids=Object.keys(state.lbSel||{}).map(Number);if(!ids.length)return;lbBatchSheet128(ids);}},true);
@@ -259,3 +253,101 @@ lkPanel127=function(){if(cur()!=='profile'||!BE.user||document.getElementById('l
 document.addEventListener('click',function(e){if(e.target.closest('[data-lkdel]')){var d=document.getElementById('myDivers');setTimeout(function(){if(!document.getElementById('lkPanel')&&d)d.remove();},50);}},true);
 (function(){var st=document.createElement('style');st.textContent='.p8g{margin-top:12px}.p8t{font-size:13px;font-weight:700;color:var(--sub);margin-bottom:6px}.p8t span{color:var(--sea)}.p8e{margin:0 0 4px!important}.p8r{padding:10px 12px;border-radius:12px;background:var(--bg);margin-bottom:6px}.p8h{display:flex;align-items:center;gap:8px}.p8h .tag{margin:0}.p8h b{white-space:nowrap}.p8h .small{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.p8x{flex:none;width:28px;height:28px;border-radius:50%;border:0;background:transparent;color:var(--sub);font-size:20px;line-height:1;cursor:pointer}.p8c{font-size:12.5px;color:var(--sub);margin-top:4px}.p8s{display:inline-block;margin-top:6px;font-size:12px;font-weight:700;color:var(--sea)}'+
  '.p8d summary{list-style:none;cursor:pointer}.p8d summary::-webkit-details-marker{display:none}.p8n{flex:none;font-size:12.5px;font-weight:700;color:var(--sea)}.p8l{margin-top:8px;border-top:1px solid var(--line)}.p8l div{display:grid;grid-template-columns:auto 1fr auto;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13px;align-items:baseline}.p8l span{color:var(--sub);font-size:12px}.p8l b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.p8l i{font-style:normal;font-size:12px;color:var(--sub)}.p8del{margin-top:8px;font-size:12px!important}';document.head.appendChild(st);})();
+
+/* ---------- 포인트 정렬: 나라 → 지역 → 포인트 (한글 가나다 · 영어 abc, 대한민국 먼저) ---------- */
+var AREA128_SRC='제주,Jeju:jeju udo beomseom chagwido hyeopjae marado|강원,Gangwon:goseong yangyang gangneung samcheok|경북,Gyeongbuk:ulleung wangdol gyeongju pohang dokdo|경남,Gyeongnam:geoje tongyeong|부산,Busan:busan sajikpool|전남,Jeonnam:geomun hongdo wando|서울,Seoul:jamsilpool olympicpool|경기,Gyeonggi:k26 deepstation paradive seongnampool suwonpool|인천,Incheon:munhakpool|대구,Daegu:duryupool|광주,Gwangju:nambupool'+
+ '|오키나와,Okinawa:okinawa maeda ishigaki miyako yonaguni|도쿄도 섬,Tokyo Islands:mikura ogasawara|시즈오카,Shizuoka:izu|가고시마,Kagoshima:amami|고치,Kochi:kashiwajima'+
+ '|세부,Cebu:mactan oslob moalboal malapascua|보홀,Bohol:balicasag cabilao|바탕가스,Batangas:anilao|민도로,Mindoro:galera aporeef|팔라완,Palawan:coron elnido tubbataha|네그로스,Negros:dauin|시키호르,Siquijor:siquijor|보라카이,Boracay:boracay|잠발레스,Zambales:subic|소르소곤,Sorsogon:donsol|카미긴,Camiguin:camiguin'+
+ '|코타오,Koh Tao:kohtao|팡아,Phang Nga:similan richelieu|푸껫,Phuket:racha|끄라비,Krabi:phiphi kohlanta|사뚠,Satun:lipe'+
+ '|사바,Sabah:sipadan mabul|파항,Pahang:tioman|트렝가누,Terengganu:perhentian redang'+
+ '|발리,Bali:tulamben amed nusapenida menjangan padangbai|롬복,Lombok:gili|누사틍가라,Nusa Tenggara:komodo alor|파푸아,Papua:rajaampat|술라웨시,Sulawesi:lembeh bunaken wakatobi|말루쿠,Maluku:banda'+
+ '|냐짱,Nha Trang:nhatrang|푸꾸옥,Phu Quoc:phuquoc|코로르,Koror:palau|북마리아나,Northern Marianas:saipan rota|괌,Guam:guam|추크,Chuuk:chuuk|얍,Yap:yap'+
+ '|아리 환초,Ari Atoll:maldives|바 환초,Baa Atoll:hanifaru|푸바물라,Fuvahmulah:fuvahmulah|남시나이,South Sinai:dahab sharm thistlegorm|홍해 연안,Red Sea Coast:hurghada brothers marsaalam'+
+ '|퀸즐랜드,Queensland:gbr codhole yongala|서호주,Western Australia:ningaloo|하와이,Hawaii:kona molokini|캘리포니아,California:monterey|플로리다,Florida:keys|킨타나로오,Quintana Roo:cenote cozumel|바하칼리포르니아,Baja California:lapaz socorro|투아모투,Tuamotu:rangiroa fakarava';
+var AREA128={};AREA128_SRC.split('|').forEach(function(g){var a=g.split(':'),n=a[0].split(',');a[1].split(' ').forEach(function(id){AREA128[id]=n;});});
+function spotArea128(s,en){if(!s)return '';var a=AREA128[s.id];if(a)return en?a[1]:a[0];
+  if(en){var e=(typeof EN==='object'&&EN[s.id])||s.name;return String(e).split(',').slice(-1)[0].replace(/\(.*\)/,'').trim();}
+  var nm=String(s.name),m=nm.match(/\(([^)]+)\)/);var f=nm.replace(/\(.*\)/,'').trim().split(/[ ·]/)[0];if(f===s.country||nm.indexOf(s.country)===0)f=nm.replace(s.country,'').replace(/\(.*\)/,'').trim().split(/[ ·]/)[0]||f;return f||nm;}
+function ctyName128(c,en){return en&&typeof EN_D==='object'&&EN_D[c]&&EN_D[c].length>3?EN_D[c]:c;}
+function spotKey128(s){var en=typeof LANG!=='undefined'&&LANG==='en',nm=en&&typeof EN==='object'&&EN[s.id]?EN[s.id]:s.name;return [s.country==='대한민국'?'':ctyName128(s.country,en)||'~',spotArea128(s,en),nm||''];}
+function spotCmp128(a,b){if(!a||!b)return a?-1:b?1:0;if(a.id==='home')return -1;if(b.id==='home')return 1;var A=spotKey128(a),B=spotKey128(b),loc=(typeof LANG!=='undefined'&&LANG==='en')?'en':'ko';for(var i=0;i<3;i++){var c=String(A[i]).localeCompare(String(B[i]),loc,{sensitivity:'base',numeric:true});if(c)return c;}return 0;}
+try{SPOTS.sort(spotCmp128);}catch(e){}
+if(typeof EN_D==='object')EN_D['추천 포인트 '+SPOTS.length+'곳과 다이빙 센터 7,700여 곳']=SPOTS.length+' featured spots and about 7,700 dive centers';
+function spTree128(){var en=typeof LANG!=='undefined'&&LANG==='en',T=[],C={};SPOTS.forEach(function(s){if(s.id==='home')return;var c=C[s.country];if(!c){c=C[s.country]={c:s.country,n:ctyName128(s.country,en),A:[],M:{}};T.push(c);}var ar=spotArea128(s,en),x=c.M[ar];if(!x){x=c.M[ar]={a:ar,S:[]};c.A.push(x);}x.S.push(s);});return T;}
+
+/* 모임: 포인트 대신 나라 → 지역. 값은 'a:나라|지역' 으로 저장하고 spot()이 대표 포인트로 풀어 줘요 */
+function areaVal128(s){return 'a:'+s.country+'|'+spotArea128(s,false);}
+var _spot128=spot;spot=function(id){if(typeof id==='string'&&id.indexOf('a:')===0){var p=id.slice(2).split('|'),en=typeof LANG!=='undefined'&&LANG==='en',L=SPOTS.filter(function(s){return s.country===p[0]&&spotArea128(s,false)===p[1];});if(!L.length)return null;
+    var o={};for(var k in L[0])o[k]=L[0][k];var ar=en?spotArea128(L[0],true):p[1];o.name=p[0]==='대한민국'?ar:ar+' · '+ctyName128(p[0],en);o.area128=1;o.spots128=L;return o;}return _spot128(id);};
+if(typeof FORMS==='object'&&FORMS.meet){FORMS.meet.steps[0].f.forEach(function(f){if(f.k==='spot'){f.l='지역';f.opts=function(){var R=[];spTree128().forEach(function(c){c.A.forEach(function(a){R.push(['a:'+c.c+'|'+(AREA128[a.S[0].id]?AREA128[a.S[0].id][0]:spotArea128(a.S[0],false)),(c.c==='대한민국'?'':c.n+' · ')+a.a]);});});return R;};}});}
+
+/* 선택 칸: 나라 → 지역 (→ 포인트) */
+function spPickHtml128(mode,cv,av,pv){var T=spTree128(),c=T.filter(function(x){return x.c===cv;})[0],a=c&&c.A.filter(function(x){return x.a===av;})[0];
+  return '<select class="sp3c" aria-label="나라"><option value="">나라</option>'+T.map(function(x){return '<option value="'+esc(x.c)+'"'+(x.c===cv?' selected':'')+'>'+esc(x.n)+'</option>';}).join('')+'</select>'+
+   '<select class="sp3a" aria-label="지역"'+(c?'':' disabled')+'><option value="">지역</option>'+(c?c.A.map(function(x){return '<option value="'+esc(x.a)+'"'+(x.a===av?' selected':'')+'>'+esc(x.a)+'</option>';}).join(''):'')+'</select>'+
+   (mode===3?'<select class="sp3p" aria-label="포인트"'+(a?'':' disabled')+'><option value="">포인트</option>'+(a?a.S.map(function(s){return '<option value="'+esc(s.id)+'"'+(s.id===pv?' selected':'')+'>'+esc(s.name)+'</option>';}).join(''):'')+'</select>':'');}
+function spPick128(){var en=typeof LANG!=='undefined'&&LANG==='en';
+  [].forEach.call(document.querySelectorAll('input[list="spotList"]:not([data-sp3])'),function(inp){inp.dataset.sp3=1;var s=SPOTS.filter(function(x){return x.name===inp.value;})[0],w=document.createElement('div');w.className='sp3';w.dataset.mode=3;
+    w.innerHTML=spPickHtml128(3,s?s.country:'',s?spotArea128(s,en):'',s?s.id:'');var lb=inp.closest('label')||inp;lb.parentNode.insertBefore(w,lb.nextSibling);w._inp=inp;});
+  var ms=document.querySelector('select[data-f="spot"][id^="f_meet"]:not([data-sp3])');if(ms){ms.dataset.sp3=1;var st=state.forms&&state.forms.meet&&state.forms.meet.v||{},v=st.spot||'';
+    if(v&&v.indexOf('a:')!==0){var s0=spot(v);if(s0){v=areaVal128(s0);st.spot=v;}}
+    var p=v.indexOf('a:')===0?v.slice(2).split('|'):['',''];ms.value=v;var w=document.createElement('div');w.className='sp3';w.dataset.mode=2;
+    var ar=p[1];if(en&&p[0]){var L=SPOTS.filter(function(s){return s.country===p[0]&&spotArea128(s,false)===p[1];});ar=L[0]?spotArea128(L[0],true):p[1];}
+    w.innerHTML=spPickHtml128(2,p[0],ar,'');ms.style.display='none';ms.parentNode.appendChild(w);w._sel=ms;}}
+document.addEventListener('change',function(e){var t=e.target,w=t.closest&&t.closest('.sp3');if(!w)return;e.stopPropagation();var mode=+w.dataset.mode,c=w.querySelector('.sp3c').value,a=w.querySelector('.sp3a').value,p=w.querySelector('.sp3p');p=p?p.value:'';
+  if(t.classList.contains('sp3c')){a='';p='';}if(t.classList.contains('sp3a'))p='';w.innerHTML=spPickHtml128(mode,c,a,p);
+  var T=spTree128(),cc=T.filter(function(x){return x.c===c;})[0],aa=cc&&cc.A.filter(function(x){return x.a===a;})[0];
+  if(mode===3&&w._inp&&p){var s=SPOTS.filter(function(x){return x.id===p;})[0];if(s){w._inp.value=s.name;w._inp.dispatchEvent(new Event('input',{bubbles:true}));w._inp.dispatchEvent(new Event('change',{bubbles:true}));}}
+  if(mode===2&&w._sel){var val=aa?areaVal128(aa.S[0]):'';w._sel.value=val;w._sel.dispatchEvent(new Event('change',{bubbles:true}));w._sel.dispatchEvent(new Event('input',{bubbles:true}));}
+  var nx=w.querySelector(t.classList.contains('sp3c')?'.sp3a':'.sp3p');if(nx&&!nx.disabled)try{nx.focus();}catch(_){}},true);
+if(window.MutationObserver)new MutationObserver(function(){if(document.querySelector('input[list="spotList"]:not([data-sp3]),select[data-f="spot"][id^="f_meet"]:not([data-sp3])'))spPick128();}).observe(document.body,{childList:true,subtree:true});
+(function(){var st=document.createElement('style');st.textContent='.sp3{display:flex;gap:6px;margin:6px 0 2px;grid-column:1/-1}.sp3 select{flex:1;min-width:0;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-size:14px;padding:0 8px}.sp3 select:disabled{opacity:.5}label>.sp3{margin-top:8px}';document.head.appendChild(st);})();
+
+/* ---------- 서명 · 도장: 배경 지우기 ---------- */
+var CLR128={};
+function inkRgb128(){var c=document.createElement('canvas').getContext('2d');c.fillStyle='#000';c.fillStyle=(getComputedStyle(document.documentElement).getPropertyValue('--ink')||'#0b2a3c').trim();var h=c.fillStyle;if(h[0]!=='#')return [11,42,60];return [parseInt(h.substr(1,2),16),parseInt(h.substr(3,2),16),parseInt(h.substr(5,2),16)];}
+function clearBg128(src,kind,cb){if(!src)return;var ink=kind==='sg'?inkRgb128():null,key=kind+(ink?ink.join(','):'')+'|'+src;if(key in CLR128){if(CLR128[key]!=='…')cb(CLR128[key]);return;}CLR128[key]='…';
+  var im=new Image();if(!/^data:/.test(src))im.crossOrigin='anonymous';im.onload=function(){try{var W=im.naturalWidth,H=im.naturalHeight,s=Math.min(1,900/Math.max(W,H));W=Math.max(1,Math.round(W*s));H=Math.max(1,Math.round(H*s));var cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d');x.drawImage(im,0,0,W,H);var d=x.getImageData(0,0,W,H),p=d.data;
+    for(var i=0;i<p.length;i+=4){if(!p[i+3])continue;var r=p[i],g=p[i+1],b=p[i+2],k;
+      if(ink){var l=(r+g+b)/3;k=l>=235?0:l<=150?1:(235-l)/85;p[i]=ink[0];p[i+1]=ink[1];p[i+2]=ink[2];}
+      else{var mn=Math.min(r,g,b);k=mn>=232?0:mn<=190?1:(232-mn)/42;}
+      p[i+3]=Math.round(p[i+3]*k);}
+    x.putImageData(d,0,0);CLR128[key]=cv.toDataURL('image/png');cb(CLR128[key]);}catch(e){CLR128[key]=src;cb(src);}};im.onerror=function(){CLR128[key]='';cb('');};im.src=src;}
+function sealHtml128(sg,st,cls){return '<span class="seal128 '+(cls||'')+'">'+(sg?'<img class="s8sg" alt="" data-src="'+esc(sg)+'">':'')+(st?'<img class="s8st" alt="" data-src="'+esc(st)+'">':'')+'</span>';}
+function sealFill128(root){[].forEach.call((root||document).querySelectorAll('.seal128 img[data-src]:not([src])'),function(im){var s=im.dataset.src;im.style.visibility='hidden';clearBg128(s,im.classList.contains('s8sg')?'sg':'st',function(u){if(!u){im.remove();return;}im.src=u;im.style.visibility='';});});}
+
+/* 로그북 줄: 서명 위에 도장이 겹쳐 찍힌 모양 */
+function lbStLoad128(){if(!BE.on||!BE.user||state.lbSt)return;state.lbSt={};BE.sb.from('dive_signs').select('log_id,stamp,signature').not('signed_at','is',null).order('signed_at',{ascending:false}).limit(1000).then(function(r){var M={};(r.data||[]).forEach(function(x){var o=M[x.log_id]||(M[x.log_id]={});if(x.stamp&&!o.st)o.st=x.stamp;if(x.signature&&!o.sg)o.sg=x.signature;});state.lbSt=M;lbStMark128();if(state.lbSel)lbSelPaint128();});}
+function lbStMark128(){var M=state.lbSt;if(!M)return;[].forEach.call(document.querySelectorAll('#lbBox a.dv'),function(a){if(a.querySelector('.seal128'))return;var m=(a.getAttribute('href')||'').match(/#dive-(\d+)/),o=m&&M[m[1]];if(!o||!(o.st||o.sg))return;a.classList.add('dvst');var old=a.querySelector('img.lbst');if(old)old.remove();
+  a.insertAdjacentHTML('beforeend',sealHtml128(o.sg,o.st,'lbseal'));var t=a.querySelector('.lbsg');if(t)t.remove();});sealFill128(document.getElementById('lbBox'));}
+function lbSigned128(id){return !!(state.lbSt&&state.lbSt[id]&&(state.lbSt[id].st||state.lbSt[id].sg));}
+
+/* 상세: 제목 오른쪽에 서명 · 도장 */
+sgLoad=function(id){if(state.sg[id]||!BE.user)return;state.sg[id]='…';BE.sb.from('dive_signs').select('id,token,signer_name,signer_role,signer_cert,signature,stamp,signed_at,created_at').eq('log_id',id).order('created_at').then(function(r){state.sg[id]=r.data||[];if(cur()==='dive'){sgPaint();dvSeal128();}});};
+var _sgPaint128=sgPaint;sgPaint=function(){_sgPaint128.apply(this,arguments);setTimeout(dvSeal128,0);};
+function dvSeal128(){if(cur()!=='dive')return;var m=location.hash.match(/dive-(\d+)/);if(!m)return;var S=state.sg&&state.sg[m[1]];if(!Array.isArray(S))return;var D=S.filter(function(x){return x.signed_at;});
+  var v=document.querySelector('#main .view'),h=v&&v.querySelector('h1');if(h&&!v.querySelector('.dvseal')){var sg=null,st=null;D.forEach(function(x){if(x.signature&&!sg)sg=x.signature;if(x.stamp&&!st)st=x.stamp;});
+    if(sg||st){var box=h.parentNode;box.classList.add('dvsealbox');box.insertAdjacentHTML('afterbegin',sealHtml128(sg,st,'dvseal'));var se=box.querySelector('.dvseal');if(se)se.style.top=Math.max(0,h.offsetTop-14)+'px';}}
+  [].forEach.call(document.querySelectorAll('.sgl .s'),function(row){if(row.querySelector('.seal128'))return;var im=row.querySelector(':scope > img:not(.stp)'),sp=row.querySelector(':scope > img.stp'),src=im&&im.getAttribute('src'),x=src?D.filter(function(y){return y.signature===src;})[0]:null,stp=x&&x.stamp||(sp&&sp.getAttribute('src'));
+    if(!im&&!sp)return;var w=document.createElement('span');w.innerHTML=sealHtml128(src,stp,'rowseal');(im||sp).replaceWith(w.firstChild);if(im&&sp)sp.remove();});
+  sealFill128(v);}
+var _after128s=after;after=function(){_after128s();if(cur()==='dive'){setTimeout(dvSeal128,300);setTimeout(dvSeal128,1200);}};
+(function(){var st=document.createElement('style');st.textContent=
+'.seal128{position:relative;display:inline-block;pointer-events:none}.seal128 img{position:absolute;object-fit:contain}'+
+'#lbBox a.dv.dvst{position:relative;overflow:hidden}#lbBox a.dv.dvst .lbsg{display:none!important}#lbBox a.dv>.lbseal{position:absolute;right:92px;top:50%;width:120px;height:64px;transform:translateY(-50%);z-index:0}'+
+'.lbseal .s8sg{left:0;top:8px;width:92px;height:44px;transform:rotate(-5deg);opacity:.9}.lbseal .s8st{right:0;top:2px;width:58px;height:58px;transform:rotate(-12deg);opacity:.88}.lbseal:not(:has(.s8sg)) .s8st{right:20px}#lbBox a.dv.dvst>*:not(.seal128){position:relative;z-index:1}'+
+'.dvsealbox{position:relative}.dvsealbox>h1,.dvsealbox>h1+p{padding-right:118px}.dvseal{position:absolute;right:0;top:-6px;width:124px;height:84px;z-index:1}.dvseal .s8sg{left:0;top:18px;width:100px;height:48px;transform:rotate(-5deg)}.dvseal .s8st{right:0;top:4px;width:70px;height:70px;transform:rotate(-12deg);opacity:.9}'+
+'.sgl .s .rowseal{flex:none;width:150px;height:48px}.rowseal .s8sg{left:0;top:2px;width:118px;height:44px}.rowseal .s8st{right:0;top:-4px;width:52px;height:52px;transform:rotate(-12deg);opacity:.9}.sgl .s img{background:transparent!important}'+
+'#lbBox a.dv.signed128{opacity:.55}#lbBox a.dv.signed128 .lbck{background:transparent!important;border:0!important;width:auto!important;font-size:11px;font-weight:700;color:var(--sub);white-space:nowrap}#lbBox a.dv.signed128 .lbck:before{content:"받음";}#lbBox a.dv.signed128 .lbck:after{display:none!important}';document.head.appendChild(st);})();
+
+state.lbSt=null;
+if(window.MutationObserver)new MutationObserver(function(){if(!state.lbSt)return;var need=false;[].forEach.call(document.querySelectorAll('#lbBox a.dv:not([data-st8])'),function(a){a.dataset.st8=1;need=true;});if(need){lbStMark128();if(state.lbSel)lbSelPaint128();}}).observe(document.getElementById('main')||document.body,{childList:true,subtree:true});
+
+/* 로그인 안 한 서명자: 도장 찍으려면 로그인 */
+function stLogin128(){if(BE.user)return;var h='<div class="stlg"><b>도장도 찍으려면 로그인해 주세요</b><span>로그인하면 내 도장 · 서명이 바로 들어가요. 처음이면 가입하면 도장이 자동으로 만들어져요.</span><div><button class="btn btn-pri" type="button" data-stlogin="login">로그인하고 도장 찍기</button><button class="btn btn-line" type="button" data-stlogin="signup">가입하기</button></div></div>';
+  if(cur()==='signs'){var mb=document.getElementById('sbMine');if(mb&&!mb.dataset.lg){mb.dataset.lg=1;mb.innerHTML=h;}}
+  if(cur()==='sign'){var r=document.getElementById('stMineRow');if(r&&!r.dataset.lg){r.dataset.lg=1;r.innerHTML=h;var d=r.closest('details');if(d)d.open=true;}}}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-stlogin]');if(!b)return;e.preventDefault();state.after=location.hash.replace(/^#/,'');try{sessionStorage.setItem('dtdo.after',JSON.stringify({h:state.after,t:Date.now()}));}catch(_){}location.hash='#'+b.dataset.stlogin;});
+var _after128L=after;after=function(){_after128L();if(cur()==='signs'||cur()==='sign'){setTimeout(stLogin128,200);setTimeout(stLogin128,900);}
+  if(BE.user&&!state.after){try{var a=JSON.parse(sessionStorage.getItem('dtdo.after')||'null');if(a&&cur()==='profile'){sessionStorage.removeItem('dtdo.after');if(Date.now()-a.t<1800000)location.hash='#'+a.h;}}catch(_){}}};
+(function(){var st=document.createElement('style');st.textContent='.stlg{display:flex;flex-direction:column;gap:6px;border:1px dashed var(--sea);border-radius:12px;padding:12px 14px;margin:2px 0}.stlg span{font-size:13px;color:var(--sub)}.stlg>div{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}.stlg .btn{min-height:40px}';document.head.appendChild(st);})();
