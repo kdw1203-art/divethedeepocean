@@ -14,8 +14,8 @@ var _admpay114=V.admpay;V.admpay=function(){var h=_admpay114();if(!(state.me&&st
   h=h.replace(/<p>입금 확인 \d+건 대기 · 결제 완료 합계 [^<]*<\/p>/,'<p>주문 · 단가 · 입금 계좌 · 사업자 확인</p>');
   return h;};
 function admpayTidy(){if(cur()!=='admpay'||!state.aPay||state.aPay==='…')return;var P=state.aPay.P||[];[].forEach.call(document.querySelectorAll('[data-prow]'),function(tr){var p=P.filter(function(x){return x.id===tr.dataset.prow;})[0];if(p&&p.kind==='ad')tr.style.display='none';});}
-/* 자동 단계: 광고는 하루 단가(목록 · 지도 · 홈 · 포인트), 목록 추천은 2주 금액 */
-PTIER={A:['시작가','최근 30일 접속 회원 1,000명 미만','하루 목록 1만 · 지도 8천 · 홈 2만 · 포인트 6천 · 추천 2주 1.5만'],B:['중간','1,000명부터','하루 목록 3만 · 지도 2.4만 · 홈 6만 · 포인트 1.8만 · 추천 2주 5만'],C:['전문 타깃','5,000명부터','하루 목록 7만 · 지도 5.6만 · 홈 14만 · 포인트 4.2만 · 추천 2주 12만']};
+/* 자동 단계: 광고 하루 단가(목록 · 지도 · 홈 · 포인트) */
+PTIER={A:['시작가','최근 30일 접속 회원 1,000명 미만','하루 목록 1만 · 지도 8천 · 홈 2만 · 포인트 6천'],B:['중간','1,000명부터','하루 목록 3만 · 지도 2.4만 · 홈 6만 · 포인트 1.8만'],C:['전문 타깃','5,000명부터','하루 목록 7만 · 지도 5.6만 · 홈 14만 · 포인트 4.2만']};
 document.addEventListener('click',function(e){if(e.target.closest('[data-ptier]'))state.adPrice=undefined;},true);
 /* 운영자 콘솔: 할 일은 있는 것만, 없으면 한 줄 · 바로가기 작게 · 접기 버튼 빼기 */
 function admSumTidy(){if(cur()!=='admin')return;var s=document.getElementById('aSum');if(s){s.classList.remove('fold');var A=[].slice.call(s.querySelectorAll('.atodo a'));var on=A.filter(function(a){return a.querySelector('em');});A.forEach(function(a){a.style.display=on.length&&!a.querySelector('em')?'none':'';});var td=s.querySelector('.atodo');if(td){td.classList.toggle('a4none',!on.length);if(!on.length&&!s.querySelector('.a4ok')){var p=document.createElement('p');p.className='a4ok';p.textContent='✓ 지금 처리할 일이 없어요';td.before(p);}if(on.length){var ok=s.querySelector('.a4ok');if(ok)ok.remove();}}}
