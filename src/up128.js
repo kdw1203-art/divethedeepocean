@@ -138,3 +138,29 @@ if(V.stamp){var _vSt128=V.stamp;V.stamp=function(a){return _vSt128(a).replace('�
 function sgStampTidy128(){if(cur()!=='sign')return;var b=document.querySelector('.sgstamp');if(!b||b.dataset.t128)return;b.dataset.t128=1;var s=b.querySelector('summary');if(s)s.textContent='내 도장 · 서명 넣기';var p=b.querySelector(':scope > p.small');if(p)p.innerHTML=BE.user?'내 도장을 넣으면 손글씨 서명은 안 해도 돼요. 도장 · 서명은 <a href="#profile">내 정보</a>에서 바꿔요.':'이 링크를 <a href="#login">로그인</a>한 내 휴대폰에서 열면 내 도장 · 서명이 바로 들어가요.';}
 var _after128e=after;after=function(){_after128e();if(cur()==='sign'){[800,2000,3800].forEach(function(ms){setTimeout(sgStampTidy128,ms);});}};
 autoStamp127=function(){autoMine128();};
+
+/* ---------- 리조트: 키워드 검색 ---------- */
+function rsNorm128(s){return String(s||'').toLowerCase().replace(/[\s·\-_.()]/g,'');}
+function rsSearch128(q){var box=document.getElementById('rsRes');if(!box)return;q=String(q||'').trim();state.rsq=q;if(!q){box.innerHTML='';box.hidden=true;return;}box.hidden=false;
+  if(!DB.sites){if(typeof need==='function')need('map');box.innerHTML='<p class="empty" style="margin:0">업체 목록을 불러오는 중이에요…</p>';setTimeout(function(){rsSearch128(state.rsq);},700);return;}
+  var n=rsNorm128(q),S=SPOTS.filter(function(s){return !(typeof isPool==='function'&&isPool(s))&&rsNorm128([s.name,s.en,s.country,s.region].join(' ')).indexOf(n)>=0;}).slice(0,8);
+  var B=DB.sites.filter(function(x){return x[3]!==1&&rsNorm128((x[2]||'')+' '+(x[4]||'')).indexOf(n)>=0;}).slice(0,40).map(function(x){var best=null,bd=1e9;SPOTS.forEach(function(s){var d=km(s.lat,s.lon,x[0],x[1]);if(d<bd){bd=d;best=s;}});return {x:x,s:best,d:bd};});
+  box.innerHTML=(S.length||B.length?'':'<p class="empty" style="margin:0">\''+esc(q)+'\'에 맞는 곳이 없어요. 다른 이름으로 찾아보세요.</p>')+
+    (B.length?'<div class="rsh">리조트 · 센터 '+B.length+(B.length>=40?'+':'')+'</div><div class="rsl">'+B.map(function(o){var x=o.x;return '<div class="rsi"><a href="#" data-site="'+x[0]+','+x[1]+'">'+esc(x[2]||'이름 없음')+'</a><span>'+(x[3]===2?'리조트':'센터')+(o.s&&o.d<80?' · '+esc(o.s.name)+' 근처':'')+(x[4]&&!/^[a-z]/i.test(x[4])?' · '+esc(String(x[4]).slice(0,24)):'')+'</span></div>';}).join('')+'</div>':'')+
+    (S.length?'<div class="rsh">바다 · 포인트 '+S.length+'</div><div class="rsl">'+S.map(function(s){return '<div class="rsi"><a href="#spot-'+s.id+'">'+esc(s.name)+'</a><span>'+esc(s.country||'')+'</span></div>';}).join('')+'</div>':'');}
+function rsBox128(){if(cur()!=='resorts')return;var v=document.querySelector('#main .view');if(!v||document.getElementById('rsFind'))return;var tab=v.querySelector('.rtab');
+  var f=document.createElement('form');f.id='rsFind';f.className='rsfind';f.setAttribute('role','search');f.innerHTML='<input id="rsq" type="search" enterkeyhint="search" autocomplete="off" placeholder="리조트 · 센터 · 바다 이름으로 찾기" value="'+esc(state.rsq||'')+'"><button class="btn btn-pri" type="submit">검색</button>';
+  var r=document.createElement('div');r.id='rsRes';r.className='panel rsres';r.hidden=true;
+  if(tab){tab.after(f);f.after(r);}else{var vh=v.querySelector(':scope > .vh');(vh||v.firstChild).after(f);f.after(r);}
+  if(state.rsq)rsSearch128(state.rsq);}
+document.addEventListener('submit',function(e){if(e.target.id!=='rsFind')return;e.preventDefault();var i=document.getElementById('rsq');rsSearch128(i&&i.value);if(i)i.blur();});
+document.addEventListener('input',function(e){if(e.target.id!=='rsq')return;clearTimeout(rsBox128.t);var v=e.target.value;rsBox128.t=setTimeout(function(){rsSearch128(v);},250);});
+var _after128f=after;after=function(){_after128f();if(cur()==='resorts'){rsBox128();setTimeout(rsBox128,400);}};
+/* ---------- 지도: 빈 공간 줄이기 ---------- */
+(function(){var st=document.createElement('style');st.textContent=
+ '.rsfind{display:flex;gap:8px;margin:2px 0 10px}.rsfind input{flex:1;min-width:0;height:46px;border:1px solid var(--line);border-radius:12px;padding:0 14px;font:inherit;font-size:16px;background:var(--card,#fff);color:var(--ink)}.rsfind .btn{flex:none;min-height:46px;padding:0 18px}'+
+ '.rsres{margin-bottom:12px}.rsh{font-size:13px;font-weight:700;color:var(--sub);margin:4px 0 6px}.rsh:not(:first-child){margin-top:12px}.rsl{display:flex;flex-direction:column}.rsi{display:flex;flex-direction:column;gap:2px;padding:9px 0;border-top:1px dashed var(--line)}.rsi:first-child{border-top:0}.rsi a{font-weight:600;color:var(--sea)}.rsi span{font-size:12.5px;color:var(--sub)}'+
+ '#main .view:has(#lmap){gap:8px!important}#main .view:has(#lmap) > *{margin-top:0!important}#mapLg{margin:6px 0 0!important}#main .mxnote{margin:2px 0 0!important;font-size:12px!important}#main .ctyrow{margin:2px 0 0!important}'+
+ '#mapFind{padding-bottom:0!important;margin:0!important}#mapFind label{font-size:0!important;gap:0!important}#mapFind label input{font-size:16px!important}#main .mfmore{margin:0!important}#main .mfmore summary{padding:6px 14px!important;font-size:14px}';document.head.appendChild(st);})();
+function mapTidy128(){if(cur()!=='map')return;var i=document.getElementById('mapq');if(i&&!i.dataset.t128){i.dataset.t128=1;i.placeholder='포인트 찾기 · 초성도 돼요 (예: 모알보알, ㅁㅇㅂㅇ)';}}
+var _after128g=after;after=function(){_after128g();if(cur()==='map'){setTimeout(mapTidy128,100);setTimeout(mapTidy128,900);}};
