@@ -99,7 +99,8 @@ document.addEventListener('click',function(e){var t=e.target.closest('[data-nwne
   t=e.target.closest('[data-nwhide]');if(t){var m=(state.news||[]).filter(function(x){return x.id===+t.dataset.nwhide;})[0];if(m)f(m.id,{hidden:!m.hidden},m.hidden?'다시 보이게 했어요':'숨겼어요. 운영자에게만 보여요');return;}
   t=e.target.closest('[data-nwdel]');if(t){if(!confirm('이 공지를 지울까요? 되돌릴 수 없어요.'))return;BE.sb.from('site_notices').delete().eq('id',+t.dataset.nwdel).then(function(r){if(r.error)return toast('지우지 못했어요');toast('지웠어요');nwLoad(true);location.hash='#news';});}});
 /* 홈 아래쪽: 최신 공지 3개 */
-function nwHome(){if(cur()!=='home'||document.getElementById('nwHome'))return;if(!state.news){nwLoad();return;}var L=state.news.filter(function(n){return !n.hidden;}).slice(0,3);if(!L.length)return;var v=document.querySelector('#main .view');if(!v)return;
+var NW_READY=false;
+function nwHome(){if(!NW_READY)return;if(cur()!=='home'||document.getElementById('nwHome'))return;if(!state.news){nwLoad();return;}var L=state.news.filter(function(n){return !n.hidden;}).slice(0,3);if(!L.length)return;var v=document.querySelector('#main .view');if(!v)return;
   var p=document.createElement('div');p.className='panel';p.id='nwHome';p.innerHTML='<h2 style="display:flex;align-items:center;justify-content:space-between">공지사항 <a class="small" href="#news">전체 보기</a></h2><div class="list">'+L.map(nwRow).join('')+'</div>';
   var ft=v.querySelector(':scope > .foot');if(ft)ft.before(p);else v.appendChild(p);}
 var _after125n=after;after=function(){_after125n();var c=cur();if(c==='home'){setTimeout(nwHome,700);setTimeout(nwHome,2000);}};
