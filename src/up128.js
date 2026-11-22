@@ -117,3 +117,24 @@ var MEETEX128='<h2 style="margin:0 0 4px">모임은 이렇게 공개돼요</h2><
 try{Object.defineProperty(state,'meetExHtml',{configurable:true,get:function(){return MEETEX128;},set:function(){}});}catch(e){}
 window.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href="#meetnew"]');if(!a||e.target.closest('.sheet'))return;try{if(localStorage.getItem('dtdo.meetEx1'))sessionStorage.setItem('dtdo.meetEx','1');else localStorage.setItem('dtdo.meetEx1','1');}catch(x){}},true);
 (function(){var st=document.createElement('style');st.textContent='.meetex h2 .fold,.meetex .fold,.meetex h2 button{display:none!important}.mex{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}.mext{display:flex;gap:6px}.mext .tag{margin:0}.mex b{font-size:16px}.mex p{margin:2px 0;font-size:14px;line-height:1.55}';document.head.appendChild(st);})();
+
+/* ---------- 가입하면 내 도장 · 서명 자동 등록, 도장 비밀번호 없애기 ---------- */
+function sigPng128(name){var c=document.createElement('canvas');c.width=640;c.height=220;var g=c.getContext('2d'),n=String(name||'다이버').slice(0,12);g.fillStyle='#0b1f33';g.strokeStyle='#0b1f33';g.textAlign='center';g.textBaseline='middle';
+  var fs=n.length<=3?104:n.length<=6?86:64;g.save();g.translate(320,100);g.rotate(-0.06);g.font='italic 700 '+fs+'px "Nanum Pen Script","Brush Script MT","Segoe Script","Apple SD Gothic Neo",cursive';g.fillText(n,0,0);g.restore();
+  g.lineWidth=4;g.lineCap='round';g.beginPath();g.moveTo(150,168);g.bezierCurveTo(260,150,400,190,500,160);g.stroke();return c.toDataURL('image/png');}
+function autoMine128(){if(!BE.on||!BE.user||autoMine128.b)return;var k='dtdo.autoMine.'+BE.user.id;try{var flag=localStorage.getItem(k);}catch(e){return;}
+  stMine(function(s){if(!s||autoMine128.b)return;var nk=(state.me&&state.me.nick)||'';if(!nk)return;var ins=!!s.ok,jobs=[];
+    var cert=(state.canClub&&state.canClub.cert)||(state.me&&state.me.cert)||'';
+    if(!s.has&&!flag)jobs.push(BE.sb.rpc('stamp_save',{p_image:sealPng127(nk,ins?'강사':'다이버'),p_label:ins?String(cert).replace(/\s*\(.*\)$/,'').slice(0,30)||null:null,p_pin:null}));
+    else if(s.has&&ins&&flag==='diver')jobs.push(BE.sb.rpc('stamp_save',{p_image:sealPng127(nk,'강사'),p_label:String(cert).replace(/\s*\(.*\)$/,'').slice(0,30)||null,p_pin:null}));
+    if(!s.sign&&!flag)jobs.push(BE.sb.rpc('instr_sign_save',{p_img:sigPng128(nk)}));
+    if(!jobs.length){if(!flag)try{localStorage.setItem(k,ins?'ins':'diver');}catch(e){}return;}
+    autoMine128.b=1;Promise.all(jobs).then(function(){try{localStorage.setItem(k,ins?'ins':'diver');}catch(e){}state.stMine=undefined;if(!flag)toast('내 도장과 서명을 만들어 뒀어요. 내 정보에서 바꿀 수 있어요');else toast('강사 도장으로 바꿨어요');var p=document.getElementById('insPanel');if(p){p.remove();setTimeout(insPanel127,300);}}).catch(function(){autoMine128.b=0;});});}
+var _after128d=after;after=function(){_after128d();if(BE.user)setTimeout(autoMine128,1500);};
+/* 도장 비밀번호 칸 · 도장 번호로 찍기 없애기 */
+(function(){var st=document.createElement('style');st.textContent='label[for="st_p"],#stCodeRow{display:none!important}';document.head.appendChild(st);})();
+window.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-stsave]');if(!t)return;var m=state.stMine;if(m&&m!=='…'&&!m.has){var tmp=Object.assign({},m,{has:true});state.stMine=tmp;setTimeout(function(){if(state.stMine===tmp)state.stMine=m;},0);}},true);
+if(V.stamp){var _vSt128=V.stamp;V.stamp=function(a){return _vSt128(a).replace('교육생 휴대폰에서 서명할 때 이 번호와 도장 비밀번호를 넣으면 도장이 찍혀요. 내 휴대폰으로 서명 링크를 열면 비밀번호 없이 찍을 수 있어요.','서명 링크를 로그인한 내 휴대폰에서 열면 \'내 도장 넣기\'로 바로 찍혀요. 비밀번호는 필요 없어요.');};}
+function sgStampTidy128(){if(cur()!=='sign')return;var b=document.querySelector('.sgstamp');if(!b||b.dataset.t128)return;b.dataset.t128=1;var s=b.querySelector('summary');if(s)s.textContent='내 도장 · 서명 넣기';var p=b.querySelector(':scope > p.small');if(p)p.innerHTML=BE.user?'내 도장을 넣으면 손글씨 서명은 안 해도 돼요. 도장 · 서명은 <a href="#profile">내 정보</a>에서 바꿔요.':'이 링크를 <a href="#login">로그인</a>한 내 휴대폰에서 열면 내 도장 · 서명이 바로 들어가요.';}
+var _after128e=after;after=function(){_after128e();if(cur()==='sign'){[800,2000,3800].forEach(function(ms){setTimeout(sgStampTidy128,ms);});}};
+autoStamp127=function(){autoMine128();};
