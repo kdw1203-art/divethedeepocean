@@ -24,3 +24,16 @@ thmPaint=function(){var t=document.getElementById('pfThm');if(!t)return;var f=PF
   [].forEach.call(t.querySelectorAll('[data-thm]'),function(b){var on=b.dataset.thm===cu;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on);});
   if(!f||!f.img)return;var o=Object.assign({},PF.opt||{});delete o.preset;delete o.txt;var sig=(f.name||'')+'|'+(f.img.width)+'|'+(PF.k==null?70:PF.k)+'|'+JSON.stringify(o);if(t.dataset.sig===sig)return;t.dataset.sig=sig;var my=(thmPaint.n=(thmPaint.n||0)+1);
   THM95.forEach(function(k,i){setTimeout(function(){if(my!==thmPaint.n)return;try{var cv=pfApply(f.img,PF.k==null?70:PF.k,260,Object.assign({},PF.opt||{},{preset:k}));var sp=t.querySelector('[data-thm="'+k+'"] .thi');if(!sp||!cv)return;cv.removeAttribute('class');var old=sp.querySelector('canvas');if(old)sp.replaceChild(cv,old);else{sp.className='thi';sp.appendChild(cv);}}catch(e){}},40*i);});};
+/* 세부 조절 · 보정 강도: 끄는 동안 1단위로 부드럽게 바로 보이게
+   끄는 중에는 작은 크기로 빠르게 그려서 보정 칸에 바로 덮고, 손을 떼면 원래 크기로 한 번 더 깨끗하게 그려요. */
+var PFLV={raf:0};
+function pfLive(){if(PFLV.raf)return;PFLV.raf=requestAnimationFrame(function(){PFLV.raf=0;var box=document.getElementById('pfCmp'),f=PF.files&&PF.files[PF.i||0];if(!box||!f||!f.img)return;var a=box.querySelector('canvas.aft');if(!a)return;var t0=performance.now();
+  try{var c=pfApply(f.img,PF.k,PFLV.w||560,PF.opt);var x=a.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(c,0,0,a.width,a.height);}catch(e){}
+  var dt=performance.now()-t0;PFLV.w=dt>45?Math.max(320,(PFLV.w||560)-80):dt<18?Math.min(900,(PFLV.w||560)+60):(PFLV.w||560);});}
+function pfFull(){clearTimeout(PFLV.t);PFLV.t=setTimeout(function(){if(typeof pfSaveOpt==='function')pfSaveOpt();try{LS.set('pfK',PF.k);}catch(e){}pfShow();},60);}
+document.addEventListener('input',function(e){var t=e.target;if(!t||t.type!=='range')return;var k=t.dataset&&t.dataset.pfo;if(!k&&t.id!=='pfK')return;e.stopImmediatePropagation();
+  if(k){PF.opt[k]=+t.value;var v=document.getElementById('pfv_'+k);if(v)v.textContent=t.value;}else{PF.k=+t.value;var kv=document.getElementById('pfKv');if(kv)kv.textContent=PF.k;}
+  clearTimeout(PFLV.t);pfLive();clearTimeout(PFLV.idle);PFLV.idle=setTimeout(pfFull,450);},true);
+document.addEventListener('change',function(e){var t=e.target;if(!t||t.type!=='range')return;if(!(t.dataset&&t.dataset.pfo)&&t.id!=='pfK')return;clearTimeout(PFLV.idle);pfFull();if(typeof pfRe==='function'){clearTimeout(PF.t3);PF.t3=setTimeout(function(){if(typeof pfCommit==='function')pfCommit();if(typeof pfKeep==='function')pfKeep();},500);}},true);
+function pfStep1(){[].forEach.call(document.querySelectorAll('.pfedit input[type=range][data-pfo], #pfK'),function(r){if(r.getAttribute('step')!=='1')r.setAttribute('step','1');});}
+var _after119=after;after=function(){_after119();if(cur()==='photofix'){setTimeout(pfStep1,300);setTimeout(pfStep1,1200);}};
