@@ -114,9 +114,9 @@ var _after128c=after;after=function(){_after128c();if(cur()==='home'){[200,900,2
 (function(){var _r=rerender,last=0,pend=0,first=0,navAt=Date.now();window.addEventListener('hashchange',function(){navAt=Date.now();});
   rerender=function(){var now=Date.now(),ev=window.event;
   if(ev&&ev.isTrusted&&/^(click|submit|change|input|keydown|keyup|pointerup|touchend|hashchange|popstate)$/.test(ev.type)){if(pend){clearTimeout(pend);pend=0;}last=now;return _r.apply(this,arguments);}
-  if(now-navAt<2500){/* 막 열린 화면: 데이터가 다 올 때까지 잠깐 모았다가 한 번에 */if(!pend)first=now;else clearTimeout(pend);var wait=Math.min(450,Math.max(30,1300-(now-first)));pend=setTimeout(function(){pend=0;last=Date.now();_r();},wait);return;}
-  if(!pend&&now-last>300){last=now;return _r.apply(this,arguments);}
-  if(pend)return;pend=setTimeout(function(){pend=0;last=Date.now();_r();},Math.max(30,300-(now-last)));};})();
+  if(now-navAt<2500){/* 막 열린 화면: 데이터가 다 올 때까지 잠깐 모았다가 한 번에 */if(!pend)first=now;else clearTimeout(pend);var wait=Math.min(450,Math.max(30,1300-(now-first)));pend=setTimeout(function(){pend=0;last=Date.now();ghostRender128(_r);},wait);return;}
+  if(!pend&&now-last>300){last=now;return ghostRender128(_r);}
+  if(pend)return;pend=setTimeout(function(){pend=0;last=Date.now();ghostRender128(_r);},Math.max(30,300-(now-last)));};})();
 
 /* ---------- 모임 만들기 예시 팝업: 깔끔한 내용으로, 기기마다 한 번만 ---------- */
 var MEETEX128='<h2 style="margin:0 0 4px">모임은 이렇게 공개돼요</h2><p class="small" style="margin:0 0 10px">예시예요. 만들면 바로 이런 모습으로 올라가요.</p><div class="mex"><div class="mext">'+'<span class="tag">펀다이빙</span><span class="tag ok">모집 중 · 3/6명</span></div><b>12월 첫 주 아닐라오 마크로 2박 3일</b><span class="small">아닐라오 · 2026-12-04 · 어드밴스드 이상 · 로그 30회 이상</span><p>금요일 밤 출발, 토·일 보트 다이빙 5회. 숙소·다이빙 비용은 인원수로 나눠 리조트에 직접 내요. 카메라 있으신 분 환영해요.</p><span class="small">참가자 · 모임장 · 바다거북 · 누디사랑</span></div>';
@@ -419,3 +419,35 @@ if(window.MutationObserver)new MutationObserver(function(){if(document.querySele
 function prNear128(p){if(p.lat==null)return [];var R=6371,rad=Math.PI/180;return SPOTS.filter(function(s){return s.id!=='home'&&!(typeof isPool==='function'&&isPool(s));}).map(function(s){var dl=(s.lat-p.lat)*rad,dn=(s.lon-p.lon)*rad,a=Math.sin(dl/2)*Math.sin(dl/2)+Math.cos(p.lat*rad)*Math.cos(s.lat*rad)*Math.sin(dn/2)*Math.sin(dn/2);return {s:s,d:2*R*Math.asin(Math.sqrt(a))};}).filter(function(x){return x.d<100;}).sort(function(a,b){return a.d-b.d;}).slice(0,3);}
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-prnear]');if(!b)return;var p=PROMO128.filter(function(x){return x.id===b.dataset.prnear;})[0],N=p?prNear128(p):[];if(N[0])state.rsp=N[0].s.id;},true);
 (function(){var st=document.createElement('style');st.textContent='.prinfo .chips{gap:6px}.prinfo .chip{min-height:32px!important;padding:5px 12px!important;font-size:13.5px}';document.head.appendChild(st);})();
+
+/* ---------- 깜박임 막기: 데이터 때문에 다시 그릴 때는 새 화면이 다 준비될 때까지 이전 화면을 잠깐 덮어 둬요 ---------- */
+var GH8=null,GH8t=0,GH8mo=null,GH8hash='';
+function ghostEnd128(){if(!GH8)return;var g=GH8;GH8=null;clearTimeout(GH8t);if(GH8mo){GH8mo.disconnect();GH8mo=null;}g.remove();}
+function ghostRender128(fn){var m=document.getElementById('main'),v=m&&m.querySelector(':scope > .view');
+  if(!m||!v||GH8hash!==location.hash||v.querySelector('canvas,video,iframe,.maplibregl-map')){GH8hash=location.hash;return fn();}
+  ghostEnd128();var top=v.offsetTop,h=v.offsetHeight,c=v.cloneNode(true);
+  c.setAttribute('inert','');c.setAttribute('aria-hidden','true');c.removeAttribute('id');[].forEach.call(c.querySelectorAll('[id]'),function(e){e.removeAttribute('id');});
+  var g=document.createElement('div');g.className='ghost8';g.style.top=top+'px';g.style.minHeight=h+'px';g.appendChild(c);
+  var r=fn();GH8=g;m.appendChild(g);
+  var quiet=function(){clearTimeout(GH8t);GH8t=setTimeout(ghostEnd128,140);};quiet();setTimeout(function(){if(GH8===g)ghostEnd128();},700);
+  if(window.MutationObserver){GH8mo=new MutationObserver(function(L){for(var i=0;i<L.length;i++){if(!g.contains(L[i].target)&&L[i].target!==m){quiet();break;}}});GH8mo.observe(m,{childList:true,subtree:true});}
+  return r;}
+/* 화면 내용을 새로 쓸 때 덮개는 그대로 남겨요 */
+(function(){var m=document.getElementById('main');if(!m)return;var d=Object.getOwnPropertyDescriptor(Element.prototype,'innerHTML');if(!d||!d.set)return;
+  Object.defineProperty(m,'innerHTML',{configurable:true,get:function(){return d.get.call(this);},set:function(v){d.set.call(this,v);GH8hash=location.hash;if(GH8)this.appendChild(GH8);}});})();
+['pointerdown','keydown','wheel','touchstart'].forEach(function(k){window.addEventListener(k,function(){if(GH8)ghostEnd128();},{capture:true,passive:true});});
+window.addEventListener('hashchange',ghostEnd128);
+(function(){var st=document.createElement('style');st.textContent='#main{position:relative}.ghost8{position:absolute;left:0;right:0;z-index:6;background:var(--bg);pointer-events:none}.ghost8>.view{margin-top:0!important}';document.head.appendChild(st);})();
+
+/* ---------- 손에 닿는 느낌: 눌림 · 떠오름 · 화면 들어올 때 살짝 ---------- */
+(function(){var st=document.createElement('style');st.textContent='@media (prefers-reduced-motion:no-preference){'+
+ '.btn,.chip,#tabbar a,.side a,.lcard,a.item,.prs,.use8c,.lbns button,.tile,.qa a{transition:transform .14s cubic-bezier(.2,.8,.3,1),background-color .18s,border-color .18s,box-shadow .18s,color .18s}'+
+ '.btn:active:not(:disabled),.chip:active,.use8c:active,.lbns button:active,a.item:active,a.lcard:active,.prs:active{transform:scale(.965)}'+
+ '#tabbar a:active svg,.side a:active svg{transform:scale(.86)}#tabbar a svg,.side a svg{transition:transform .18s cubic-bezier(.3,1.6,.5,1)}'+
+ '#tabbar a[aria-current="page"] svg{animation:pop8 .32s cubic-bezier(.3,1.6,.5,1)}@keyframes pop8{0%{transform:scale(.8)}60%{transform:scale(1.12)}100%{transform:scale(1)}}'+
+ '@media (hover:hover){a.lcard:hover,.panel a.item:hover,.prs:hover{transform:translateY(-2px)}a.lcard:hover{box-shadow:0 8px 22px rgba(0,0,0,.18)}.btn:hover:not(:disabled){filter:brightness(1.06)}.chip:hover{border-color:var(--sea)}}'+
+ '#main>.view.enter8{animation:enter8 .24s cubic-bezier(.2,.8,.3,1)}@keyframes enter8{from{opacity:.35;transform:translateY(8px)}to{opacity:1;transform:none}}'+
+ 'details>summary{transition:color .15s}details[open]>summary{color:var(--sea)}'+
+ '.chip[aria-pressed="true"],.chip.on{animation:chipon8 .22s ease}@keyframes chipon8{50%{transform:scale(1.06)}}'+
+ '}';document.head.appendChild(st);})();
+var _after128E=after,navE8='';after=function(){_after128E();var h=location.hash;if(h!==navE8){navE8=h;var v=document.querySelector('#main > .view');if(v&&!GH8){v.classList.remove('enter8');void v.offsetWidth;v.classList.add('enter8');setTimeout(function(){v.classList.remove('enter8');},400);}}};
