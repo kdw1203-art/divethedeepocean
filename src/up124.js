@@ -222,3 +222,9 @@ function instrCode124(){if(cur()!=='profile'||!BE.user||document.getElementById(
   var kv=v.querySelector(':scope > .panel.kvp');if(kv)kv.appendChild(p);else{var a=document.getElementById('cc2')||v.querySelector(':scope > .vh');if(a)a.after(p);}});}
 document.addEventListener('click',function(e){var t=e.target.closest('[data-iccopy]');if(t&&navigator.clipboard)navigator.clipboard.writeText(t.dataset.iccopy).then(function(){toast('강사 코드를 복사했어요');});});
 var _after124d=after;after=function(){_after124d();if(cur()==='profile'){setTimeout(instrCode124,500);setTimeout(instrCode124,1600);setTimeout(instrCode124,3000);}};
+
+/* ---------- 새 버전 자동 적용: 앱을 오래 켜 둬도 다음 화면 이동 때 새 버전으로 ---------- */
+(function(){var s=document.querySelector('script[src*="/assets/app."]'),m=s&&/app\.([0-9a-f]+)\.js/.exec(s.src),mine=m&&m[1];if(!mine)return;var stale=false,last=0;
+  function check(){if(stale||Date.now()-last<60000)return;last=Date.now();fetch('/VERSION?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.text():'';}).then(function(v){v=(v||'').trim();if(v&&/^[0-9a-f]{6,}$/.test(v)&&v!==mine){stale=true;try{navigator.serviceWorker&&navigator.serviceWorker.getRegistration().then(function(r){r&&r.update();});}catch(e){}}}).catch(function(){});}
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)check();});window.addEventListener('focus',check);setInterval(check,10*60000);setTimeout(check,30000);
+  window.addEventListener('hashchange',function(){if(stale){var sb=document.getElementById('sheetbg');if(sb)return;location.reload();}});})();
