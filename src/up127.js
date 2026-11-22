@@ -173,18 +173,18 @@ function insPanel127(){if(cur()!=='profile'||!BE.user||document.getElementById('
   stMine(function(s){if(cur()!=='profile'||document.getElementById('insPanel'))return;s=s||{};var x=state.canClub||{},ok=!!s.ok,pre=!ok&&!!s.pre,none=!ok&&!pre;
     var ic={st:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M9 3h6v5l2 3H7l2-3z"/><path d="M5 14h14v3H5zM4 20h16"/></svg>',sg:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M3 17c3-1 4-8 6-8s0 8 3 8 3-4 5-4 2 2 4 2"/><path d="M3 21h18"/></svg>',in:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.5-1.5 1.7-2 3-2s2.5.5 3 2M14 10h4M14 13h3"/></svg>'};
     var tag=ok?'<span class="tag ok">'+(x.verified?'확인됨':'업체 운영자')+'</span>':pre?'<span class="tag fr">확인 중</span>':'';
-    var codeBox=ok&&s.code?'<div class="inscode"><span class="small">내 강사 코드</span><b>'+esc(s.code)+'</b><span class="inscb"><button class="chip" type="button" data-iccopy="'+esc(s.code)+'">복사</button><button class="chip" type="button" data-lkinv="t">교육생에게 등록 링크</button></span></div>'
-      :'<div class="inscode off"><span class="small">내 강사 코드</span><b>······</b><span class="small">'+(pre?'운영자 확인이 끝나면 바로 생겨요. 보통 1~2일 걸려요.':ok?'도장이나 서명을 등록하면 생겨요.':'강사 정보를 등록하고 확인되면 생겨요.')+'</span></div>';
+    var bc=state.myInv127,bud=bc?'<div><span class="small">버디 코드</span><b>'+esc(bc)+'</b><span class="inscb"><button class="chip" type="button" data-budcopy="'+esc(bc)+'">복사</button></span></div>':'';
+    if(state.myInv127===undefined){state.myInv127=null;BE.sb.rpc('my_invite').then(function(r){var q=r.data;if(Array.isArray(q))q=q[0];state.myInv127=(q&&q.code)||'';var o=document.getElementById('insPanel');if(o){o.remove();insPanel127();}});}
+    var codeBox=ok?'<div class="inscode two"><div><span class="small">강사 코드</span><b>'+esc(s.code||'······')+'</b><span class="inscb">'+(s.code?'<button class="chip" type="button" data-iccopy="'+esc(s.code)+'">복사</button><button class="chip" type="button" data-lkinv="t">등록 링크</button>':'')+'</span></div>'+bud+'</div>'
+      :pre?'<div class="inscode two"><div class="off"><span class="small">강사 코드</span><b>······</b><span class="small">확인되면 바로 생겨요</span></div>'+bud+'</div>':'';
     var tile=function(tg,href,data,thumb,title,sub,dim){return '<'+tg+(href?' href="'+href+'"':' type="button"')+' class="inst'+(dim?' dim':'')+'" '+data+'><span class="insth">'+thumb+'</span><b>'+title+'</b><span class="small">'+sub+'</span></'+tg+'>';};
     var stT=s.has&&s.image?'<img src="'+esc(s.image)+'" alt="">':ic.st,sgT=s.sign&&s.sign_image?'<img src="'+esc(s.sign_image)+'" alt="">':ic.sg;
     var p=document.createElement('div');p.className='panel';p.id='insPanel';
-    p.innerHTML='<h2>강사 '+tag+'</h2>'+codeBox+'<div class="insg">'+
-      tile('button','','data-insapply',ic.in,'강사 정보',ok?esc((x.cert||'').slice(0,16)||'보기'):pre?'확인 중':'등록하기')+
-      (none?tile('button','','data-insapply',ic.st,'강사 도장','정보 먼저',1)+tile('button','','data-insapply',ic.sg,'강사 서명','정보 먼저',1)
-           :tile('a','#stamp','',stT,'강사 도장',s.has?'등록됨 · 바꾸기':'등록하기')+tile('button','','data-inssign',sgT,'강사 서명',s.sign?'등록됨 · 바꾸기':'등록하기'))+'</div>'+
-      '<p class="small" style="margin:10px 0 0">'+(ok?'교육생 로그 서명 화면에서 \'내 도장 · 서명 넣기\'를 누르면 비밀번호 없이 들어가요.':pre?'확인을 기다리는 동안 도장 · 서명을 미리 만들어 두면 확인되자마자 쓸 수 있어요.':'강사라면 자격과 자격증 사진으로 등록해 주세요. 도장 · 서명도 같이 만들 수 있어요.')+'</p>'+
-      (none?'<button class="btn btn-pri" type="button" data-insapply style="width:100%;justify-content:center;margin-top:10px">강사 등록하기</button>':'');
-    v.appendChild(p);document.body.classList.add('ins127');order127();});}
+    p.innerHTML='<h2>'+(none?'내 도장 · 서명':'강사 '+tag)+'</h2>'+codeBox+'<div class="insg">'+
+      tile('button','','data-insapply',ic.in,none?'강사 등록':'강사 정보',ok?esc((x.cert||'').slice(0,16)||'보기'):pre?'확인 중':'강사라면')+
+      tile('a','#stamp','',stT,none?'내 도장':'강사 도장',s.has?'등록됨 · 바꾸기':'등록하기')+tile('button','','data-inssign',sgT,none?'내 서명':'강사 서명',s.sign?'등록됨 · 바꾸기':'등록하기')+'</div>'+
+      '<p class="small" style="margin:10px 0 0">'+(ok?'교육생 로그 서명 화면에서 \'내 도장 · 서명 넣기\'를 누르면 비밀번호 없이 들어가요.':pre?'확인을 기다리는 동안 도장 · 서명을 미리 만들어 두면 확인되자마자 쓸 수 있어요.':'도장 · 서명을 등록해 두면 버디 로그에 서명할 때 바로 넣을 수 있어요. 강사라면 \'강사 등록\'에서 자격을 올려 주세요.')+'</p>';
+    v.appendChild(p);document.body.classList.add('ins127');order127();if(ok&&!s.has&&!insPanel127.auto){insPanel127.auto=1;autoStamp127(x.cert);}});}
 function insApply127(){var x=state.canClub||{},isIns=/인스트럭터|instructor|강사/i.test(x.cert||'');state.insNew=[];
   sheet('<button class="chip x" type="button" data-xsheet>닫기</button><h2 style="margin:0 0 4px">강사 등록하기</h2><p class="small" style="margin:0 0 12px">강사 자격증 사진을 올리면 운영자가 확인해요. 확인되면 강사 코드가 바로 생겨요.'+(x.verified?' <b>자격이나 사진을 바꾸면 다시 확인받아야 해요.</b>':'')+'</p>'+
     '<form id="insForm" class="form" style="grid-template-columns:1fr 1fr">'+insSel127(isIns?x.cert:'')+
@@ -211,7 +211,7 @@ document.addEventListener('click',function(e){if(e.target.closest('[data-insappl
 /* 서명 화면: 저장한 서명도 비밀번호 없이 */
 if(typeof sgPrefill==='function')sgPrefill=function(){var f=document.getElementById('sgForm');if(!f||f.dataset.pre||!BE.user)return;f.dataset.pre=1;stMine(function(m){if(!m||!(m.has||m.sign))return;var n=document.getElementById('sg_n'),r=document.getElementById('sg_r'),c=document.getElementById('sg_c');if(n&&!n.value&&state.me&&state.me.nick)n.value=state.me.nick;if(r)r.value='instructor';if(c&&!c.value&&m.label)c.value=m.label;setTimeout(function(){var k=document.getElementById('sg_mine');if(k)k.checked=true;},300);});};
 function sgMine127(){if(cur()!=='sign'||!BE.user)return;stMine(function(m){if(!m||!m.sign)return;var r=document.getElementById('stMineRow');if(!r||r.dataset.s127)return;r.dataset.s127=1;
-  if(!m.has)r.innerHTML='<label style="display:flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="sg_mine" checked><img src="'+esc(m.sign_image)+'" alt="" style="width:72px;height:30px;object-fit:contain"> 내 강사 서명 넣기 (비밀번호 없이)</label>';
+  if(!m.has)r.innerHTML='<label style="display:flex;gap:8px;align-items:center;margin-top:8px;cursor:pointer"><input type="checkbox" id="sg_mine" checked><img src="'+esc(m.sign_image)+'" alt="" style="width:72px;height:30px;object-fit:contain"> '+(m.ok?'내 강사 서명':'내 서명')+' 넣기 (비밀번호 없이)</label>';
   else{var l=r.querySelector('label');if(l)l.insertAdjacentHTML('beforeend',' + 저장한 서명');}var d=r.closest('details');if(d)d.open=true;});}
 (function(){var st=document.createElement('style');st.textContent='.ins127 #icPanel,.ins127 #myCert{display:none!important}#insPanel h2{display:flex;align-items:center;gap:8px}#insPanel h2 .tag{margin:0;font-size:12px}'+
  '.inscode{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:12px 14px;border-radius:12px;background:var(--bg);margin-bottom:10px}.inscode .small{flex-basis:100%}.inscode b{font:700 26px Sora,sans-serif;letter-spacing:2px}.inscb{display:flex;gap:6px;flex-wrap:wrap}'+
@@ -255,3 +255,17 @@ if(V.stamp){var _vSt127=V.stamp;V.stamp=function(a){var m=state.stMine;if(m&&m!=
 window.insNext127=insNext127;
 (function(){var st=document.createElement('style');st.textContent='.inscode.off b{color:var(--line)}.inst.dim{opacity:.55}.insfs{grid-column:1/-1;display:flex;flex-direction:column;gap:6px;align-items:flex-start}.insfs b .small{font-weight:400}.insfs .inspad{align-self:stretch;width:100%}'+
  '.insnx{display:flex;flex-direction:column;gap:6px}.insnx>div{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--bg)}.insnx>div b{white-space:nowrap;font-size:14px}.insnx>div span{flex:1;font-size:12.5px;color:var(--sub)}.insnx>div.ok span{color:#1e8a4a;font-weight:600}.insnx .chip{flex:none}';document.head.appendChild(st);})();
+
+/* 승인된 강사: 도장이 없으면 이름 도장을 자동으로 만들어 바로 찍을 수 있게 */
+function sealPng127(name,sub){var c=document.createElement('canvas');c.width=c.height=400;var g=c.getContext('2d'),col='#c8102e';g.strokeStyle=col;g.fillStyle=col;
+  g.lineWidth=16;g.beginPath();g.arc(200,200,182,0,Math.PI*2);g.stroke();g.lineWidth=4;g.beginPath();g.arc(200,200,158,0,Math.PI*2);g.stroke();
+  var n=String(name||'다이버').replace(/\s+/g,'').slice(0,6),ff='"Noto Serif KR","Nanum Myeongjo",serif';g.textAlign='center';g.textBaseline='middle';
+  if(n.length===4){g.font='900 92px '+ff;[[255,140],[255,245],[145,140],[145,245]].forEach(function(q,i){g.fillText(n.charAt(i),q[0],q[1]);});}
+  else{var fs=n.length<=2?140:n.length===3?104:Math.floor(300/n.length);g.font='900 '+fs+'px '+ff;g.fillText(n,200,185);}
+  g.font='700 34px '+ff;g.fillText(sub||'강사',200,n.length===4?330:300);return c.toDataURL('image/png');}
+function autoStamp127(cert){var nk=(state.me&&state.me.nick)||'강사';BE.sb.rpc('stamp_save',{p_image:sealPng127(nk,'강사'),p_label:String(cert||'').replace(/\s*\(.*\)$/,'').slice(0,30)||null,p_pin:null}).then(function(r){if(r.data!=='ok')return;toast('강사 도장을 자동으로 만들었어요. 교육생 로그에 바로 찍을 수 있어요');insFresh127();});}
+/* 일반 다이버도 내 도장 화면을 쓸 수 있게 */
+if(V.stamp){var _vSt127b=V.stamp;V.stamp=function(a){var m=state.stMine;if(m&&m!=='…'&&!m.ok&&!m.pre&&BE.user){state.stMine=Object.assign({},m,{ok:true});var h;try{h=_vSt127b(a);}finally{state.stMine=m;}return h.replace('교육생 로그에 서명할 때 같이 찍히는 강사 도장이에요.','버디 로그에 서명할 때 같이 찍히는 내 도장이에요.').replace('</div></div>','</div></div><div class="notice" style="margin-bottom:12px">강사 도장은 강사 확인을 받은 뒤에 쓸 수 있어요. 이 도장은 버디로 서명할 때 찍혀요.</div>');}return _vSt127b(a);};}
+/* 서명 화면: 강사가 아니면 역할을 버디로 */
+if(typeof sgPrefill==='function'){var _sgp127=sgPrefill;sgPrefill=function(){_sgp127();setTimeout(function(){var m=state.stMine;if(m&&!m.ok){var r=document.getElementById('sg_r');if(r&&r.value==='instructor')r.value='buddy';}},500);};}
+(function(){var st=document.createElement('style');st.textContent='.inscode.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.inscode.two>div{display:flex;flex-direction:column;gap:4px;min-width:0}.inscode.two b{font-size:22px}.inscode.two .off b{color:var(--line)}.inscode.two .inscb .chip{padding:5px 10px;font-size:12.5px}@media(max-width:360px){.inscode.two{grid-template-columns:1fr}}';document.head.appendChild(st);})();
