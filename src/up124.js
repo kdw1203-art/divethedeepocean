@@ -139,7 +139,7 @@ var _clubs124=V.clubs;V.clubs=function(){var h=_clubs124.apply(this,arguments);s
 
 /* ---------- 소모임 상세 정리: 버튼 한 줄, 지난 모임 표시, 섹션 순서, 칩 높이 ---------- */
 (function(){var st=document.createElement('style');st.textContent=
-'.mdact{display:flex;flex-wrap:wrap;gap:8px;width:100%;margin-top:4px}.mdact>*{flex:1 1 0;min-width:96px;justify-content:center;min-height:42px;margin:0!important;white-space:nowrap}.mdact .chip{border:1px solid var(--line)}'+
+'.mdact>button,.mdact>a{background:var(--panel)!important;border:1.5px solid var(--sea)!important;color:var(--sea)!important;font-weight:700;border-radius:14px}.mdact{display:flex;flex-wrap:wrap;gap:8px;width:100%;margin-top:4px}.mdact>*{flex:1 1 0;min-width:96px;justify-content:center;min-height:42px;margin:0!important;white-space:nowrap}.mdact .chip{border:1px solid var(--line)}'+
 '.vh .mdtag{margin-top:6px;display:inline-flex}'+
 '#main .view .chips>span.chip{display:inline-flex;align-items:center;gap:4px;line-height:1.2;min-height:36px;padding-top:0;padding-bottom:0}'+
 '#mtPlan h2,#mtCm h2,#mtCar h2,#mtRv h2{flex:1;display:flex;align-items:center;gap:8px}'+
@@ -197,3 +197,28 @@ function clMem124(){var id=clubId();if(!id)return;var D=state.clubD&&state.clubD
 document.addEventListener('click',function(e){var t=e.target.closest('[data-clrole]');if(t){var a=t.dataset.clrole.split('|');t.disabled=true;BE.sb.rpc('club_set_role',{p_club:+a[0],p_user:a[1],p_role:a[2]}).then(function(r){var x=r.data,E={max:'운영진은 5명까지예요',notowner:'클럽장만 바꿀 수 있어요',notmember:'멤버가 아니에요'};if(r.error||x!=='ok'){t.disabled=false;return toast(E[x]||'바꾸지 못했어요');}var D=state.clubD[+a[0]];(D&&D.M||[]).forEach(function(m){if(m.user_id===a[1])m.role=a[2];});toast(a[2]==='manager'?'운영진으로 정했어요':'운영진을 해제했어요');rerender();});return;}
   t=e.target.closest('[data-clxfer]');if(t){var b=t.dataset.clxfer.split('|');if(!confirm(b[2]+' 님에게 클럽장을 넘길까요? 나는 운영진이 돼요.'))return;BE.sb.rpc('club_transfer',{p_club:+b[0],p_to:b[1]}).then(function(r){if(r.error||r.data!=='ok')return toast('넘기지 못했어요');var c=(state.clubs||[]).filter(function(x){return x.id===+b[0];})[0];if(c)c.owner=b[1];var D=state.clubD[+b[0]];(D&&D.M||[]).forEach(function(m){if(m.user_id===b[1])m.role='owner';else if(m.user_id===BE.user.id)m.role='manager';});toast('클럽장을 넘겼어요');rerender();});}});
 var _after124c=after;after=function(){_after124c();if(/^club-\d+$/.test(cur())){setTimeout(clMem124,400);setTimeout(clMem124,1500);}};
+
+/* ---------- 초대하기: 상세에 항상 버튼, 초대한 사람 표시 링크, 받은 사람 배너 ---------- */
+(function(){try{var q=new URLSearchParams(location.search),f=q.get('from');if(f){f=f.replace(/[<>"'&]/g,'').trim().slice(0,20);if(f)sessionStorage.setItem('invFrom',f);var u=new URL(location.href);u.searchParams.delete('from');history.replaceState(null,'',u.pathname+(u.search||'')+u.hash);}}catch(e){}})();
+function invFrom(){try{return sessionStorage.getItem('invFrom')||'';}catch(e){return '';}}
+if(typeof invSheet==='function'){var _inv124b=invSheet;invSheet=function(kind,id,title,link,code){var nk=state.me&&state.me.nick;if(nk){try{var u=new URL(link);u.searchParams.set('from',nk.slice(0,20));link=u.toString();}catch(e){}}
+  _inv124b.call(this,kind,id,title,link,code);if(kind==='meetup'){var r=mtRole(+id),M=(state.mem&&state.mem[+id])||[],mem=r||M.some(function(x){return BE.user&&x.user_id===BE.user.id;});var f=document.getElementById('invNick');if(f&&!mem)f.style.display='none';}};}
+function invTidy(){var id=m4Id();if(!id)return;var m=m4Get(id);if(!m)return;var past=m.meet_date&&m.meet_date<m4Today(),act=document.getElementById('mdAct');
+  if(!past&&act&&!document.getElementById('meetInv')){var b=document.createElement('button');b.type='button';b.className='btn btn-line';b.id='meetInv';b.dataset.minv=id;b.textContent='초대하기';act.insertBefore(b,act.firstChild);}
+  if(past){var mi=document.getElementById('meetInv');if(mi)mi.style.display='none';}
+  var f=invFrom(),u=BE.user&&BE.user.id,M=(state.mem&&state.mem[id])||[],joined=u&&(m.owner===u||M.some(function(x){return x.user_id===u;}));
+  if(f&&!past&&!joined&&!document.getElementById('invBan')){var bx=document.getElementById('m4ban');if(!bx)return;var full=state.m4cnt[id]!=null&&m.max_people&&state.m4cnt[id]>=m.max_people;
+    bx.insertAdjacentHTML('afterbegin','<div class="m4ban done" id="invBan"><b>'+esc(f)+' 님이 이 모임에 초대했어요.'+(m.closed||full?' 지금은 모집이 마감됐어요.':' 같이 가요!')+'</b>'+(m.closed||full?'':'<button class="btn btn-pri" type="button" data-m4join="'+id+'">참가 신청</button>')+'</div>');}
+  if(joined){var ib=document.getElementById('invBan');if(ib)ib.remove();}}
+document.addEventListener('click',function(e){var t=e.target.closest('[data-m4join]');if(!t)return;var j=document.querySelector('#main [data-join="'+t.dataset.m4join+'"]');if(j){j.scrollIntoView({block:'center'});j.click();}else if(!BE.user)needLogin('참가하려면 로그인해 주세요');else toast('아래 참가 신청 버튼을 눌러 주세요');});
+var _mdT124b=mdTidy;mdTidy=function(){_mdT124b();invTidy();};
+
+/* ---------- 내 정보: 강사 코드 ---------- */
+function isInstr124(){var me=state.me||{},c=String(me.cert||'')+' '+(me.orgs||[]).join(' ');return /강사|instructor|IDC|트레이너|trainer/i.test(c);}
+function instrCode124(){if(cur()!=='profile'||!BE.user||document.getElementById('icPanel'))return;if(typeof stMine!=='function')return;stMine(function(s){if(cur()!=='profile'||document.getElementById('icPanel'))return;if(!(s&&s.code)&&!isInstr124())return;var v=document.querySelector('#main .view');if(!v)return;
+  var p=document.createElement('div');p.id='icPanel';p.style.cssText='margin-top:14px;padding-top:14px;border-top:1px solid var(--line)';
+  p.innerHTML=s&&s.code?'<b style="font-size:15px">강사 코드</b><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><b style="font:700 26px Sora,sans-serif;letter-spacing:2px">'+esc(s.code)+'</b><button class="chip" type="button" data-iccopy="'+esc(s.code)+'">복사</button><a class="chip" href="#stamp">도장 보기 · 바꾸기</a></div><p class="small" style="margin:8px 0 0">교육생이 로그 서명 화면에서 이 코드를 넣으면 내 강사 도장을 찍을 수 있어요. 도장 비밀번호는 따로 알려 주지 마세요.</p>'
+    :'<b style="font-size:15px">강사 코드</b><p class="small" style="margin:4px 0 10px">강사 도장을 만들면 강사 코드가 생겨요. 교육생 로그에 서명할 때 써요.</p><a class="btn btn-pri" href="#stamp">도장 만들고 코드 받기</a>';
+  var kv=v.querySelector(':scope > .panel.kvp');if(kv)kv.appendChild(p);else{var a=document.getElementById('cc2')||v.querySelector(':scope > .vh');if(a)a.after(p);}});}
+document.addEventListener('click',function(e){var t=e.target.closest('[data-iccopy]');if(t&&navigator.clipboard)navigator.clipboard.writeText(t.dataset.iccopy).then(function(){toast('강사 코드를 복사했어요');});});
+var _after124d=after;after=function(){_after124d();if(cur()==='profile'){setTimeout(instrCode124,500);setTimeout(instrCode124,1600);setTimeout(instrCode124,3000);}};
