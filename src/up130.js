@@ -6,6 +6,8 @@ function mpRpc130(uid,field,val){var id=mtId();if(!id||!BE.user)return;
     if(res!=='ok'){toast({full:'자리가 다 찼어요',denied:'바꿀 수 있는 권한이 없어요',no_driver:'운전하는 사람이 바뀌었어요',not_member:'참가자만 바꿀 수 있어요'}[res]||'저장하지 못했어요');}
     BE.sb.from('meetup_members').select('*').eq('meetup_id',id).order('created_at').then(function(q){if(q.data){state.mem[id]=q.data;}var b=document.getElementById('mtCar');if(b)b.dataset.h='';mtExtra();});});}
 
+var BCOL130=[['red','빨강','#e5484d'],['orange','주황','#f6a04d'],['yellow','노랑','#f5c518'],['green','초록','#30a46c'],['blue','파랑','#1a86c7'],['purple','보라','#8e4ec6'],['pink','분홍','#e93d82'],['white','흰색','#ffffff'],['black','검정','#1c2024']];
+function bcol130(k){return BCOL130.filter(function(c){return c[0]===k;})[0]||BCOL130[4];}
 mtExtra=function(){if(cur()!=='meet')return;var id=mtId();if(!id)return;var m=mtGet(id),v=document.querySelector('#main .view'),M=state.mem&&state.mem[id];if(!m||!v||!M)return;
   var me=BE.user&&BE.user.id,mine=M.filter(function(x){return x.user_id===me;})[0],host=!!(me&&(m.owner===me||(m.cohosts||[]).indexOf(me)>=0));
   var W=M.filter(function(x){return x.rsvp==='wait';}),G=M.filter(function(x){return x.rsvp!=='wait';}),n=G.length+1,cap=Math.min(m.max_people||15,15);
@@ -46,6 +48,21 @@ mtExtra=function(){if(cur()!=='meet')return;var id=mtId();if(!id)return;var m=mt
     if(roomless.length||rk.length)h+='<div class="c130new" data-droom130="'+nextNo+'">＋ 여기에 끌어다 놓으면 새 방</div>';
     if(mine&&mine.room_share&&!myRoom)h+='<button type="button" class="btn btn-line c130join" data-rjoin130="'+nextNo+'">새 방 만들기</button>';
     else if(host&&roomless.length)h+='<select class="c130add" data-rin130="'+nextNo+'" aria-label="새 방에 넣을 사람"><option value="">+ 새 방 만들어 넣기</option>'+roomless.map(function(x){return '<option value="'+esc(x.user_id)+'">'+nk(x)+'</option>';}).join('')+'</select>';
+    h+='</div>';
+    /* 버디 짝 · 색 */
+    var BC=m.buddy_colors||{},bud={};G.forEach(function(x){if(x.buddy_no){(bud[x.buddy_no]=bud[x.buddy_no]||[]).push(x);}});var bk=Object.keys(bud).map(Number).sort(function(a,b){return a-b;}),nob=G.filter(function(x){return !x.buddy_no;}),myB=mine&&mine.buddy_no||null;
+    h+='<div class="c130sec"><b class="c130h">🤿 버디 짝 · 색 <span class="small" style="font-weight:500">· 물속에서 알아보기 쉽게</span></b>';
+    if(!G.length)h+='<p class="small" style="margin:0">참가자가 생기면 버디 짝을 정할 수 있어요.</p>';
+    bk.forEach(function(no){var R=bud[no],col=BC[no]||BCOL130[(no-1)%BCOL130.length][0],cc=bcol130(col),inB=myB===no,canB=host||inB;
+      h+='<div class="c130box c130bud" data-dbud130="'+no+'" style="border-left:6px solid '+cc[2]+'"><div class="c130t"><b><i class="c130dot" style="background:'+cc[2]+'"></i>버디 '+no+' · '+cc[1]+'</b><span class="small">'+R.length+'명</span></div><div class="c130m">'+R.map(function(x){var canX=canB||x.user_id===me;return '<span class="c130p" data-dk="buddy" data-uid="'+esc(x.user_id)+'"><i class="c130dot" style="background:'+cc[2]+'"></i>'+nk(x)+(canX?'<button type="button" data-bout130="'+esc(x.user_id)+'" aria-label="'+esc(x.nick||'')+' 빼기">×</button>':'')+'</span>';}).join('')+'</div>'+
+        (canB?'<div class="c130cols" role="group" aria-label="버디 '+no+' 색 고르기">'+BCOL130.map(function(c){return '<button type="button" class="c130col'+(c[0]===col?' on':'')+'" data-bcol130="'+no+'|'+c[0]+'" style="background:'+c[2]+'" aria-label="'+c[1]+'" aria-pressed="'+(c[0]===col)+'"></button>';}).join('')+'</div>':'')+
+        (canB&&nob.length?'<select class="c130add" data-bin130="'+no+'" aria-label="버디에 넣을 사람"><option value="">+ 이 버디에 넣기</option>'+nob.map(function(x){return '<option value="'+esc(x.user_id)+'">'+nk(x)+'</option>';}).join('')+'</select>':'')+
+        (mine&&mine.rsvp!=='wait'&&!myB?'<button type="button" class="btn btn-line c130join" data-bjoin130="'+no+'">이 버디로 갈게요</button>':'')+'</div>';});
+    if(nob.length&&G.length)h+='<div class="c130wait" data-dbud130=""><span class="small">짝 정하는 중</span>'+nob.map(function(x){return '<span class="c130p" data-dk="buddy" data-uid="'+esc(x.user_id)+'">'+nk(x)+'</span>';}).join('')+'</div>';
+    else if(bk.length)h+='<div class="c130wait" data-dbud130=""><span class="small">짝 정하는 중</span></div>';
+    var nb=(bk.length?Math.max.apply(null,bk):0)+1;
+    if(G.length)h+='<div class="c130new" data-dbud130="'+nb+'">＋ 여기에 끌어다 놓으면 새 버디 짝</div>';
+    if(mine&&mine.rsvp!=='wait'&&!myB)h+='<button type="button" class="btn btn-line c130join" data-bjoin130="'+nb+'">새 버디 짝 만들기</button>';
     h+='</div>';}
   else h+='<p class="small" style="margin:0">참가하면 카풀 · 방 같이 쓸 사람을 찾을 수 있어요.</p>';
   if(W.length&&(host||mine))h+='<div class="mcwt"><b>대기 명단</b><span>'+W.map(function(x,i){return (i+1)+'. '+esc(x.nick);}).join(' · ')+'</span></div>';
@@ -56,10 +73,16 @@ document.addEventListener('click',function(e){var t;
   if((t=e.target.closest('[data-cout130]'))){mpRpc130(t.dataset.cout130,'ride',null);return;}
   if((t=e.target.closest('[data-cjoin130]'))){mpRpc130(BE.user.id,'ride',t.dataset.cjoin130);return;}
   if((t=e.target.closest('[data-rout130]'))){mpRpc130(t.dataset.rout130,'room',null);return;}
-  if((t=e.target.closest('[data-rjoin130]'))){mpRpc130(BE.user.id,'room',t.dataset.rjoin130);return;}});
-document.addEventListener('change',function(e){var t=e.target;if(t.dataset&&t.dataset.cin130&&t.value){mpRpc130(t.value,'ride',t.dataset.cin130);return;}if(t.dataset&&t.dataset.rin130&&t.value){mpRpc130(t.value,'room',t.dataset.rin130);return;}
+  if((t=e.target.closest('[data-rjoin130]'))){mpRpc130(BE.user.id,'room',t.dataset.rjoin130);return;}
+  if((t=e.target.closest('[data-bout130]'))){mpRpc130(t.dataset.bout130,'buddy',null);return;}
+  if((t=e.target.closest('[data-bjoin130]'))){mpRpc130(BE.user.id,'buddy',t.dataset.bjoin130);return;}
+  if((t=e.target.closest('[data-bcol130]'))){var a=t.dataset.bcol130.split('|'),id=mtId(),m=mtGet(id);BE.sb.rpc('meet_buddy_color',{p_meet:id,p_no:+a[0],p_color:a[1]}).then(function(r){if(r.error||r.data!=='ok')return toast(r.data==='denied'?'같은 버디만 색을 바꿀 수 있어요':'바꾸지 못했어요');if(m){m.buddy_colors=Object.assign({},m.buddy_colors||{});m.buddy_colors[a[0]]=a[1];}var b=document.getElementById('mtCar');if(b)b.dataset.h='';mtExtra();});return;}});
+document.addEventListener('change',function(e){var t=e.target;if(t.dataset&&t.dataset.cin130&&t.value){mpRpc130(t.value,'ride',t.dataset.cin130);return;}if(t.dataset&&t.dataset.rin130&&t.value){mpRpc130(t.value,'room',t.dataset.rin130);return;}if(t.dataset&&t.dataset.bin130&&t.value){mpRpc130(t.value,'buddy',t.dataset.bin130);return;}
   /* 운전 안 하기로 바꾸면 내 차에 탄 사람은 '차 정하는 중'으로 */
-  if(t.id==='mcRide'){var b=document.getElementById('mtCar');if(b)b.dataset.h='';}
+  if(t.id==='mcRide'){var b=document.getElementById('mtCar');if(b)b.dataset.h='';var id0=mtId(),M0=id0&&state.mem&&state.mem[id0]||[],me0=BE.user&&BE.user.id,mi0=M0.filter(function(x){return x.user_id===me0;})[0];
+    /* 운전 그만두면 내 차에 탄 사람은 '차 정하는 중'으로, 따로 가면 내가 탄 차에서 내리기 */
+    if(t.value!=='offer')M0.filter(function(x){return x.ride_with===me0&&x.user_id!==me0;}).forEach(function(x){mpRpc130(x.user_id,'ride',null);});
+    if(t.value==='none'&&mi0&&mi0.ride_with)mpRpc130(me0,'ride',null);}
   if(t.id==='mcRoom'&&!t.checked){var id=mtId(),M=id&&state.mem[id]||[],me=BE.user&&BE.user.id,mi=M.filter(function(x){return x.user_id===me;})[0];if(mi&&mi.room_no)mpRpc130(me,'room',null);}});
 
 /* ---------- 2) 일차별 일정표 (다이빙 · 식사 · 이동 · 집결 · 자유) ---------- */
@@ -136,17 +159,19 @@ document.addEventListener('change',function(e){var t=e.target;
 /* ---------- 4) 카풀 · 방: 끌어서 옮기기 (마우스 · 터치 공통) ---------- */
 (function(){var D=null;
   function canDrag(){var id=mtId(),M=id&&state.mem&&state.mem[id]||[],me=BE.user&&BE.user.id,m=id&&mtGet(id);if(!me||!m)return false;if(m.owner===me||(m.cohosts||[]).indexOf(me)>=0)return true;return M.some(function(x){return x.user_id===me&&x.rsvp!=='wait';});}
-  function zoneAt(x,y,kind){var el=document.elementFromPoint(x,y);if(!el)return null;var z=el.closest(kind==='ride'?'[data-dcar130]':'[data-droom130]');return z&&z.closest('#mtCar')?z:null;}
+  function zoneAt(x,y,kind){var el=document.elementFromPoint(x,y);if(!el)return null;var z=el.closest(kind==='ride'?'[data-dcar130]':kind==='buddy'?'[data-dbud130]':'[data-droom130]');return z&&z.closest('#mtCar')?z:null;}
   function clear(){[].forEach.call(document.querySelectorAll('#mtCar .dz130'),function(z){z.classList.remove('dz130');});}
   function stop(){if(!D)return;clear();document.body.classList.remove('dragging130');if(D.ghost)D.ghost.remove();D.c.classList.remove('c130drag');D=null;}
   document.addEventListener('pointerdown',function(e){var c=e.target.closest('#mtCar .c130p[data-uid]');if(!c||e.target.closest('button')||e.button>0||!canDrag())return;
-    D={c:c,uid:c.dataset.uid,kind:c.dataset.dk,x0:e.clientX,y0:e.clientY,on:false,ghost:null,from:c.closest(c.dataset.dk==='ride'?'[data-dcar130]':'[data-droom130]'),pid:e.pointerId};});
+    D={c:c,uid:c.dataset.uid,kind:c.dataset.dk,x0:e.clientX,y0:e.clientY,on:false,ghost:null,from:c.closest(c.dataset.dk==='ride'?'[data-dcar130]':c.dataset.dk==='buddy'?'[data-dbud130]':'[data-droom130]'),pid:e.pointerId};});
   document.addEventListener('pointermove',function(e){if(!D||e.pointerId!==D.pid)return;var dx=e.clientX-D.x0,dy=e.clientY-D.y0;
     if(!D.on){if(Math.abs(dx)+Math.abs(dy)<7)return;D.on=true;var r=D.c.getBoundingClientRect(),g=D.c.cloneNode(true);g.className='c130p c130ghost';g.style.width=r.width+'px';g.style.left=r.left+'px';g.style.top=r.top+'px';document.body.appendChild(g);D.ghost=g;D.ox=e.clientX-r.left;D.oy=e.clientY-r.top;D.c.classList.add('c130drag');document.body.classList.add('dragging130');}
     e.preventDefault();D.ghost.style.left=(e.clientX-D.ox)+'px';D.ghost.style.top=(e.clientY-D.oy)+'px';clear();var z=zoneAt(e.clientX,e.clientY,D.kind);if(z&&z!==D.from)z.classList.add('dz130');
     if(e.clientY<70)window.scrollBy(0,-12);else if(e.clientY>innerHeight-90)window.scrollBy(0,12);},{passive:false});
   document.addEventListener('pointerup',function(e){if(!D||e.pointerId!==D.pid)return;var d=D;var on=d.on,z=on?zoneAt(e.clientX,e.clientY,d.kind):null;stop();if(!on)return;
     var sup=function(ev){ev.stopPropagation();ev.preventDefault();};document.addEventListener('click',sup,true);setTimeout(function(){document.removeEventListener('click',sup,true);},250);
-    if(!z||z===d.from)return;if(d.kind==='ride')mpRpc130(d.uid,'ride',z.dataset.dcar130||null);else mpRpc130(d.uid,'room',z.dataset.droom130||null);});
+    if(!z||z===d.from)return;if(d.kind==='ride')mpRpc130(d.uid,'ride',z.dataset.dcar130||null);else if(d.kind==='buddy')mpRpc130(d.uid,'buddy',z.dataset.dbud130||null);else mpRpc130(d.uid,'room',z.dataset.droom130||null);});
   document.addEventListener('pointercancel',stop);
   var st=document.createElement('style');st.textContent='#mtCar .c130p[data-uid]{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}.c130ghost{position:fixed;z-index:9999;pointer-events:none;box-shadow:0 10px 26px rgba(0,0,0,.25);transform:scale(1.06) rotate(-2deg);background:#fff!important;cursor:grabbing}.c130drag{opacity:.35}#mtCar .dz130{outline:2px dashed #1a86c7;outline-offset:2px;background:rgba(26,134,199,.08)}.c130new{padding:12px;border:2px dashed var(--line,#cfdbe4);border-radius:12px;text-align:center;font-size:14px;opacity:.75}body.dragging130{cursor:grabbing}.c130wait{min-height:40px;padding:6px;border-radius:10px}';document.head.appendChild(st);})();
+
+(function(){var st=document.createElement('style');st.textContent='.c130dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}.c130cols{display:flex;flex-wrap:wrap;gap:8px}.c130col{width:30px;height:30px;border-radius:50%;border:2px solid rgba(0,0,0,.15);cursor:pointer;padding:0}.c130col.on{outline:3px solid var(--sea,#0a5c8a);outline-offset:2px}';document.head.appendChild(st);})();
