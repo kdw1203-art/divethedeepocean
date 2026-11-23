@@ -75,3 +75,24 @@ document.addEventListener('click',function(e){if(e.target.closest('.chip,[data-m
 /* 3) 운영자 회원 목록: 날짜 · 로그 수 등 칸이 줄바꿈되지 않게 한 줄로 (표는 옆으로 밀어서 봄) */
 amT=function(s){if(!s)return '—';var d=new Date(s);if(isNaN(d))return '—';var p=function(n){return (n<10?'0':'')+n;};return (d.getFullYear()!==new Date().getFullYear()?String(d.getFullYear()).slice(2)+'.':'')+(d.getMonth()+1)+'.'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());};
 (function(){var st=document.createElement('style');st.textContent='#main .ai table[style*="min-width:1100px"]{min-width:0!important;width:max-content;border-collapse:collapse}#main .ai table[style*="min-width:1100px"] th,#main .ai table[style*="min-width:1100px"] td{white-space:nowrap;padding:10px 12px 10px 0;vertical-align:top;font-variant-numeric:tabular-nums}#main .ai table[style*="min-width:1100px"] td[style*="max-width:180px"]{white-space:normal;min-width:160px}#main .ai table[style*="min-width:1100px"] td:last-child,#main .ai table[style*="min-width:1100px"] th:last-child{text-align:right;padding-right:4px}';document.head.appendChild(st);})();
+
+/* 4) 홈 위 홍보 배너에 승인된 '홈' 광고도 함께 돌리기 (맨 앞, '광고' 표시) */
+function adHomeList137(){if(typeof state==='undefined'||!state.ads)return [];var mo=new Date().getMonth()+1;return state.ads.filter(function(a){var P=a.placement||['list'];if(P.indexOf('home')<0)return false;if(a.kind&&a.kind!=='all'&&typeof DM!=='undefined'&&DM!=='all'&&a.kind!==DM)return false;if(a.months&&a.months.length&&a.months.indexOf(mo)<0)return false;return true;});}
+if(typeof promoHtml128==='function'&&typeof PROMO128==='object'){
+  var _prH137=promoHtml128;
+  promoHtml128=function(){
+    for(var i=PROMO128.length-1;i>=0;i--)if(PROMO128[i].ad137)PROMO128.splice(i,1);
+    try{if(typeof adsLoad==='function')adsLoad();}catch(e){}
+    var A=adHomeList137(),BG=['linear-gradient(135deg,#1b2f5e 0%,#2f6aa3 58%,#7cc0e8 125%)','linear-gradient(135deg,#3b1f5e 0%,#6a3fa0 58%,#b59ae8 125%)'];
+    A.forEach(function(a,k){var t=String(a.title||''),cut=t.lastIndexOf(', ');PROMO128.splice(k,0,{id:'ad'+a.id,ad137:a,n:cut>0?t.slice(cut+2):t,area:cut>0?t.slice(0,cut):(a.region||'전 지역'),kind:'스폰서',line:a.title_b||'',bg:BG[k%BG.length]});});
+    var h=_prH137();if(!A.length)return h;
+    var d=document.createElement('div');d.innerHTML=h;
+    [].forEach.call(d.querySelectorAll('.prs[data-promo^="ad"]'),function(b){var p=PROMO128.filter(function(x){return x.id===b.dataset.promo;})[0];if(!p||!p.ad137)return;var a=p.ad137,inner=a.business_id,href=inner?'#biz-d'+a.business_id:a.link;
+      var el=document.createElement('a');[].forEach.call(b.attributes,function(at){if(at.name!=='type'&&at.name!=='data-promo')el.setAttribute(at.name,at.value);});el.setAttribute('href',href);el.setAttribute('data-adclick',a.id);if(!inner){el.target='_blank';el.rel='noopener sponsored';}el.setAttribute('aria-label',(p.n||'')+' 광고');el.innerHTML=b.innerHTML;var tg=el.querySelector('.prtag');if(tg)tg.textContent='광고';if(!p.line){var l=el.querySelector('.prl');if(l)l.remove();}
+      b.replaceWith(el);
+      adSlot.shown=adSlot.shown||{};if(!adSlot.shown[a.id+'home']){adSlot.shown[a.id+'home']=1;try{BE.sb.rpc('ad_hit',{aid:a.id,is_click:false}).then(function(){});}catch(e){}}});
+    return d.innerHTML;};
+  /* 광고 목록이 늦게 도착하면 배너를 한 번 다시 그림 */
+  if(typeof adPaintAll==='function'){var _apa137=adPaintAll;adPaintAll=function(){_apa137.apply(this,arguments);if(cur()==='home'&&adHomeList137().length&&document.getElementById('prHome')&&!document.querySelector('#prHome [data-adclick]'))rerender();};}
+}
+(function(){var st=document.createElement('style');st.textContent='a.prs{text-decoration:none;color:#fff}';document.head.appendChild(st);})();
