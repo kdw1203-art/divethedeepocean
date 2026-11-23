@@ -71,3 +71,7 @@ function tidy137(){var v=document.querySelector('#main .view');if(!v)return;
 var _after137=after;after=function(){_after137();try{tidy137();}catch(e){}setTimeout(function(){try{tidy137();}catch(e){}},700);};
 /* 목록을 나중에 다시 채우는 화면도 있어서 한 번 더 */
 document.addEventListener('click',function(e){if(e.target.closest('.chip,[data-mtab],[data-m4],button'))setTimeout(function(){try{tidy137();}catch(x){}},120);});
+
+/* 3) 운영자 회원 목록: 날짜 · 로그 수 등 칸이 줄바꿈되지 않게 한 줄로 (표는 옆으로 밀어서 봄) */
+amT=function(s){if(!s)return '—';var d=new Date(s);if(isNaN(d))return '—';var p=function(n){return (n<10?'0':'')+n;};return (d.getFullYear()!==new Date().getFullYear()?String(d.getFullYear()).slice(2)+'.':'')+(d.getMonth()+1)+'.'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());};
+(function(){var st=document.createElement('style');st.textContent='#main .ai table[style*="min-width:1100px"]{min-width:0!important;width:max-content;border-collapse:collapse}#main .ai table[style*="min-width:1100px"] th,#main .ai table[style*="min-width:1100px"] td{white-space:nowrap;padding:10px 12px 10px 0;vertical-align:top;font-variant-numeric:tabular-nums}#main .ai table[style*="min-width:1100px"] td[style*="max-width:180px"]{white-space:normal;min-width:160px}#main .ai table[style*="min-width:1100px"] td:last-child,#main .ai table[style*="min-width:1100px"] th:last-child{text-align:right;padding-right:4px}';document.head.appendChild(st);})();
