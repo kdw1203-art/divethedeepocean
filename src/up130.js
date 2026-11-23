@@ -25,24 +25,25 @@ mtExtra=function(){if(cur()!=='meet')return;var id=mtId();if(!id)return;var m=mt
     '<label class="chip mxck"><input type="checkbox" id="mcRoom"'+(mine.room_share?' checked':'')+'> 숙소 방 같이 써요</label></div>';}
   if(mine&&mine.rsvp!=='wait'||host){
     /* 차 */
-    h+='<div class="c130sec"><b class="c130h">🚗 카풀</b>';
+    h+='<div class="c130sec"><b class="c130h">🚗 카풀 <span class="small" style="font-weight:500">· 이름을 끌어서 옮겨요</span></b>';
     if(!drivers.length)h+='<p class="small" style="margin:0">태워 줄 수 있는 사람이 아직 없어요.</p>';
     drivers.forEach(function(d){var R=riders(d),seats=+d.seats||0,left=seats-R.length,canD=host||d.user_id===me;
-      h+='<div class="c130box"><div class="c130t"><b>'+nk(d)+'의 차</b><span class="small'+(left<0?' c130over':'')+'">'+R.length+' / '+seats+'자리'+(left<0?' · 자리보다 많아요':'')+'</span></div><div class="c130m">'+
-        (R.length?R.map(function(x){var canX=canD||x.user_id===me;return '<span class="c130p">'+nk(x)+(canX?'<button type="button" data-cout130="'+esc(x.user_id)+'" aria-label="'+esc(x.nick||'')+' 내리기">×</button>':'')+'</span>';}).join(''):'<span class="small">아직 탄 사람이 없어요</span>')+'</div>'+
+      h+='<div class="c130box" data-dcar130="'+esc(d.user_id)+'"><div class="c130t"><b>'+nk(d)+'의 차</b><span class="small'+(left<0?' c130over':'')+'">'+R.length+' / '+seats+'자리'+(left<0?' · 자리보다 많아요':'')+'</span></div><div class="c130m">'+
+        (R.length?R.map(function(x){var canX=canD||x.user_id===me;return '<span class="c130p" data-dk="ride" data-uid="'+esc(x.user_id)+'">'+nk(x)+(canX?'<button type="button" data-cout130="'+esc(x.user_id)+'" aria-label="'+esc(x.nick||'')+' 내리기">×</button>':'')+'</span>';}).join(''):'<span class="small">아직 탄 사람이 없어요</span>')+'</div>'+
         (left>0&&canD&&waiting.length?'<select class="c130add" data-cin130="'+esc(d.user_id)+'" aria-label="태울 사람 고르기"><option value="">+ 태울 사람 넣기</option>'+waiting.map(function(x){return '<option value="'+esc(x.user_id)+'">'+nk(x)+'</option>';}).join('')+'</select>':'')+
         (left>0&&mine&&mine.ride==='need'&&!myCar&&d.user_id!==me?'<button type="button" class="btn btn-line c130join" data-cjoin130="'+esc(d.user_id)+'">이 차 탈게요</button>':'')+'</div>';});
-    if(waiting.length)h+='<div class="c130wait"><span class="small">차 정하는 중</span>'+waiting.map(function(x){return '<span class="c130p">'+nk(x)+'</span>';}).join('')+'</div>';
+    if(waiting.length||drivers.length)h+='<div class="c130wait" data-dcar130=""><span class="small">차 정하는 중</span>'+waiting.map(function(x){return '<span class="c130p" data-dk="ride" data-uid="'+esc(x.user_id)+'">'+nk(x)+'</span>';}).join('')+'</div>';
     h+='</div>';
     /* 방 */
-    h+='<div class="c130sec"><b class="c130h">🛏 방 같이 쓰기</b>';
+    h+='<div class="c130sec"><b class="c130h">🛏 방 같이 쓰기 <span class="small" style="font-weight:500">· 끌어서 옮겨요</span></b>';
     if(!rk.length&&!roomless.length)h+='<p class="small" style="margin:0">방을 같이 쓸 사람이 아직 없어요.</p>';
     rk.forEach(function(no){var R=rooms[no],inR=myRoom===no,canR=host||inR;
-      h+='<div class="c130box"><div class="c130t"><b>방 '+no+'</b><span class="small">'+R.length+'명</span></div><div class="c130m">'+R.map(function(x){var canX=canR||x.user_id===me;return '<span class="c130p">'+nk(x)+(canX?'<button type="button" data-rout130="'+esc(x.user_id)+'" aria-label="'+esc(x.nick||'')+' 빼기">×</button>':'')+'</span>';}).join('')+'</div>'+
+      h+='<div class="c130box" data-droom130="'+no+'"><div class="c130t"><b>방 '+no+'</b><span class="small">'+R.length+'명</span></div><div class="c130m">'+R.map(function(x){var canX=canR||x.user_id===me;return '<span class="c130p" data-dk="room" data-uid="'+esc(x.user_id)+'">'+nk(x)+(canX?'<button type="button" data-rout130="'+esc(x.user_id)+'" aria-label="'+esc(x.nick||'')+' 빼기">×</button>':'')+'</span>';}).join('')+'</div>'+
         (canR&&roomless.length?'<select class="c130add" data-rin130="'+no+'" aria-label="방에 넣을 사람 고르기"><option value="">+ 이 방에 넣기</option>'+roomless.map(function(x){return '<option value="'+esc(x.user_id)+'">'+nk(x)+'</option>';}).join('')+'</select>':'')+
         (mine&&mine.room_share&&!myRoom?'<button type="button" class="btn btn-line c130join" data-rjoin130="'+no+'">이 방 쓸게요</button>':'')+'</div>';});
-    if(roomless.length)h+='<div class="c130wait"><span class="small">방 정하는 중</span>'+roomless.map(function(x){return '<span class="c130p">'+nk(x)+'</span>';}).join('')+'</div>';
+    if(roomless.length||rk.length)h+='<div class="c130wait" data-droom130=""><span class="small">방 정하는 중</span>'+roomless.map(function(x){return '<span class="c130p" data-dk="room" data-uid="'+esc(x.user_id)+'">'+nk(x)+'</span>';}).join('')+'</div>';
     var nextNo=(rk.length?Math.max.apply(null,rk):0)+1;
+    if(roomless.length||rk.length)h+='<div class="c130new" data-droom130="'+nextNo+'">＋ 여기에 끌어다 놓으면 새 방</div>';
     if(mine&&mine.room_share&&!myRoom)h+='<button type="button" class="btn btn-line c130join" data-rjoin130="'+nextNo+'">새 방 만들기</button>';
     else if(host&&roomless.length)h+='<select class="c130add" data-rin130="'+nextNo+'" aria-label="새 방에 넣을 사람"><option value="">+ 새 방 만들어 넣기</option>'+roomless.map(function(x){return '<option value="'+esc(x.user_id)+'">'+nk(x)+'</option>';}).join('')+'</select>';
     h+='</div>';}
@@ -131,3 +132,21 @@ document.addEventListener('change',function(e){var t=e.target;
   Promise.all(F.map(function(f){return new Promise(function(res){var im=new Image(),u=URL.createObjectURL(f);im.onload=function(){var s=Math.min(1,1800/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(function(bl){upload('media',bl,'meetup.jpg').then(function(p){return BE.sb.from('meetup_photos').insert({meetup_id:id,path:p,day:day}).select('*');}).then(function(r){res(r&&r.data&&r.data[0]);}).catch(function(){res(null);});},'image/jpeg',.85);};im.onerror=function(){res(null);};im.src=u;});}))
     .then(function(R){R=R.filter(Boolean);state.mph[id]=R.concat(state.mph[id]||[]);state.phView130[id]=state.phView130[id]||0;toast(R.length?day+'일차에 '+R.length+'장 올렸어요':'올리지 못했어요');phPaint130();mtExtra();t.value='';});},true);
 (function(){var st=document.createElement('style');st.textContent='.ph130u{display:flex;align-items:center;gap:6px;margin-left:auto}.ph130u select{min-height:36px}.ph130t{margin:4px 0 10px;flex-wrap:wrap}.ph130s{margin-bottom:12px}.ph130h{display:flex;align-items:baseline;gap:8px;margin:0 0 6px}#mtPh .ph130g{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}.ph130f{margin:0;display:flex;flex-direction:column;gap:4px;min-width:0}.ph130f a{display:block}.ph130f img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;display:block}.ph130f figcaption{display:flex;align-items:center;gap:4px;font-size:12px;min-width:0}.ph130f figcaption span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}.ph130f figcaption select{font-size:11px;min-height:24px;padding:0 2px;max-width:62px}.ph130f figcaption button{border:0;background:none;cursor:pointer;font-size:15px;opacity:.55;padding:0 2px;color:inherit}';document.head.appendChild(st);})();
+
+/* ---------- 4) 카풀 · 방: 끌어서 옮기기 (마우스 · 터치 공통) ---------- */
+(function(){var D=null;
+  function canDrag(){var id=mtId(),M=id&&state.mem&&state.mem[id]||[],me=BE.user&&BE.user.id,m=id&&mtGet(id);if(!me||!m)return false;if(m.owner===me||(m.cohosts||[]).indexOf(me)>=0)return true;return M.some(function(x){return x.user_id===me&&x.rsvp!=='wait';});}
+  function zoneAt(x,y,kind){var el=document.elementFromPoint(x,y);if(!el)return null;var z=el.closest(kind==='ride'?'[data-dcar130]':'[data-droom130]');return z&&z.closest('#mtCar')?z:null;}
+  function clear(){[].forEach.call(document.querySelectorAll('#mtCar .dz130'),function(z){z.classList.remove('dz130');});}
+  function stop(){if(!D)return;clear();document.body.classList.remove('dragging130');if(D.ghost)D.ghost.remove();D.c.classList.remove('c130drag');D=null;}
+  document.addEventListener('pointerdown',function(e){var c=e.target.closest('#mtCar .c130p[data-uid]');if(!c||e.target.closest('button')||e.button>0||!canDrag())return;
+    D={c:c,uid:c.dataset.uid,kind:c.dataset.dk,x0:e.clientX,y0:e.clientY,on:false,ghost:null,from:c.closest(c.dataset.dk==='ride'?'[data-dcar130]':'[data-droom130]'),pid:e.pointerId};});
+  document.addEventListener('pointermove',function(e){if(!D||e.pointerId!==D.pid)return;var dx=e.clientX-D.x0,dy=e.clientY-D.y0;
+    if(!D.on){if(Math.abs(dx)+Math.abs(dy)<7)return;D.on=true;var r=D.c.getBoundingClientRect(),g=D.c.cloneNode(true);g.className='c130p c130ghost';g.style.width=r.width+'px';g.style.left=r.left+'px';g.style.top=r.top+'px';document.body.appendChild(g);D.ghost=g;D.ox=e.clientX-r.left;D.oy=e.clientY-r.top;D.c.classList.add('c130drag');document.body.classList.add('dragging130');}
+    e.preventDefault();D.ghost.style.left=(e.clientX-D.ox)+'px';D.ghost.style.top=(e.clientY-D.oy)+'px';clear();var z=zoneAt(e.clientX,e.clientY,D.kind);if(z&&z!==D.from)z.classList.add('dz130');
+    if(e.clientY<70)window.scrollBy(0,-12);else if(e.clientY>innerHeight-90)window.scrollBy(0,12);},{passive:false});
+  document.addEventListener('pointerup',function(e){if(!D||e.pointerId!==D.pid)return;var d=D;var on=d.on,z=on?zoneAt(e.clientX,e.clientY,d.kind):null;stop();if(!on)return;
+    var sup=function(ev){ev.stopPropagation();ev.preventDefault();};document.addEventListener('click',sup,true);setTimeout(function(){document.removeEventListener('click',sup,true);},250);
+    if(!z||z===d.from)return;if(d.kind==='ride')mpRpc130(d.uid,'ride',z.dataset.dcar130||null);else mpRpc130(d.uid,'room',z.dataset.droom130||null);});
+  document.addEventListener('pointercancel',stop);
+  var st=document.createElement('style');st.textContent='#mtCar .c130p[data-uid]{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}.c130ghost{position:fixed;z-index:9999;pointer-events:none;box-shadow:0 10px 26px rgba(0,0,0,.25);transform:scale(1.06) rotate(-2deg);background:#fff!important;cursor:grabbing}.c130drag{opacity:.35}#mtCar .dz130{outline:2px dashed #1a86c7;outline-offset:2px;background:rgba(26,134,199,.08)}.c130new{padding:12px;border:2px dashed var(--line,#cfdbe4);border-radius:12px;text-align:center;font-size:14px;opacity:.75}body.dragging130{cursor:grabbing}.c130wait{min-height:40px;padding:6px;border-radius:10px}';document.head.appendChild(st);})();
