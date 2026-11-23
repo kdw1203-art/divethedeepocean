@@ -96,3 +96,28 @@ if(typeof promoHtml128==='function'&&typeof PROMO128==='object'){
   if(typeof adPaintAll==='function'){var _apa137=adPaintAll;adPaintAll=function(){_apa137.apply(this,arguments);if(cur()==='home'&&adHomeList137().length&&document.getElementById('prHome')&&!document.querySelector('#prHome [data-adclick]'))rerender();};}
 }
 (function(){var st=document.createElement('style');st.textContent='a.prs{text-decoration:none;color:#fff}';document.head.appendChild(st);})();
+
+/* 5) 내 정보 순서: 나 → 자격 · 사람 → 강사 도구 → 내 활동 → 안전 · 화면 설정 → 안내 */
+var PFORD137=[
+ function(v){return v.querySelector(':scope > #miAsk');},
+ function(v){return v.querySelector(':scope > .kvp');},
+ function(v){return [].filter.call(v.querySelectorAll(':scope > .cols'),function(c){return /바로가기|Shortcuts/.test(c.textContent);})[0];},
+ function(v){return pfH137(v,/^(운영자 콘솔|Admin console)/);},
+ function(v){return v.querySelector(':scope > #cc2');},
+ function(v){return v.querySelector(':scope > #lkPanel');},
+ function(v){return v.querySelector(':scope > #insPanel');},
+ function(v){return v.querySelector(':scope > #myDivers');},
+ function(v){return v.querySelector(':scope > #myCert');},
+ function(v){return pfH137(v,/^(예약|Bookings)/);},
+ function(v){return pfH137(v,/^(저장한 포인트|Saved spots)/);},
+ function(v){return pfH137(v,/^(내가 등록한 것|My listings)/);},
+ function(v){return v.querySelector(':scope > #safePanel');},
+ function(v){return v.querySelector(':scope > #thmBox');},
+ function(v){return v.querySelector(':scope > #fzBox');},
+ function(v){return v.querySelector(':scope > #tidyTop');}];
+function pfH137(v,re){return [].filter.call(v.children,function(c){var h=c.querySelector&&c.querySelector(':scope > h2, :scope > .fhd h2, :scope > div > h2, :scope > div:first-child > b:first-child');return h&&re.test(h.textContent.trim());})[0];}
+function pfOrder137(){if(cur()!=='profile')return;var v=document.querySelector('#main .view');if(!v)return;var at=v.querySelector(':scope > .vh');if(!at)return;
+  PFORD137.forEach(function(f){var el;try{el=f(v);}catch(e){el=null;}if(!el||el===at)return;if(at.nextElementSibling!==el)at.after(el);at=el;});}
+var _after137p=after;after=function(){_after137p();if(cur()==='profile'){pfOrder137();[300,900,1800,3500].forEach(function(ms){setTimeout(pfOrder137,ms);});}};
+/* 예전 순서 정리(127)가 뒤늦게 다른 순서로 되돌리지 않게 같은 규칙을 쓰게 함 */
+if(typeof order127==='function')order127=pfOrder137;
