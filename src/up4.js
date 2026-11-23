@@ -21,7 +21,7 @@ function fixPhotos(root){root=root||document;var ids=[].slice.call(root.querySel
   fetch('https://api.inaturalist.org/v1/taxa/'+ids.join(',')).then(function(r){return r.json();}).then(function(d){(d.results||[]).forEach(function(t){var p=(t.taxon_photos||[]).map(function(x){return x.photo;}).filter(okPh)[0];if(!p)return;var src=p.square_url||String(p.url||'').replace('/square.','/square.');
     document.querySelectorAll('[data-spsheet="'+t.id+'"] .noimg').forEach(function(e){var im=document.createElement('img');im.src=src;im.alt='';im.loading='lazy';im.title=p.attribution||'';e.replaceWith(im);});});}).catch(function(){});}
 function sheet(html){closeSheet();var bg=document.createElement('div');bg.className='sheetbg';bg.id='sheetbg';bg.innerHTML='<div class="sheet" role="dialog" aria-modal="true" tabindex="-1">'+html+'</div>';
-  bg.addEventListener('click',function(e){if(e.target===bg||e.target.closest('[data-xsheet]'))closeSheet();});document.body.appendChild(bg);document.body.classList.add('locked');sheet.prev=document.activeElement;bg.firstChild.focus();return bg.firstChild;}
+  bg.addEventListener('click',function(e){if(e.target===bg||e.target.closest('[data-xsheet]'))closeSheet();});document.body.appendChild(bg);document.body.classList.add('locked');sheet.prev=document.activeElement;try{bg.firstChild.focus({preventScroll:true});}catch(e){bg.firstChild.focus();}return bg.firstChild;}
 function closeSheet(){var b=document.getElementById('sheetbg');if(b){b.remove();document.body.classList.remove('locked');if(sheet.prev&&sheet.prev.focus)try{sheet.prev.focus();}catch(e){}}}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet();});
 function myNick(){return (state.me&&state.me.nick)||'다이버';}
