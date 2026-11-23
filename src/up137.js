@@ -105,6 +105,7 @@ var PFORD137=[
  function(v){return pfH137(v,/^(운영자 콘솔|Admin console)/);},
  function(v){return v.querySelector(':scope > #cc2');},
  function(v){return v.querySelector(':scope > #lkPanel');},
+ function(v){var a=document.getElementById('actBox');if(a&&v.contains(a)){var r=a.querySelector('#rankBox'),d=a.querySelector(':scope > .dci');if(r&&d&&d.nextElementSibling!==r)d.after(r);}return a&&v.contains(a)?a:null;},
  function(v){return v.querySelector(':scope > #insPanel');},
  function(v){return v.querySelector(':scope > #myDivers');},
  function(v){return v.querySelector(':scope > #myCert');},
@@ -143,7 +144,7 @@ if(typeof order127==='function')order127=pfOrder137;
  '#actBox>.list{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px}',
  '#actBox>.list>.item{min-height:0!important;padding:8px 10px!important;border:1px solid var(--line)!important;border-radius:12px;gap:6px;align-items:center}',
  '#actBox>.list>.item .tx b{font-size:13px}#actBox>.list>.item .tx span{font-size:11.5px}#actBox>.list>.item .rt{font-size:12.5px;white-space:nowrap}',
- '#rankBox{margin-top:12px}#rankBox .item,#rankBox>div>div{min-height:0}'
+ '#actBox #rankBox{margin:12px 0 4px;padding-bottom:12px;border-bottom:1px solid var(--line)}#rankBox{margin-top:12px}#rankBox .item,#rankBox>div>div{min-height:0}'
 ].join('');document.head.appendChild(st);})();
 function pfCompact137(){if(cur()!=='profile')return;var v=document.querySelector('#main .view');if(!v)return;
   [].forEach.call(v.querySelectorAll(':scope > .cols'),function(c){if(c.querySelector('.stats'))c.classList.add('pfsum137');});
