@@ -171,3 +171,60 @@ function pfCard137(){if(cur()!=='profile')return;var v=document.querySelector('#
   var box=acc?acc.parentNode:k.querySelector('.fright');if(!box)return;c.classList.add('chip','pfcard137');if(acc)box.insertBefore(c,acc);else box.insertBefore(c,box.firstChild);}
 (function(){var st=document.createElement('style');st.textContent='.pfcard137{margin:0!important;white-space:nowrap}';document.head.appendChild(st);})();
 var _po137c=pfOrder137;pfOrder137=function(){_po137c();try{pfCard137();}catch(e){}};if(typeof order127==='function')order127=pfOrder137;
+
+/* 9) 로그북 정리: 순서(기록 분석 → 내 다이빙 분석 → 최근 다이브 → 다이브 목록) · 최근 다이브 2개 · 같은 날 여러 번은 최근 다이브 안 · 요약 카드에 올해 · 배지 축소 · 다녀온 바다 숨김 */
+(function(){var st=document.createElement('style');st.textContent=[
+ '.lgs137{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;padding:14px!important}',
+ '.lgs137>.stat{padding:8px 6px!important;min-height:0!important;text-align:center;display:flex;flex-direction:column-reverse;align-items:center;gap:1px}',
+ '.lgs137>.stat b{font-size:17px!important;line-height:1.2}.lgs137>.stat small{font-size:11px!important;color:var(--sub);white-space:nowrap}',
+ '.lgs137>.stat.yr137{display:none!important}',
+ '.lgx137{grid-column:1/-1;border-top:1px solid var(--line);margin-top:6px;padding-top:10px;display:flex;flex-direction:column;gap:8px}',
+ '.lgx137 .lgh{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--sub)}.lgx137 .lgh b{font-size:13.5px;color:var(--ink)}',
+ '.lgx137 .stats{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:6px!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;background:none!important}',
+ '.lgx137 .stats .stat{padding:7px 4px!important;min-height:0!important;text-align:center;display:flex;flex-direction:column-reverse;align-items:center;gap:1px}',
+ '.lgx137 .stats .stat b{font-size:15px!important;line-height:1.2;white-space:nowrap}.lgx137 .stats .stat small{font-size:10.5px!important;color:var(--sub);white-space:nowrap}',
+ '.lgx137 .trm2{margin:0!important;font-size:12.5px;color:var(--sub)}.lgx137 .trm2 b{color:var(--ink);font-weight:700;margin-right:4px}',
+ '.lgx137 .bdg{display:flex!important;flex-wrap:nowrap!important;gap:6px!important;overflow-x:auto;scrollbar-width:none;margin:0!important}.lgx137 .bdg::-webkit-scrollbar{display:none}',
+ '.lgx137 .bdg i{flex:none;width:38px!important;height:38px!important;min-width:0!important;font-size:9px!important;border-width:1.5px!important;line-height:1.05}.lgx137 .bdg i b{font-size:12px!important}',
+ '.lgx137 .bdgn{margin:0!important;font-size:12px!important;color:var(--sub)}',
+ '.lgr137 .list>.item:nth-child(n+3){display:none!important}'
+].join('');document.head.appendChild(st);})();
+function logTidy137(){if(cur()!=='log')return;var v=document.querySelector('#main .view');if(!v)return;
+  var S=v.querySelector(':scope > .stats');
+  /* 순서 */
+  var rec=pfH137(v,/^(최근 다이브|Recent dive)/);
+  var lb=document.getElementById('lbBox');if(lb&&lb.parentNode===v){var L=[document.getElementById('lxBox'),document.getElementById('anBox'),rec].filter(function(x){return x&&x.parentNode===v;});var ok=L.every(function(x,i){return x.nextElementSibling===(i<L.length-1?L[i+1]:lb);});if(!ok)L.forEach(function(x){lb.before(x);});}
+  /* 최근 다이브: 2개만 · 같은 날 여러 번은 안으로 */
+  if(rec){rec.classList.add('lgr137');var sd=[].filter.call(v.querySelectorAll('.panel'),function(p){var h=p.querySelector(':scope > h2');return h&&/^(같은 날 여러 번|Multiple dives)/.test(h.textContent.trim())&&!rec.contains(p);})[0];if(sd){sd.classList.add('sub137');rec.appendChild(sd);}}
+  /* 다녀온 바다: 로그북에서는 숨김 (로그를 쓰면 지도에 자동으로 들어가요) */
+  [].forEach.call(v.querySelectorAll('.panel'),function(p){var h=p.querySelector(':scope > h2');if(h&&/^(다녀온 바다|Seas visited)/.test(h.textContent.trim()))p.classList.add('pfnolo137');});
+  var sm=v.querySelector('details.lbx > summary');if(sm&&/다녀온 바다/.test(sm.textContent))sm.textContent='더 보기 · 종이 로그북';
+  /* 요약 카드 안에 올해 · 배지 */
+  if(!S)return;S.classList.add('lgs137');[].forEach.call(S.querySelectorAll(':scope > .stat'),function(s){var k=s.querySelector('small');if(k&&/^\d{4}년$/.test(k.textContent.trim()))s.classList.add('yr137');});
+  var bb=document.getElementById('bdgBox');if(!bb)return;
+  var yp=[].filter.call(bb.querySelectorAll('.panel'),function(p){var h=p.querySelector(':scope > h2');return h&&/돌아보기|in review/.test(h.textContent);})[0],bp=[].filter.call(bb.querySelectorAll('.panel'),function(p){return p.querySelector(':scope > .bdg');})[0];
+  var yHas=yp&&yp.querySelector(':scope > .stats'),bHas=bp&&bp.querySelector(':scope > .bdg');if(!yHas&&!bHas)return;var w=S.querySelector(':scope > .lgx137');if(!w){w=document.createElement('div');w.className='lgx137';S.appendChild(w);}w.innerHTML='';
+  if(yp){var ys=yp.querySelector(':scope > .stats'),h2=yp.querySelector(':scope > h2'),hd=document.createElement('div');hd.className='lgh';hd.innerHTML='<b></b>';hd.firstChild.textContent=h2?h2.firstChild.textContent.trim():'';w.appendChild(hd);if(ys)w.appendChild(ys);[].forEach.call(yp.querySelectorAll(':scope > p.trm2'),function(p){w.appendChild(p);});yp.classList.add('pfnolo137');}
+  if(bp){var bd=bp.querySelector(':scope > .bdg'),nt=bp.querySelector(':scope > p'),hd2=document.createElement('div');hd2.className='lgh';hd2.innerHTML='<b>로그 배지</b>';if(nt){nt.classList.add('bdgn');var sp=document.createElement('span');sp.textContent=nt.textContent;hd2.appendChild(sp);}w.appendChild(hd2);if(bd)w.appendChild(bd);bp.classList.add('pfnolo137');}}
+var _after137l=after;after=function(){_after137l();if(cur()==='log'){logTidy137();[300,900,1800,3500].forEach(function(ms){setTimeout(logTidy137,ms);});var v=document.querySelector('#main .view');if(v&&!v._lg137&&window.MutationObserver){var t=0;v._lg137=new MutationObserver(function(){clearTimeout(t);t=setTimeout(function(){if(cur()==='log')logTidy137();},120);});v._lg137.observe(v,{childList:true});}}};
+document.addEventListener('toggle',function(e){if(cur()==='log'&&e.target.matches&&e.target.matches('details'))setTimeout(logTidy137,50);},true);
+
+/* 10) 지도: 검색칸 줄에 '조건' 버튼 · 목록 위 거르기 칸 한 줄 */
+(function(){var st=document.createElement('style');st.textContent=[
+ '#mapFind.f137{grid-template-columns:minmax(0,1fr) auto auto!important;align-items:end}#mapFind.f137>span:empty{display:none}',
+ '#mapFind .mfc137{height:44px;padding:0 14px;white-space:nowrap}#mapFind .mfc137[aria-expanded=true]{background:var(--soft);border-color:var(--sea)}',
+ 'details.mfmore.f137>summary{display:none!important}details.mfmore.f137{margin:0}',
+ '.mxbar{flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;gap:6px!important}.mxbar::-webkit-scrollbar{display:none}',
+ '.mxbar>*{flex:none}.mxbar .mxsel>span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}',
+ '.mxbar .mxsel select{height:34px!important;font-size:12.5px!important;padding:0 24px 0 10px!important;min-height:0!important;width:auto!important;min-width:0!important}',
+ '.mxbar .mxck{min-height:34px!important;height:34px;padding:0 10px!important;font-size:13px;gap:6px}.mxbar .mxck input{width:18px!important;height:18px!important}',
+ '.mxbar .mxcnt{display:none!important}'
+].join('');document.head.appendChild(st);})();
+function mapTidy137(){if(cur()!=='map')return;var f=document.getElementById('mapFind'),d=document.querySelector('#main details.mfmore');
+  if(f&&d&&!f.querySelector('.mfc137')){var sb=f.querySelector('button[type=submit]');var b=document.createElement('button');b.type='button';b.className='btn btn-line mfc137';b.textContent=(typeof LANG!=='undefined'&&LANG==='en')?'Filters':'조건';b.setAttribute('aria-expanded',d.open?'true':'false');b.onclick=function(){d.open=!d.open;b.setAttribute('aria-expanded',d.open?'true':'false');};if(sb)f.insertBefore(b,sb);else f.appendChild(b);f.classList.add('f137');d.classList.add('f137');f.style.gridTemplateColumns='';}
+  var mo=document.getElementById('mxMo');if(mo)[].forEach.call(mo.options,function(o){o.textContent=o.textContent.replace(' (이번 달)','').replace(/^아무 때나$/,'모든 달');});var s=document.getElementById('mxSort');if(s)[].forEach.call(s.options,function(o){if(/나라 · 도시 · 이름순/.test(o.textContent))o.textContent='이름순';if(/^가까운 순$/.test(o.textContent))o.textContent='가까운순';});
+  var ck=document.querySelector('.mxbar .mxck');if(ck){[].forEach.call(ck.childNodes,function(n){if(n.nodeType===3&&/지도에 보이는 곳만/.test(n.textContent))n.textContent=' 보이는 곳';});}}
+var _after137m=after;after=function(){_after137m();if(cur()==='map'){mapTidy137();[400,1200,2500].forEach(function(ms){setTimeout(mapTidy137,ms);});}};
+
+/* 11) 내 정보 바로가기: 글자를 칸 가운데로 */
+(function(){var st=document.createElement('style');st.textContent='.pfsum137>.panel:last-child .list>a.item{justify-content:center!important;align-items:center!important;padding:0 6px!important;height:48px;min-height:48px!important}.pfsum137>.panel:last-child .list>a.item .tx{flex:none!important;margin:0!important;padding:0!important;display:flex;justify-content:center;align-items:center;width:100%}.pfsum137>.panel:last-child .list>a.item .tx b{margin:0!important;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}';document.head.appendChild(st);})();
