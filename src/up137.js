@@ -163,3 +163,11 @@ function pfMerge137(){if(cur()!=='profile')return;var v=document.querySelector('
   var tt=document.getElementById('tidyTop');tt=tt&&(tt.classList.contains('panel')?tt:(tt.querySelector(':scope > .panel')||tt));put(document.getElementById('thmBox'),tt);put(document.getElementById('fzBox'),tt);
   if(tt&&document.getElementById('thmBox')&&tt.contains(document.getElementById('thmBox')))[].forEach.call(tt.querySelectorAll('.chip,button'),function(b){if(/^(화면 밝기|Theme)$/.test(b.textContent.trim())&&!b.closest('#thmBox'))b.classList.add('pfnolo137');});}
 var _po137b=pfOrder137;pfOrder137=function(){_po137b();try{pfMerge137();}catch(e){}};if(typeof order127==='function')order127=pfOrder137;
+
+/* 8) '내 바다 카드' 버튼은 내 프로필 칸의 '계정 관리' 왼쪽으로 */
+function pfCard137(){if(cur()!=='profile')return;var v=document.querySelector('#main .view');if(!v)return;var k=v.querySelector(':scope > .kvp');if(!k)return;
+  var c=[].filter.call(v.querySelectorAll('a,button'),function(b){return /^(내 바다 카드|My sea cards?)$/.test(b.textContent.trim())&&!k.contains(b);})[0];if(!c)return;
+  var acc=[].filter.call(k.querySelectorAll('a,button'),function(b){return /^(계정 관리|Account)$/.test(b.textContent.trim());})[0];
+  var box=acc?acc.parentNode:k.querySelector('.fright');if(!box)return;c.classList.add('chip','pfcard137');if(acc)box.insertBefore(c,acc);else box.insertBefore(c,box.firstChild);}
+(function(){var st=document.createElement('style');st.textContent='.pfcard137{margin:0!important;white-space:nowrap}';document.head.appendChild(st);})();
+var _po137c=pfOrder137;pfOrder137=function(){_po137c();try{pfCard137();}catch(e){}};if(typeof order127==='function')order127=pfOrder137;
