@@ -58,3 +58,10 @@ if(LANG==='en'){
     if(t.indexOf(' · ')>0){var P=t.split(' · '),Q=P.map(function(x){return enTok(x);});if(Q.some(function(x,i){return x!==P[i];}))return Q.join(' · ');}
     return r;};
 }
+
+/* 4) 운영자 콘솔 '화면 오류 기록': 콘솔을 다시 그릴 때마다 새로 묻던 것 → 1분 안에는 받은 값 재사용 */
+(function(){if(!BE.on||!BE.sb)return;var _from=BE.sb.from.bind(BE.sb),C135=null;
+  BE.sb.from=function(t){var q=_from(t);if(t!=='client_errors')return q;var _sel=q.select;
+    q.select=function(cols){var b=_sel.apply(q,arguments);if(cols!=='at,route,msg,src,ua,ver'||typeof b.then!=='function')return b;var _then=b.then;
+      b.then=function(ok,no){if(C135&&Date.now()-C135.t<60000)return Promise.resolve(C135.r).then(ok,no);return _then.call(b,function(r){if(r&&!r.error)C135={t:Date.now(),r:r};return r;}).then(ok,no);};return b;};
+    return q;};})();
