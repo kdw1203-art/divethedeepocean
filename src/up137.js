@@ -121,3 +121,34 @@ function pfOrder137(){if(cur()!=='profile')return;var v=document.querySelector('
 var _after137p=after;after=function(){_after137p();if(cur()==='profile'){pfOrder137();[300,900,1800,3500].forEach(function(ms){setTimeout(pfOrder137,ms);});}};
 /* 예전 순서 정리(127)가 뒤늦게 다른 순서로 되돌리지 않게 같은 규칙을 쓰게 함 */
 if(typeof order127==='function')order127=pfOrder137;
+
+/* 6) 내 정보 요약 카드 · 바로가기: 여백 줄이고 한눈에 */
+(function(){var st=document.createElement('style');st.textContent=[
+ '.pfsum137{gap:10px!important}',
+ '.pfsum137>.panel:first-child{padding:14px!important}',
+ '.pfsum137>.panel:first-child>.item{padding:0!important;gap:12px;min-height:0}',
+ '.pfsum137>.panel:first-child .av{width:44px!important;height:44px!important;flex:none}',
+ '.pfsum137>.panel:first-child .tx b{font-size:16px!important}.pfsum137>.panel:first-child .tx span{font-size:12.5px}',
+ '.pfsum137 .stats{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px!important;margin-top:12px!important}',
+ '.pfsum137 .stat{padding:8px 4px!important;min-height:0!important;text-align:center;border-radius:12px;display:flex;flex-direction:column-reverse;gap:1px;align-items:center}',
+ '.pfsum137 .stat b{font-size:17px!important;line-height:1.2}.pfsum137 .stat small{font-size:11px!important;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}',
+ '.pfsum137>.panel:last-child{padding:14px!important}',
+ '.pfsum137>.panel:last-child .list{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}',
+ '.pfsum137>.panel:last-child .list>a.item{flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:52px!important;padding:8px 4px!important;border:1px solid var(--line)!important;border-radius:12px;background:var(--soft)}',
+ '.pfsum137>.panel:last-child .list>a.item .tx{align-items:center}.pfsum137>.panel:last-child .list>a.item .tx b{font-size:13.5px}.pfsum137>.panel:last-child .list>a.item .tx span{display:none}',
+ '.pfsum137>.panel:last-child .list>a.item:after{display:none!important}',
+ '.pfsum137>.panel:last-child h2.fhd{margin-bottom:8px}',
+ '.pfnolo137{display:none!important}',
+ '#actBox .dci{padding:10px 12px!important;gap:12px!important}#actBox .dci .sc{font-size:30px!important;line-height:1}',
+ '#actBox>.list{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px}',
+ '#actBox>.list>.item{min-height:0!important;padding:8px 10px!important;border:1px solid var(--line)!important;border-radius:12px;gap:6px;align-items:center}',
+ '#actBox>.list>.item .tx b{font-size:13px}#actBox>.list>.item .tx span{font-size:11.5px}#actBox>.list>.item .rt{font-size:12.5px;white-space:nowrap}',
+ '#rankBox{margin-top:12px}#rankBox .item,#rankBox>div>div{min-height:0}'
+].join('');document.head.appendChild(st);})();
+function pfCompact137(){if(cur()!=='profile')return;var v=document.querySelector('#main .view');if(!v)return;
+  [].forEach.call(v.querySelectorAll(':scope > .cols'),function(c){if(c.querySelector('.stats'))c.classList.add('pfsum137');});
+  /* 위 머리말에 로그아웃이 있으니 프로필 칸 안의 같은 버튼은 숨김 */
+  /* 로그아웃은 위 머리말 하나 + 맨 아래 하나만 */
+  var L=[].filter.call(v.querySelectorAll('button,a'),function(b){return /^(로그아웃|Log out)$/.test(b.textContent.trim());}),keepBot=document.getElementById('loBot')||L.filter(function(b){return !b.closest('.vh')&&!b.closest('.kvp');}).pop();
+  L.forEach(function(b){b.classList.toggle('pfnolo137',!(b.closest('.vh')||b===keepBot));});}
+var _po137=pfOrder137;pfOrder137=function(){_po137();try{pfCompact137();}catch(e){}};if(typeof order127==='function')order127=pfOrder137;
