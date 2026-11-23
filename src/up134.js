@@ -29,3 +29,6 @@ if(typeof mtHomeRm==='function'){var _mtHomeRm134=mtHomeRm;mtHomeRm=function(){v
   if(f.d===undefined&&c&&c.u===u&&Date.now()-c.t<60000){f.d=c.d;f.h=c.h;}
   var r=_mtHomeRm134.apply(this,arguments);
   if(f.d&&f.h&&(!f._c134||f._c134.d!==f.d||f._c134.h!==f.h))f._c134={u:u,t:Date.now(),d:f.d,h:f.h};return r;};}
+
+/* 6) 자동 점검 로봇(헤드리스 브라우저)이 연 화면은 광고 노출 · 클릭으로 세지 않기 */
+(function(){if(!BE.on||!BE.sb||!navigator.webdriver)return;var _r=BE.sb.rpc;BE.sb.rpc=function(fn){if(fn==='ad_hit')return Promise.resolve({data:null,error:null});return _r.apply(this,arguments);};})();
