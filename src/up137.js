@@ -153,3 +153,13 @@ function pfCompact137(){if(cur()!=='profile')return;var v=document.querySelector
   var L=[].filter.call(v.querySelectorAll('button,a'),function(b){return /^(로그아웃|Log out)$/.test(b.textContent.trim());}),keepBot=document.getElementById('loBot')||L.filter(function(b){return !b.closest('.vh')&&!b.closest('.kvp');}).pop();
   L.forEach(function(b){b.classList.toggle('pfnolo137',!(b.closest('.vh')||b===keepBot));});}
 var _po137=pfOrder137;pfOrder137=function(){_po137();try{pfCompact137();}catch(e){}};if(typeof order127==='function')order127=pfOrder137;
+
+/* 7) 내 정보 묶기: 저장한 포인트 → 내가 등록한 것 / 강사 도장 → 강사 칸 / 화면 밝기 · 글자 크기 → 설정 · 안내 */
+(function(){var st=document.createElement('style');st.textContent='.sub137{border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;padding:14px 0 0!important;margin:14px 0 0!important}.sub137>h2,.sub137>.fhd{font-size:15px!important;margin-bottom:8px!important}.sub137 .foldbtn{display:none!important}.panel.fold .sub137{display:none!important}';document.head.appendChild(st);})();
+function pfMerge137(){if(cur()!=='profile')return;var v=document.querySelector('#main .view');if(!v)return;
+  var put=function(el,box){if(!el||!box||el===box||box.contains(el))return;el.classList.add('sub137');el.classList.remove('fold');box.appendChild(el);};
+  put(pfH137(v,/^(저장한 포인트|Saved spots)/),pfH137(v,/^(내가 등록한 것|My listings)/));
+  put(document.getElementById('stLink'),document.getElementById('insPanel'));
+  var tt=document.getElementById('tidyTop');tt=tt&&(tt.classList.contains('panel')?tt:(tt.querySelector(':scope > .panel')||tt));put(document.getElementById('thmBox'),tt);put(document.getElementById('fzBox'),tt);
+  if(tt&&document.getElementById('thmBox')&&tt.contains(document.getElementById('thmBox')))[].forEach.call(tt.querySelectorAll('.chip,button'),function(b){if(/^(화면 밝기|Theme)$/.test(b.textContent.trim())&&!b.closest('#thmBox'))b.classList.add('pfnolo137');});}
+var _po137b=pfOrder137;pfOrder137=function(){_po137b();try{pfMerge137();}catch(e){}};if(typeof order127==='function')order127=pfOrder137;
