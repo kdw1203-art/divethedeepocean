@@ -32,11 +32,14 @@ function m4Load(force){if(!BE.on)return;var uid=BE.user?BE.user.id:'';if(!force&
   }).then(function(add){var seen={};state.m4extra=add.filter(function(x){if(seen[x.id])return false;seen[x.id]=1;return true;});m4Merge();return m4Count();})
   .then(function(){var c=cur();if(c==='meet'||/^meet-d\d+$/.test(c))rerender();}).catch(function(){});}
 function m4Count(){var ids=(state.pubMeets||[]).map(function(x){return x.id;});if(!ids.length)return Promise.resolve();
-  return BE.sb.from('meetup_members').select('meetup_id').in('meetup_id',ids.slice(0,200)).then(function(r){var c={};(r.data||[]).forEach(function(x){c[x.meetup_id]=(c[x.meetup_id]||0)+1;});state.m4cnt=c;});}
+  var own={};(state.pubMeets||[]).forEach(function(x){own[x.id]=x.owner;});
+  return BE.sb.from('meetup_members').select('meetup_id,user_id,rsvp').in('meetup_id',ids.slice(0,200)).then(function(r){if(r.error)return;var c={};ids.forEach(function(i){c[i]=0;});(r.data||[]).forEach(function(x){if(x.rsvp==='wait'||x.user_id===own[x.meetup_id])return;c[x.meetup_id]=(c[x.meetup_id]||0)+1;});state.m4cnt=c;});}
+/* 모임 인원: 참가자 + 모임장 1명 (상세 화면과 같은 셈), 정원은 최대 15명 */
+function m4Head(m){var n=state.m4cnt[m.id];return {n:n!=null?n+1:null,cap:Math.min(+m.max_people||15,15)};}
 var _pull124=BE.pull;BE.pull=function(){return _pull124.apply(this,arguments).then(function(v){m4Merge();return v;});};
 
 /* ---------- 소모임 목록 ---------- */
-function m4Item(m){var t=m4Today(),past=m.meet_date&&m.meet_date<t,uid=BE.user&&BE.user.id,own=uid&&m.owner===uid,joined=state.m4mine[m.id],s=spot(m.spot)||{},n=state.m4cnt[m.id],mx=+m.max_people||0,full=n!=null&&mx&&n>=mx;
+function m4Item(m){var t=m4Today(),past=m.meet_date&&m.meet_date<t,uid=BE.user&&BE.user.id,own=uid&&m.owner===uid,joined=state.m4mine[m.id],s=spot(m.spot)||{},hd=m4Head(m),n=hd.n,mx=+m.max_people?hd.cap:0,full=n!=null&&mx&&n>=mx;
   var d=m.meet_date?new Date(m.meet_date+'T00:00:00'):null,dd=m4Dd(m.meet_date),T=[[m.kind||'모임','']];
   if(past)T.push(['지난 모임','gray']);else if(m.closed||full)T.push([m.closed?'마감':'정원 마감','gray']);else if(dd)T.push([dd,dd==='오늘'?'warn':'ok']);
   if(own)T.push(['내가 연 모임','']);else if(joined)T.push(['참가 중','ok']);
@@ -97,7 +100,7 @@ document.addEventListener('submit',function(e){if(e.target.id!=='m2form')return;
 
 /* ---------- 초대: 모임 정보 카드 · 고쳐 쓰는 문구 · QR ---------- */
 if(typeof invSheet==='function'){var _inv124=invSheet;invSheet=function(kind,id,title,link,code){_inv124.apply(this,arguments);var box=document.querySelector('#sheetbg .invbox');if(!box)return;
-  var info='',msg='';if(kind==='meetup'){var m=m4Get(+id)||{},s=spot(m.spot)||{},n=state.m4cnt[m.id]!=null?state.m4cnt[m.id]:((state.mem&&state.mem[m.id])||[]).length,mx=+m.max_people||0,left=mx?Math.max(0,mx-n-1):null;
+  var info='',msg='';if(kind==='meetup'){var m=m4Get(+id)||{},s=spot(m.spot)||{},n=state.m4cnt[m.id]!=null?state.m4cnt[m.id]:((state.mem&&state.mem[m.id])||[]).filter(function(x){return x.rsvp!=='wait'&&x.user_id!==m.owner;}).length,mx=+m.max_people?Math.min(+m.max_people,15):0,left=mx?Math.max(0,mx-n-1):null;
     info='<b>'+esc(m.title||title)+'</b>'+esc([m.meet_date,m.meet_time?String(m.meet_time).slice(0,5):'',s.name||m.spot||''].filter(Boolean).join(' · '))+(mx?'<br>자리 '+(n+1)+'/'+mx+'명'+(left!=null?' · '+left+'자리 남음':''):'')+(m.min_cert&&!/제한 없음/.test(m.min_cert)?'<br>참가 조건 '+esc(m.min_cert)+(m.min_logs?' · 로그 '+(+m.min_logs)+'회':''):'');
     msg='['+(m.title||title)+']\n'+[m.meet_date,s.name||m.spot||''].filter(Boolean).join(' · ')+'\n같이 들어가요!'+(left?' 자리 '+left+'개 남았어요.':'')+'\n'+link;}
   else{var c=(state.clubs||[]).filter(function(x){return x.id===+id;})[0]||{},cn=state.clubN&&state.clubN[id];info='<b>'+esc(c.name||title)+'</b>'+(cn?'멤버 '+cn+'명 · ':'')+(c.is_public?'공개 클럽':'초대 전용 클럽')+(c.intro?'<br>'+esc(String(c.intro).split('\n')[0].slice(0,80)):'');
@@ -207,7 +210,7 @@ function invTidy(){var id=m4Id();if(!id)return;var m=m4Get(id);if(!m)return;var 
   if(!past&&act&&!document.getElementById('meetInv')){var b=document.createElement('button');b.type='button';b.className='btn btn-line';b.id='meetInv';b.dataset.minv=id;b.textContent='초대하기';act.insertBefore(b,act.firstChild);}
   if(past){var mi=document.getElementById('meetInv');if(mi)mi.style.display='none';}
   var f=invFrom(),u=BE.user&&BE.user.id,M=(state.mem&&state.mem[id])||[],joined=u&&(m.owner===u||M.some(function(x){return x.user_id===u;}));
-  if(f&&!past&&!joined&&!document.getElementById('invBan')){var bx=document.getElementById('m4ban');if(!bx)return;var full=state.m4cnt[id]!=null&&m.max_people&&state.m4cnt[id]>=m.max_people;
+  if(f&&!past&&!joined&&!document.getElementById('invBan')){var bx=document.getElementById('m4ban');if(!bx)return;var hd=m4Head(m),full=hd.n!=null&&m.max_people&&hd.n>=hd.cap;
     bx.insertAdjacentHTML('afterbegin','<div class="m4ban done" id="invBan"><b>'+esc(f)+' 님이 이 모임에 초대했어요.'+(m.closed||full?' 지금은 모집이 마감됐어요.':' 같이 가요!')+'</b>'+(m.closed||full?'':'<button class="btn btn-pri" type="button" data-m4join="'+id+'">참가 신청</button>')+'</div>');}
   if(joined){var ib=document.getElementById('invBan');if(ib)ib.remove();}}
 document.addEventListener('click',function(e){var t=e.target.closest('[data-m4join]');if(!t)return;var j=document.querySelector('#main [data-join="'+t.dataset.m4join+'"]');if(j){j.scrollIntoView({block:'center'});j.click();}else if(!BE.user)needLogin('참가하려면 로그인해 주세요');else toast('아래 참가 신청 버튼을 눌러 주세요');});
