@@ -325,3 +325,13 @@ function mi137(){if(!BE.on||!BE.user||!BE.sb||mi137.done)return;mi137.done=1;var
   BE.sb.from('member_info').select('id').eq('id',u).maybeSingle().then(function(x){if(x.error)return;var has=!!x.data;state.miHas=has;if(has){state.miDone=1;var m=document.getElementById('miAsk');if(m)m.remove();}try{localStorage.setItem(k,u+':'+(has?1:0));}catch(e){}},function(){});}
 var _after137mi=after;after=function(){try{mi137();}catch(e){}_after137mi();};
 if(BE.on&&BE.sb){try{BE.sb.auth.onAuthStateChange(function(ev){if(ev==='SIGNED_OUT'||ev==='SIGNED_IN')setTimeout(function(){mi137.done=0;},0);});}catch(e){}}
+
+/* 21) 위 막대 오른쪽 끝에 언어 바꾸기 버튼 하나 (지금 언어 KR/EN 표시, 누르면 반대 언어로) — 찾기·알림은 그만큼 왼쪽으로 */
+(function(){var ta=document.querySelector('.topact');if(!ta||document.getElementById('langTop137'))return;
+  var b=document.createElement('button');b.type='button';b.id='langTop137';b.className='iconbtn lang137';b.setAttribute('data-noen','');
+  b.textContent=LANG==='en'?'EN':'KR';b.setAttribute('aria-label',LANG==='en'?'한국어로 보기':'Switch to English');b.title=b.getAttribute('aria-label');
+  b.addEventListener('click',function(){LS.set('lang',LANG==='en'?'ko':'en');location.reload();});
+  ta.appendChild(b);
+  var st=document.createElement('style');st.textContent='.lang137{font-size:12px;font-weight:800;letter-spacing:.04em;line-height:1;font-family:inherit}@media (max-width:860px){.topbar .topact{gap:5px!important}.topbar .topact .lang137{width:34px!important;min-width:34px!important}}@media (max-width:380px){.topbar .dmtop button{padding:0 9px!important}}';document.head.appendChild(st);
+  /* 버튼은 나중에 붙는 것도 있으니 언어 버튼이 늘 맨 끝에 있게 */
+  if(window.MutationObserver)new MutationObserver(function(){if(ta.lastElementChild!==b)ta.appendChild(b);}).observe(ta,{childList:true});})();
