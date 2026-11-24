@@ -93,7 +93,7 @@ if(typeof promoHtml128==='function'&&typeof PROMO128==='object'){
       adSlot.shown=adSlot.shown||{};if(!adSlot.shown[a.id+'home']){adSlot.shown[a.id+'home']=1;try{BE.sb.rpc('ad_hit',{aid:a.id,is_click:false}).then(function(){});}catch(e){}}});
     return d.innerHTML;};
   /* 광고 목록이 늦게 도착하면 배너를 한 번 다시 그림 */
-  if(typeof adPaintAll==='function'){var _apa137=adPaintAll;adPaintAll=function(){_apa137.apply(this,arguments);if(cur()==='home'&&adHomeList137().length&&document.getElementById('prHome')&&!document.querySelector('#prHome [data-adclick]'))rerender();};}
+  if(typeof adPaintAll==='function'){var _apa137=adPaintAll;adPaintAll=function(){_apa137.apply(this,arguments);var w=document.getElementById('prHome');if(cur()==='home'&&adHomeList137().length&&w&&!w.querySelector('[data-adclick]')){var d=document.createElement('div');d.innerHTML=promoHtml128();var n=d.firstElementChild;if(n){w.replaceWith(n);try{promoHome128();}catch(e){}}}};}
 }
 (function(){var st=document.createElement('style');st.textContent='a.prs{text-decoration:none;color:#fff}';document.head.appendChild(st);})();
 
@@ -117,8 +117,9 @@ var PFORD137=[
  function(v){return v.querySelector(':scope > #fzBox');},
  function(v){return v.querySelector(':scope > #tidyTop');}];
 function pfH137(v,re){return [].filter.call(v.children,function(c){var h=c.querySelector&&c.querySelector(':scope > h2, :scope > .fhd h2, :scope > div > h2, :scope > div:first-child > b:first-child');return h&&re.test(h.textContent.trim());})[0];}
-function pfOrder137(){if(cur()!=='profile')return;var v=document.querySelector('#main .view');if(!v)return;var at=v.querySelector(':scope > .vh');if(!at)return;
-  PFORD137.forEach(function(f){var el;try{el=f(v);}catch(e){el=null;}if(!el||el===at)return;if(at.nextElementSibling!==el)at.after(el);at=el;});}
+function pfOrder137(){if(cur()!=='profile')return;var v=document.querySelector('#main .view');if(!v)return;
+  /* 칸을 옮기지 않고 보이는 순서만 정함 (다른 코드가 칸을 옮겨도 서로 다투지 않음 → 떨림 없음) */
+  PFORD137.forEach(function(f,i){var el;try{el=f(v);}catch(e){el=null;}if(el&&el.parentNode===v&&el.style.order!==String(i+1))el.style.order=i+1;});}
 var _after137p=after;after=function(){_after137p();if(cur()==='profile'){pfOrder137();[300,900,1800,3500].forEach(function(ms){setTimeout(pfOrder137,ms);});}};
 /* 예전 순서 정리(127)가 뒤늦게 다른 순서로 되돌리지 않게 같은 규칙을 쓰게 함 */
 if(typeof order127==='function')order127=pfOrder137;
@@ -193,7 +194,7 @@ function logTidy137(){if(cur()!=='log')return;var v=document.querySelector('#mai
   var S=v.querySelector(':scope > .stats');
   /* 순서 */
   var rec=pfH137(v,/^(최근 다이브|Recent dive)/);
-  var lb=document.getElementById('lbBox');if(lb&&lb.parentNode===v){var L=[document.getElementById('lxBox'),document.getElementById('anBox'),rec].filter(function(x){return x&&x.parentNode===v;});var ok=L.every(function(x,i){return x.nextElementSibling===(i<L.length-1?L[i+1]:lb);});if(!ok)L.forEach(function(x){lb.before(x);});}
+  if(rec&&rec.style.order!=='6')rec.style.order=6;
   /* 최근 다이브: 2개만 · 같은 날 여러 번은 안으로 */
   if(rec){rec.classList.add('lgr137');var sd=[].filter.call(v.querySelectorAll('.panel'),function(p){var h=p.querySelector(':scope > h2');return h&&/^(같은 날 여러 번|Multiple dives)/.test(h.textContent.trim())&&!rec.contains(p);})[0];if(sd){sd.classList.add('sub137');rec.appendChild(sd);}}
   /* 다녀온 바다: 로그북에서는 숨김 (로그를 쓰면 지도에 자동으로 들어가요) */
@@ -244,3 +245,47 @@ var _after137m=after;after=function(){_after137m();if(cur()==='map'){mapTidy137(
 
 /* 13) 떨림 · 깜박임 줄이기: 스크롤 때 나타나기 효과는 끄고(늦게 옮겨지는 칸과 겹쳐 깜박였음), 화면 전환은 아주 짧게 */
 (function(){var st=document.createElement('style');st.textContent='.rv136{opacity:1!important;transform:none!important;transition:none!important}.view.vin136{animation:vin137 .16s ease-out!important}@keyframes vin137{from{opacity:.65}to{opacity:1}}';document.head.appendChild(st);})();
+
+/* 14) 떨림 · 깜박임 전체 정리
+   - 화면마다 칸의 '보이는 순서'를 CSS로 고정: 늦게 붙는 칸이 맨 위에 끼어들어 아래가 밀리지 않게, 코드끼리 칸을 옮기며 다투지 않게
+   - 로그인한 사람은 내 기록이 다 올 때까지(최대 1.6초) 화면을 잠깐 가렸다가 한 번에 보여 줌 (로그아웃 화면 → 내 화면으로 바뀌며 번쩍이던 것) */
+(function(){
+  var R=document.documentElement;try{var k=Object.keys(localStorage).filter(function(x){return /^sb-.*-auth-token$/.test(x);})[0];if(k&&localStorage.getItem(k)&&typeof BE==='object'&&BE.on)R.classList.add('boot137');}catch(e){}
+  var t0=Date.now();window.__aft137=0;(function wait(){if(!R.classList.contains('boot137'))return;if((typeof BE==='object'&&BE.ready&&window.__aft137>0)||Date.now()-t0>1800){requestAnimationFrame(function(){R.classList.remove('boot137');});return;}setTimeout(wait,40);})();
+  var O={
+   home:[['.vh',0],['#prHome',1],['.panel:has(#homemap)',2],['.panel:has(.wmap)',2],['.cats',3],['#eduHome',4],['#mtRm',5],['#adHome',6]],
+   spot:[['.vh',0],['.hero',1],['#gal',1],['.stats',2],['#sc129',3],['.season',4],['.view > p.small',5],['#spX',10],['#spMine',11],['#adSpot',12],['#spRep',13],['#spEmg',14],['#spBio',15]],
+   log:[['.vh',0],['#i6Rep',1],['#lbmBox',2],['.stats',3],['#lxBox',4],['#anBox',5],['#lbBox',7],['#quickLog',8]],
+   profile:[['.vh',0],['#miAsk',1],['.kvp',2],['.cols:has(.stats)',3],['#cc2',5],['#lkPanel',6],['#insPanel',7],['#myDivers',8],['#actBox',9],['#myCert',10],['#safePanel',13],['#tidyTop',14],['#loBot',98]],
+   map:[['.vh',0],['.chips.regionrow',1],['#lmap',2],['#mapLg',3],['.mxnote',4],['.chips:not(.regionrow)',5],['#mapFind',6],['details.mfmore',7],['#regBox',8]],
+   community:[['.vh',0],['#kGuide',1],['#ctypeBox',2]]};
+  var dflt={home:20,spot:20,log:50,profile:50,map:50,community:20},css=[];
+  Object.keys(O).forEach(function(r){var P='body[data-r137="'+r+'"] #main .view > ';css.push(P+'*{order:'+dflt[r]+'}');O[r].forEach(function(x){var sel=x[0].replace(/^\.view > /,'');css.push(P+sel+'{order:'+x[1]+'}');});css.push(P+'.foot{order:99}');});
+  css.push('html.boot137 #main{opacity:0}#main{transition:opacity .14s ease-out}');
+  css.push('body[data-r137="home"] #main .view > .vh{min-height:56px}');css.push('#csvBtn{display:none!important}');
+  var st=document.createElement('style');st.textContent=css.join('\n');document.head.appendChild(st);
+  function mark(){var h=(location.hash||'#home').slice(1),id=h.split('-')[0]||'home';if(typeof V==='object'&&!V[h]&&V[id]){}else id=V&&V[h]?h:id;if(document.body.getAttribute('data-r137')!==id)document.body.setAttribute('data-r137',id);}
+  mark();window.addEventListener('hashchange',mark,true);
+  var _af=after;after=function(){_af();if(typeof BE==='object'&&BE.ready)window.__aft137++;};
+  var _rt=route;route=function(){mark();return _rt.apply(this,arguments);};Object.keys(_rt).forEach(function(k){route[k]=_rt[k];});
+})();
+
+/* 15) 자리 맡아 두기: 화면을 다시 그릴 때 잠깐 사라졌다 다시 붙는 칸은 지난번 높이만큼 빈자리를 먼저 잡아 둠 (아래 칸이 위아래로 튀지 않게) */
+(function(){
+  var IDS={home:['eduHome','mtRm','adHome','hello94'],log:['i6Rep','lxBox','anBox'],spot:['spX','spMine','adSpot','spRep','spEmg','spBio','sc129'],community:['kGuide'],profile:['miAsk','icPanel','cc2','lkPanel','insPanel','myDivers','actBox','safePanel'],map:['regBox','mapLg']};
+  var H={};try{H=JSON.parse(localStorage.getItem('dtdo.gh137')||'{}')||{};}catch(e){H={};}
+  function route(){return document.body.getAttribute('data-r137')||'';}
+  function remember(){var v0=document.querySelector('#main .view > .vh');if(v0){var hk='vh:'+(location.hash||'#home');var hh=Math.round(v0.getBoundingClientRect().height);if(hh>20&&!v0.dataset.vhm137){H[hk]=hh;try{localStorage.setItem('dtdo.gh137',JSON.stringify(H));}catch(e){}}}var r=route(),L=IDS[r];if(!L)return;var v=document.querySelector('#main .view');if(!v)return;H[r]=H[r]||{};L.forEach(function(id){var e=document.getElementById(id);if(e&&v.contains(e)&&!e.classList.contains('ghost137')){var h=e.getBoundingClientRect().height;if(h>8)H[r][id]=Math.round(h);}});try{localStorage.setItem('dtdo.gh137',JSON.stringify(H));}catch(e){}}
+  function ghosts(){var vh=document.querySelector('#main .view > .vh'),hk='vh:'+(location.hash||'#home');if(vh&&H[hk]&&window.innerWidth<=860){vh.style.minHeight=H[hk]+'px';vh.dataset.vhm137=1;setTimeout(function(){if(vh.isConnected){vh.style.minHeight='';delete vh.dataset.vhm137;}},4000);}var r=route(),L=IDS[r],M=H[r];if(!L||!M)return;var v=document.querySelector('#main .view');if(!v||v._gh137)return;v._gh137=1;var any=false;
+    L.forEach(function(id){if(!M[id]||document.getElementById(id))return;var g=document.createElement('div');g.className='ghost137';g.dataset.for=id;g.style.height=M[id]+'px';g.setAttribute('aria-hidden','true');var ref=null;
+      /* 같은 순서값으로 같은 자리에 */
+      var probe=document.createElement('div');probe.id=id;probe.style.display='none';v.appendChild(probe);var ord=getComputedStyle(probe).order;probe.remove();g.style.order=ord;v.insertBefore(g,v.firstChild);any=true;});
+    if(!any)return;
+    var mo=new MutationObserver(function(){[].forEach.call(v.querySelectorAll(':scope > .ghost137'),function(g){if(document.getElementById(g.dataset.for))g.remove();});if(!v.querySelector(':scope > .ghost137'))mo.disconnect();});
+    mo.observe(v,{childList:true});setTimeout(function(){mo.disconnect();[].forEach.call(v.querySelectorAll(':scope > .ghost137'),function(g){g.remove();});},3500);}
+  var st=document.createElement('style');st.textContent='.ghost137{visibility:hidden;pointer-events:none;margin:0!important;padding:0!important;border:0!important}';document.head.appendChild(st);
+  var _a=after;after=function(){_a();try{ghosts();}catch(e){}[600,1500,3000,5000].forEach(function(ms){setTimeout(remember,ms);});};
+  window.addEventListener('scroll',function(){clearTimeout(remember.t);remember.t=setTimeout(remember,400);},{passive:true});
+})();
+/* 로그북 요약 카드: 올해 · 배지 줄을 다시 그릴 때 바로 넣어 두기 (카드 높이가 줄었다 늘어나지 않게) */
+var _lt137c=logTidy137;logTidy137=function(){_lt137c();var S=document.querySelector('#main .view > .stats');if(!S)return;var w=S.querySelector(':scope > .lgx137');if(!logTidy137.c){try{logTidy137.c=localStorage.getItem('dtdo.lgx137')||'';}catch(e){}}if(w&&w.children.length){if(logTidy137.c!==w.innerHTML){logTidy137.c=w.innerHTML;try{localStorage.setItem('dtdo.lgx137',w.innerHTML);}catch(e){}}}else if(logTidy137.c&&!w){w=document.createElement('div');w.className='lgx137';w.innerHTML=logTidy137.c;S.appendChild(w);S.classList.add('lgs137');}};

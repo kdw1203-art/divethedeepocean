@@ -12,7 +12,7 @@ var _base13=baseLayer;baseLayer=function(L){if(KOSTYLE||!window.maplibregl||!L.m
   var g=L.layerGroup();KOSTYLE=null;var p=koStyle();(p||Promise.resolve()).then(function(){if(KOSTYLE){try{g.addLayer(_base13(L));}catch(e){}}else{setTimeout(function(){var q=koStyle();if(q)q.then(function(){if(KOSTYLE)g.addLayer(_base13(L));else toast('지도 배경을 불러오지 못했어요. 잠시 뒤 새로고침해 주세요.');});},3000);}});return g;};
 
 /* 사업자 정보·책임자: 운영자 화면에서 입력하면 하단·약관에 바로 반영 */
-function cfgLoad(){if(!BE.on||cfgLoad.b)return;cfgLoad.b=1;BE.sb.from('site_config').select('k,v').then(function(r){(r.data||[]).forEach(function(x){if(x.k==='company'&&x.v&&x.v.name)COMPANY=x.v;});if(COMPANY)rerender();});}
+function cfgLoad(){if(!BE.on||cfgLoad.b)return;cfgLoad.b=1;BE.sb.from('site_config').select('k,v').then(function(r){(r.data||[]).forEach(function(x){if(x.k==='company'&&x.v&&x.v.name)COMPANY=x.v;});if(COMPANY){var ft=document.querySelector('#main .view > .foot');if(ft&&typeof foot==='function'){var d=document.createElement('div');d.innerHTML=foot();if(d.firstElementChild)ft.replaceWith(d.firstElementChild);}else if(!ft)rerender();}});}
 
 /* 내 프로필 추가 정보(정지 여부·동의한 약관 버전) */
 var TERMS_V='2026-11-14';
