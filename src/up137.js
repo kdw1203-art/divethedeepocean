@@ -350,11 +350,16 @@ function hrWrap137(root){[].forEach.call((root||document).querySelectorAll('.hrb
    - 손가락으로 좌우로 밀어도 넘어감, 만지면 10초 동안 멈춤 */
 (function(){var st=document.createElement('style');st.textContent='@keyframes mrInR137{from{opacity:.25;transform:translateX(28px)}to{opacity:1;transform:none}}@keyframes mrInL137{from{opacity:.25;transform:translateX(-28px)}to{opacity:1;transform:none}}#hbundle .mslide.on.inR137{animation:mrInR137 .38s cubic-bezier(.2,.7,.2,1)}#hbundle .mslide.on.inL137{animation:mrInL137 .38s cubic-bezier(.2,.7,.2,1)}@media (prefers-reduced-motion:reduce){#hbundle .mslide.on.inR137,#hbundle .mslide.on.inL137{animation:none}}#hbundle .mtrack{touch-action:pan-y}';document.head.appendChild(st);})();
 var _ms137=monthShow;monthShow=function(i,auto){var hb=document.getElementById('hbundle'),prev=state.mIdx,keep=state.seaSid;
-  if(auto&&hb){/* 자동 넘김: 날씨는 그대로 두기 */var T=[].slice.call(hb.querySelectorAll('.mtabs [data-mt]')),n=T.length||12,j=((i%n)+n)%n,S=[].slice.call(hb.querySelectorAll('.mslide')),want=T[j]?mNum(T[j].textContent):null,sl=S.filter(function(s){var mb=s.querySelector('.mb');return mb&&mNum(mb.textContent)===want;})[0]||S[j];if(sl&&sl.dataset.sid)state.seaSid=sl.dataset.sid;}
-  _ms137(i);if(auto)state.seaSid=keep;
-  if(typeof MR!=='undefined'){MR.i=state.mIdx;MR.t=Date.now();if(!auto)MR.hold=Date.now()+10000;}
+  _ms137(i);
+  if(typeof MR!=='undefined'){MR.i=state.mIdx;MR.t=Date.now()+(auto?2000:0);/* 자동은 약 7초마다 */if(!auto)MR.hold=Date.now()+10000;}
   if(hb&&prev!=null&&state.mIdx!==prev){var on=hb.querySelector('.mslide.on');if(on){var n2=hb.querySelectorAll('.mtabs [data-mt]').length||12,fw=((state.mIdx-prev)%n2+n2)%n2<=n2/2;on.classList.remove('inR137','inL137');void on.offsetWidth;on.classList.add(fw?'inR137':'inL137');}}};
-mrGo=function(i,smooth){var manual=!smooth||Date.now()<(MR.hold||0)||!MR.ready;monthShow(i,!manual);};
+/* 24) 자동으로 넘어갈 때도 아래 바다 날씨가 카드와 함께 바뀌게 (한 번 불러온 바다는 기억해 두어서 다시 받지 않음)
+   - 시간별 예보를 펼쳐 보고 있거나, 카드 윗부분이 화면 밖으로 올라가 날씨를 읽는 중이면 자동 넘김을 잠시 쉼
+   - 날씨가 바뀌는 동안 칸 높이를 잠깐 붙잡아 아래 내용이 튀지 않게 */
+function mrPause137(){var hb=document.getElementById('hbundle');if(!hb)return true;var d=hb.querySelector('#seaToday details.hrdet[open]');if(d)return true;var r=hb.getBoundingClientRect(),top=(document.querySelector('.topbar')||{offsetHeight:0}).offsetHeight;return r.top<top-8||r.top>window.innerHeight-120;}
+mrGo=function(i,smooth){var manual=!smooth||Date.now()<(MR.hold||0)||!MR.ready;if(!manual&&mrPause137()){MR.t=Date.now();return;}
+  var sea=document.getElementById('seaToday');if(sea&&!manual){var h=sea.offsetHeight;if(h){sea.style.minHeight=h+'px';clearTimeout(mrGo.t);mrGo.t=setTimeout(function(){sea.style.minHeight='';},1800);}}
+  monthShow(i,!manual);};
 mrMark=function(){};
 (function(){var x0=null,y0=0;document.addEventListener('touchstart',function(e){var t=e.target.closest&&e.target.closest('#hbundle .mtrack');if(!t){x0=null;return;}x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
   document.addEventListener('touchend',function(e){if(x0==null)return;var c=e.changedTouches[0],dx=c.clientX-x0,dy=c.clientY-y0;x0=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.4)monthShow((state.mIdx||0)+(dx<0?1:-1));},{passive:true});})();
