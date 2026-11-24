@@ -117,7 +117,7 @@ document.addEventListener('change',function(e){if(e.target.id!=='dvMedia')return
 /* 로그 목록: 각 다이브에 '분석' 링크 */
 function logLinks(){[].forEach.call(document.querySelectorAll('#main [data-ledit]'),function(b){if(b.dataset.dl)return;b.dataset.dl=1;var a=document.createElement('a');a.className='chip';a.href='#dive-'+b.dataset.ledit;a.textContent=L53('분석','Details');b.before(a);});
   var lp=[].filter.call(document.querySelectorAll('#main [data-lprof]'),function(x){return true;});lp.forEach(function(x){x.style.display='none';});
-  var v=document.querySelector('#main .view'),h1=v&&v.querySelector('.vh h1'),pp=v&&v.querySelector('.vh p');if(h1&&/로그 · 컨디션|로그/.test(h1.textContent)&&!EN53){h1.textContent='내 로그북';if(pp)pp.textContent='다이브 컴퓨터 기록을 가져오거나 직접 써요. 다이브마다 수심 그래프와 점검이 붙어요';}
+  var v=document.querySelector('#main .view'),h1=v&&v.querySelector('.vh h1'),pp=v&&v.querySelector('.vh p');if(h1&&/로그 · 컨디션|로그/.test(h1.textContent)&&!EN53){h1.textContent='내 로그북';if(pp&&pp.textContent!=='다이브 기록과 통계')pp.textContent='다이브 기록과 통계';}
   if(v){[].forEach.call(v.querySelectorAll(':scope > .panel'),function(p){var h=(p.querySelector('h2')||{}).textContent||'';if(/이렇게 기록돼요/.test(h))p.style.display='none';});var lp=document.getElementById('lpBox'),ft=v.querySelector('.foot');if(lp&&!lp.dataset.mv){lp.dataset.mv=1;if(ft)ft.before(lp);else v.appendChild(lp);}}
   var vh=document.querySelector('#main .view .vh');if(vh&&!document.getElementById('logTop')){vh.insertAdjacentHTML('beforeend','<div id="logTop" style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-pri" href="#logimport">'+L53('컴퓨터 기록 가져오기','Import')+'</a><a class="btn btn-line" href="#logstats">'+L53('통계 · 내보내기','Stats')+'</a></div>');}}
 

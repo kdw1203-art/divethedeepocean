@@ -278,17 +278,19 @@ var _after137m=after;after=function(){_after137m();if(cur()==='map'){mapTidy137(
 (function(){
   var IDS={home:['eduHome','mtRm','adHome','hello94'],log:['i6Rep','lxBox','anBox'],spot:['spX','spMine','adSpot','spRep','spEmg','spBio','sc129'],community:['kGuide'],profile:['miAsk','icPanel','cc2','lkPanel','insPanel','myDivers','actBox','safePanel'],map:['regBox','mapLg']};
   var H={};try{H=JSON.parse(localStorage.getItem('dtdo.gh137')||'{}')||{};}catch(e){H={};}
+  /* 처음 방문이라 높이를 모를 때 쓰는 기본값 (휴대폰 기준) */
+  if(window.innerWidth<=860){H.log=H.log||{};if(!H.log.i6Rep)H.log.i6Rep=416;}
   function route(){return document.body.getAttribute('data-r137')||'';}
-  function remember(){var v0=document.querySelector('#main .view > .vh');if(v0){var hk='vh:'+(location.hash||'#home');var hh=Math.round(v0.getBoundingClientRect().height);if(hh>20&&!v0.dataset.vhm137){H[hk]=hh;try{localStorage.setItem('dtdo.gh137',JSON.stringify(H));}catch(e){}}}var r=route(),L=IDS[r];if(!L)return;var v=document.querySelector('#main .view');if(!v)return;H[r]=H[r]||{};L.forEach(function(id){var e=document.getElementById(id);if(e&&v.contains(e)&&!e.classList.contains('ghost137')){var h=e.getBoundingClientRect().height;if(h>8)H[r][id]=Math.round(h);}});try{localStorage.setItem('dtdo.gh137',JSON.stringify(H));}catch(e){}}
+  function remember(){var v0=document.querySelector('#main .view > .vh');/* 화면을 막 그린 직후의 높이는 버튼이 옮겨지기 전이라 크게 잡힘 → 2.5초 지난 뒤 높이만 기억 */if(v0&&Date.now()-(remember.at||0)<2500)v0=null;if(v0){var hk='vh:'+(location.hash||'#home');var hh=Math.round(v0.getBoundingClientRect().height);if(hh>20&&!v0.dataset.vhm137){H[hk]=hh;try{localStorage.setItem('dtdo.gh137',JSON.stringify(H));}catch(e){}}}var r=route(),L=IDS[r];if(!L)return;var v=document.querySelector('#main .view');if(!v)return;H[r]=H[r]||{};L.forEach(function(id){var e=document.getElementById(id);if(e&&v.contains(e)&&!e.classList.contains('ghost137')){var h=e.getBoundingClientRect().height;if(h>8)H[r][id]=Math.round(h);}});try{localStorage.setItem('dtdo.gh137',JSON.stringify(H));}catch(e){}}
   function ghosts(){var vh=document.querySelector('#main .view > .vh'),hk='vh:'+(location.hash||'#home');if(vh&&H[hk]&&window.innerWidth<=860){vh.style.minHeight=H[hk]+'px';vh.dataset.vhm137=1;setTimeout(function(){if(vh.isConnected){vh.style.minHeight='';delete vh.dataset.vhm137;}},4000);}var r=route(),L=IDS[r],M=H[r];if(!L||!M)return;var v=document.querySelector('#main .view');if(!v||v._gh137)return;v._gh137=1;var any=false;
     L.forEach(function(id){if(!M[id]||document.getElementById(id))return;var g=document.createElement('div');g.className='ghost137';g.dataset.for=id;g.style.height=M[id]+'px';g.setAttribute('aria-hidden','true');var ref=null;
       /* 같은 순서값으로 같은 자리에 */
       var probe=document.createElement('div');probe.id=id;probe.style.display='none';v.appendChild(probe);var ord=getComputedStyle(probe).order;probe.remove();g.style.order=ord;v.insertBefore(g,v.firstChild);any=true;});
     if(!any)return;
     var mo=new MutationObserver(function(){[].forEach.call(v.querySelectorAll(':scope > .ghost137'),function(g){if(document.getElementById(g.dataset.for))g.remove();});if(!v.querySelector(':scope > .ghost137'))mo.disconnect();});
-    mo.observe(v,{childList:true});setTimeout(function(){mo.disconnect();[].forEach.call(v.querySelectorAll(':scope > .ghost137'),function(g){g.remove();});},3500);}
+    mo.observe(v,{childList:true});setTimeout(function(){mo.disconnect();[].forEach.call(v.querySelectorAll(':scope > .ghost137'),function(g){g.remove();});},r==='profile'?8000:3500);}
   var st=document.createElement('style');st.textContent='.ghost137{visibility:hidden;pointer-events:none;margin:0!important;padding:0!important;border:0!important}';document.head.appendChild(st);
-  var _a=after;after=function(){_a();try{ghosts();}catch(e){}[600,1500,3000,5000].forEach(function(ms){setTimeout(remember,ms);});};
+  var _a=after;after=function(){_a();remember.at=Date.now();try{ghosts();}catch(e){}[600,1500,3000,5000].forEach(function(ms){setTimeout(remember,ms);});};
   window.addEventListener('scroll',function(){clearTimeout(remember.t);remember.t=setTimeout(remember,400);},{passive:true});
 })();
 /* 로그북 요약 카드: 올해 · 배지 줄을 다시 그릴 때 바로 넣어 두기 (카드 높이가 줄었다 늘어나지 않게) */
@@ -302,3 +304,24 @@ function pfDcard137(){if(cur()!=='profile')return;var v=document.querySelector('
   sum.classList.add('pfnolo137');}
 (function(){var st=document.createElement('style');st.textContent='.dcx137{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.18)}.dcx137 .k{font-size:12px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dcx137 b{font-size:17px}.pfsum137{grid-template-columns:1fr!important}';document.head.appendChild(st);})();
 var _po137d=pfOrder137;pfOrder137=function(){_po137d();try{pfDcard137();}catch(e){}};if(typeof order127==='function')order127=pfOrder137;
+
+/* 17) 포인트 화면 머리 버튼: 버튼이 하나씩 늦게 붙어도 높이가 그대로이게 한 줄(옆으로 밀기)로 */
+(function(){var st=document.createElement('style');st.textContent='body[data-r137="spot"] #main .view > .vh > div[style*="flex-wrap"]{flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;max-width:100%}body[data-r137="spot"] #main .view > .vh > div[style*="flex-wrap"]::-webkit-scrollbar{display:none}body[data-r137="spot"] #main .view > .vh > div[style*="flex-wrap"] > *{flex:none;white-space:nowrap}';document.head.appendChild(st);})();
+function spHead137(){if(cur()!=='spot')return;var vh=document.querySelector('#main .view > .vh');if(!vh)return;var row=vh.querySelector(':scope > div[style*="flex-wrap"]');if(!row)return;[].forEach.call(vh.querySelectorAll(':scope > #seaBtn, :scope > .btn'),function(b){row.appendChild(b);});
+  if(!vh._sh137&&window.MutationObserver){vh._sh137=new MutationObserver(function(){var b=vh.querySelectorAll(':scope > #seaBtn, :scope > .btn');if(b.length)[].forEach.call(b,function(x){row.appendChild(x);});});vh._sh137.observe(vh,{childList:true});}}
+var _after137s=after;after=function(){_after137s();try{spHead137();}catch(e){}};
+
+/* 18) 내 정보 첫 방문: 다이버 카드로 합쳐질 요약 칸은 처음부터 숨겨서 잠깐 보였다 사라지며 아래가 튀지 않게 */
+(function(){var st=document.createElement('style');st.textContent='body[data-r137="profile"] #main .view:has(.kvp .dcard) > .cols:has(.stats) > .panel:first-child{display:none!important}';document.head.appendChild(st);})();
+
+/* 19) 로그북 머리: 긴 설명 문구가 잠깐 두 줄로 보였다가 짧아지며 아래가 튀던 것 → 그리자마자 바로 짧게 */
+var _after137lh=after;after=function(){_after137lh();var c=cur();if(c==='log'){try{logTidy116();}catch(e){}}
+  /* 머리 칸에 붙는 버튼(올해 결산 · 투어 모아보기)도 그리자마자 바로 붙여서 머리 높이가 한 번에 정해지게 */
+  if(c==='log'||c==='home'){try{yrEntry129();}catch(e){}}if(c==='community'){try{tourEntry129();}catch(e){}}};
+
+/* 20) '기본 정보를 채워 주세요' 칸: 확인 결과를 기억해 두고 미리 확인 → 내 정보를 열 때 칸이 늦게 끼어들며 아래가 밀리지 않게 */
+function mi137(){if(!BE.on||!BE.user||!BE.sb||mi137.done)return;mi137.done=1;var k='dtdo.mi137',u=BE.user.id;
+  try{var c=localStorage.getItem(k);if(state.miHas==null&&c===u+':0')state.miHas=false;else if(state.miHas==null&&c===u+':1'){state.miHas=true;state.miDone=1;}}catch(e){}
+  BE.sb.from('member_info').select('id').eq('id',u).maybeSingle().then(function(x){if(x.error)return;var has=!!x.data;state.miHas=has;if(has){state.miDone=1;var m=document.getElementById('miAsk');if(m)m.remove();}try{localStorage.setItem(k,u+':'+(has?1:0));}catch(e){}},function(){});}
+var _after137mi=after;after=function(){try{mi137();}catch(e){}_after137mi();};
+if(BE.on&&BE.sb){try{BE.sb.auth.onAuthStateChange(function(ev){if(ev==='SIGNED_OUT'||ev==='SIGNED_IN')setTimeout(function(){mi137.done=0;},0);});}catch(e){}}
