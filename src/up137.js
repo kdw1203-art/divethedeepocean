@@ -335,3 +335,11 @@ if(BE.on&&BE.sb){try{BE.sb.auth.onAuthStateChange(function(ev){if(ev==='SIGNED_O
   var st=document.createElement('style');st.textContent='.lang137{font-size:12px;font-weight:800;letter-spacing:.04em;line-height:1;font-family:inherit}@media (max-width:860px){.topbar .topact{gap:5px!important}.topbar .topact .lang137{width:34px!important;min-width:34px!important}}@media (max-width:380px){.topbar .dmtop button{padding:0 9px!important}}';document.head.appendChild(st);
   /* 버튼은 나중에 붙는 것도 있으니 언어 버튼이 늘 맨 끝에 있게 */
   if(window.MutationObserver)new MutationObserver(function(){if(ta.lastElementChild!==b)ta.appendChild(b);}).observe(ta,{childList:true});})();
+
+/* 22) 바다 날씨의 '시간별 예보' 표: 접기 전에 잠깐 펼쳐진 채로 보였다가 접히던 것 → 표가 붙는 순간 바로 접기 안에 넣음 */
+function hrWrap137(root){[].forEach.call((root||document).querySelectorAll('.hrbox .hrt'),function(hr){if(hr.closest('details'))return;
+  var h3=hr.previousElementSibling&&hr.previousElementSibling.tagName==='H3'?hr.previousElementSibling:null;var d=document.createElement('details');d.className='hrdet';d.innerHTML='<summary>'+(LANG==='en'?'Hourly':'시간별 예보')+'</summary>';
+  hr.before(d);d.appendChild(hr);var nt=d.nextElementSibling;if(nt&&nt.tagName==='P')d.appendChild(nt);if(h3)h3.remove();});}
+(function(){var m=document.getElementById('main');if(!m||!window.MutationObserver)return;
+  new MutationObserver(function(L){for(var i=0;i<L.length;i++){if(L[i].addedNodes.length){if(m.querySelector('.hrbox > .hrt'))hrWrap137(m);return;}}}).observe(m,{childList:true,subtree:true});
+  var st=document.createElement('style');st.textContent='.hrbox > .hrt{display:none}';document.head.appendChild(st);})();
