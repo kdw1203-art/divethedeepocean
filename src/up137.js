@@ -289,3 +289,12 @@ var _after137m=after;after=function(){_after137m();if(cur()==='map'){mapTidy137(
 })();
 /* 로그북 요약 카드: 올해 · 배지 줄을 다시 그릴 때 바로 넣어 두기 (카드 높이가 줄었다 늘어나지 않게) */
 var _lt137c=logTidy137;logTidy137=function(){_lt137c();var S=document.querySelector('#main .view > .stats');if(!S)return;var w=S.querySelector(':scope > .lgx137');if(!logTidy137.c){try{logTidy137.c=localStorage.getItem('dtdo.lgx137')||'';}catch(e){}}if(w&&w.children.length){if(logTidy137.c!==w.innerHTML){logTidy137.c=w.innerHTML;try{localStorage.setItem('dtdo.lgx137',w.innerHTML);}catch(e){}}}else if(logTidy137.c&&!w){w=document.createElement('div');w.className='lgx137';w.innerHTML=logTidy137.c;S.appendChild(w);S.classList.add('lgs137');}};
+
+/* 16) 내 정보: 요약 카드(이름 · 기록한 다이브 · 저장한 포인트 · 장비 · 본 생물)는 다이버 카드와 겹쳐서 다이버 카드 안으로 합침 */
+function pfDcard137(){if(cur()!=='profile')return;var v=document.querySelector('#main .view');if(!v)return;var dc=v.querySelector('.kvp .dcard'),sum=v.querySelector(':scope > .cols:has(.stats) > .panel:first-child')||v.querySelector('.pfsum137 > .panel:first-child');if(!dc||!sum)return;
+  var S=[].map.call(sum.querySelectorAll('.stat'),function(s){var k=s.querySelector('small'),b=s.querySelector('b');return [k?k.textContent.trim():'',b?b.textContent.trim():''];}).filter(function(x){return x[0]&&!/기록한 다이브|Logged dives/.test(x[0]);});
+  if(!S.length)return;var g=dc.querySelector('.dcx137');if(!g){g=document.createElement('div');g.className='dcx137';var base=[].filter.call(dc.children,function(c){return c.style&&/grid/.test(c.style.display);})[0];if(base)base.after(g);else dc.appendChild(g);}
+  var NM={'저장한 포인트':'저장한 곳'};var h=S.map(function(x){return '<div><div class="k">'+esc(NM[x[0]]||x[0])+'</div><b>'+esc(x[1])+'</b></div>';}).join('');if(g.innerHTML!==h)g.innerHTML=h;
+  sum.classList.add('pfnolo137');}
+(function(){var st=document.createElement('style');st.textContent='.dcx137{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.18)}.dcx137 .k{font-size:12px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dcx137 b{font-size:17px}.pfsum137{grid-template-columns:1fr!important}';document.head.appendChild(st);})();
+var _po137d=pfOrder137;pfOrder137=function(){_po137d();try{pfDcard137();}catch(e){}};if(typeof order127==='function')order127=pfOrder137;
