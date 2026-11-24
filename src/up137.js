@@ -343,3 +343,18 @@ function hrWrap137(root){[].forEach.call((root||document).querySelectorAll('.hrb
 (function(){var m=document.getElementById('main');if(!m||!window.MutationObserver)return;
   new MutationObserver(function(L){for(var i=0;i<L.length;i++){if(L[i].addedNodes.length){if(m.querySelector('.hrbox > .hrt'))hrWrap137(m);return;}}}).observe(m,{childList:true,subtree:true});
   var st=document.createElement('style');st.textContent='.hrbox > .hrt{display:none}';document.head.appendChild(st);})();
+
+/* 23) 달마다 가기 좋은 바다: 5초마다 다음 달로 슬라이드처럼 넘어감 (탭 · 카드가 늘 같은 달)
+   - 예전엔 자동 넘김이 위 달 탭만 바꾸고 카드는 그대로라 '4월' 탭에 11월 카드(티슬곰)가 남아 있었음
+   - 자동으로 넘어갈 때는 아래 바다 날씨를 다시 불러오지 않음 (직접 달을 누르거나 밀었을 때만 날씨도 그 바다로)
+   - 손가락으로 좌우로 밀어도 넘어감, 만지면 10초 동안 멈춤 */
+(function(){var st=document.createElement('style');st.textContent='@keyframes mrInR137{from{opacity:.25;transform:translateX(28px)}to{opacity:1;transform:none}}@keyframes mrInL137{from{opacity:.25;transform:translateX(-28px)}to{opacity:1;transform:none}}#hbundle .mslide.on.inR137{animation:mrInR137 .38s cubic-bezier(.2,.7,.2,1)}#hbundle .mslide.on.inL137{animation:mrInL137 .38s cubic-bezier(.2,.7,.2,1)}@media (prefers-reduced-motion:reduce){#hbundle .mslide.on.inR137,#hbundle .mslide.on.inL137{animation:none}}#hbundle .mtrack{touch-action:pan-y}';document.head.appendChild(st);})();
+var _ms137=monthShow;monthShow=function(i,auto){var hb=document.getElementById('hbundle'),prev=state.mIdx,keep=state.seaSid;
+  if(auto&&hb){/* 자동 넘김: 날씨는 그대로 두기 */var T=[].slice.call(hb.querySelectorAll('.mtabs [data-mt]')),n=T.length||12,j=((i%n)+n)%n,S=[].slice.call(hb.querySelectorAll('.mslide')),want=T[j]?mNum(T[j].textContent):null,sl=S.filter(function(s){var mb=s.querySelector('.mb');return mb&&mNum(mb.textContent)===want;})[0]||S[j];if(sl&&sl.dataset.sid)state.seaSid=sl.dataset.sid;}
+  _ms137(i);if(auto)state.seaSid=keep;
+  if(typeof MR!=='undefined'){MR.i=state.mIdx;MR.t=Date.now();if(!auto)MR.hold=Date.now()+10000;}
+  if(hb&&prev!=null&&state.mIdx!==prev){var on=hb.querySelector('.mslide.on');if(on){var n2=hb.querySelectorAll('.mtabs [data-mt]').length||12,fw=((state.mIdx-prev)%n2+n2)%n2<=n2/2;on.classList.remove('inR137','inL137');void on.offsetWidth;on.classList.add(fw?'inR137':'inL137');}}};
+mrGo=function(i,smooth){var manual=!smooth||Date.now()<(MR.hold||0)||!MR.ready;monthShow(i,!manual);};
+mrMark=function(){};
+(function(){var x0=null,y0=0;document.addEventListener('touchstart',function(e){var t=e.target.closest&&e.target.closest('#hbundle .mtrack');if(!t){x0=null;return;}x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
+  document.addEventListener('touchend',function(e){if(x0==null)return;var c=e.changedTouches[0],dx=c.clientX-x0,dy=c.clientY-y0;x0=null;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.4)monthShow((state.mIdx||0)+(dx<0?1:-1));},{passive:true});})();
