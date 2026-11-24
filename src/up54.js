@@ -35,7 +35,7 @@ function logLayout(){var v=document.querySelector('#main .view');if(!v||document
   logTidy();
   lbProfVisible();}
 
-function logTidy(){if(cur()!=='log')return;var v=document.querySelector('#main .view'),lb=document.getElementById('lbBox');if(!v||!lb)return;var st=v.querySelector(':scope > .stats');if(st&&lb.previousElementSibling!==st)st.after(lb);
+function logTidy(){if(cur()!=='log')return;var v=document.querySelector('#main .view'),lb=document.getElementById('lbBox');if(!v||!lb)return;var st=v.querySelector(':scope > .stats');/* 순서는 137에서 정함 (기록 분석 → 내 다이빙 분석 → 최근 다이브 → 다이브 목록) */
   var csv=document.getElementById('csvBtn');if(csv)csv.style.display='none';
   var dx=v.querySelector(':scope > .lbx');if(!dx){dx=document.createElement('details');dx.className='panel lbx';dx.innerHTML='<summary>분석 · 배지 · 올해 돌아보기 · 다녀온 바다 · 종이 로그북</summary><div></div>';var ft=v.querySelector(':scope > .foot');if(ft)ft.before(dx);else v.appendChild(dx);}
   var box=dx.querySelector('div');[].forEach.call(v.querySelectorAll(':scope > .panel, :scope > div[id]'),function(p){if(p===dx||p===lb)return;var h=(p.querySelector('h2')||{}).textContent||'';if(p.id==='lpBox'||/로그 배지|돌아보기|종이 로그북|다녀온 바다|내 다이빙 분석/.test(h)){p.style.boxShadow='none';p.style.border='0';p.style.padding='8px 0';p.style.margin='0';box.appendChild(p);}});

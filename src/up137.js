@@ -228,3 +228,19 @@ var _after137m=after;after=function(){_after137m();if(cur()==='map'){mapTidy137(
 
 /* 11) 내 정보 바로가기: 글자를 칸 가운데로 */
 (function(){var st=document.createElement('style');st.textContent='.pfsum137>.panel:last-child .list>a.item{justify-content:center!important;align-items:center!important;padding:0 6px!important;height:48px;min-height:48px!important}.pfsum137>.panel:last-child .list>a.item .tx{flex:none!important;margin:0!important;padding:0!important;display:flex;justify-content:center;align-items:center;width:100%}.pfsum137>.panel:last-child .list>a.item .tx b{margin:0!important;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}';document.head.appendChild(st);})();
+
+/* 12) 설정 · 안내 정돈: 설명 줄 빼고, 화면 밝기 · 글자 크기는 한 줄 버튼 묶음으로 */
+(function(){var st=document.createElement('style');st.textContent=[
+ '#tidyTop p.small[data-tr]{display:none}',
+ '#thmBox.sub137,#fzBox.sub137{padding-top:12px!important;margin-top:12px!important}',
+ '#thmBox>h2,#fzBox .a4h{display:flex!important;align-items:baseline;justify-content:space-between;margin:0 0 8px!important;font-size:14.5px!important}',
+ '#fzBox .a4h h2{font-size:14.5px!important;margin:0!important}#fzBox .a4h .small{font-size:11.5px}',
+ '#thmBox>.chips,#fzBox .lbm{display:flex!important;flex-wrap:nowrap!important;gap:0!important;padding:3px;border-radius:999px;background:var(--soft);border:1px solid var(--line);overflow:hidden}',
+ '#thmBox>.chips .chip,#fzBox .lbm .lbmb{flex:1 1 0!important;width:auto!important;min-width:0;min-height:36px!important;height:36px;margin:0!important;padding:0 4px!important;border:0!important;border-radius:999px!important;background:transparent!important;color:var(--sub)!important;font-size:13px!important;font-weight:600;white-space:nowrap;display:flex;align-items:center;justify-content:center}',
+ '#fzBox .lbm .lbmb b{font-weight:600;line-height:1;color:inherit!important;font-size:13px!important}',
+ '#thmBox>.chips .chip.on,#fzBox .lbm .lbmb.on,#fzBox .lbm .lbmb[aria-checked=true]{background:var(--sea)!important;color:var(--sea-ink,#fff)!important}',
+ '#thmBox>p.small{font-size:11.5px!important;margin:6px 2px 0!important}'
+].join('');document.head.appendChild(st);})();
+
+/* 13) 떨림 · 깜박임 줄이기: 스크롤 때 나타나기 효과는 끄고(늦게 옮겨지는 칸과 겹쳐 깜박였음), 화면 전환은 아주 짧게 */
+(function(){var st=document.createElement('style');st.textContent='.rv136{opacity:1!important;transform:none!important;transition:none!important}.view.vin136{animation:vin137 .16s ease-out!important}@keyframes vin137{from{opacity:.65}to{opacity:1}}';document.head.appendChild(st);})();
